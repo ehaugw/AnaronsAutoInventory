@@ -1,0 +1,65 @@
+local addon_name, addon_data = ...
+
+addon_data = {}
+addon_data.core = {}
+
+-- Create frame that has the addon loaded event.
+addon_data.core.core_frame = CreateFrame("Frame", addon_name .. "CoreFrame", UIParent)
+addon_data.core.core_frame:RegisterEvent("ADDON_LOADED")
+addon_data.core.core_frame:RegisterEvent("MERCHANT_SHOW")
+addon_data.core.core_frame:RegisterEvent("BANKFRAME_OPENED")
+
+
+local function OnAddonLoadedCore(self)
+    AAI_print("Anaron's Auto Inventory was loaded")
+    AAI_OnAddonLoadedTags(self)
+end
+
+local function CoreFrame_OnEvent(self, event, ...)
+    local args = {...}
+    if event == "ADDON_LOADED" then
+        if args[1] == "AnaronsAutoInventory" then
+            OnAddonLoadedCore()
+        end
+
+    elseif event == "MERCHANT_SHOW" then
+        AAI_UseAllTaggedItems("character", "junk", true, false)
+
+    elseif event == "BANKFRAME_OPENED" then
+        AAI_UseAllTaggedItems("character", "bank", false, false)
+
+    end
+end
+
+
+function AAI_AddTooltipTags()
+    _, link = GameTooltip:GetItem()
+    if aai_item_tags[link] ~= nil then
+        for key, value in pairs(aai_item_tags[link]) do
+            GameTooltip:AddLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)))
+        end
+    end
+end
+
+
+function AAI_TitleCase(str)
+    return str:gsub("(%l)(%w*)", function(a,b) return string.upper(a)..b end)
+end
+
+
+-- Set the function that is run on every event.
+addon_data.core.core_frame:SetScript("OnEvent", CoreFrame_OnEvent)
+GameTooltip:HookScript("OnTooltipSetItem", AAI_AddTooltipTags)
+
+
+function AAI_print(str)
+    print(AAI_SetColor(str, "aaaaff"))
+end
+
+
+AAI_print_original = AAI_print
+
+
+function AAI_SetColor(str, color)
+    return string.format("\124cff%s%s\124r", color, str)
+end

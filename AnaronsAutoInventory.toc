@@ -1,0 +1,33 @@
+## Interface: 20502
+## Title-deDE: Anaron's Auto Inventory (Deutsch)
+## Title-enUS: Anaron's Auto Inventory (English)
+## Title-esES: Anaron's Auto Inventory (Español)
+## Title-esMX: Anaron's Auto Inventory (Español)
+## Title-frFR: Anaron's Auto Inventory (Français)
+## Title-itIT: Anaron's Auto Inventory (Italiano)
+## Title-koKR: Anaron's Auto Inventory (한국어)
+## Title-ptBR: Anaron's Auto Inventory (Português)
+## Title-ruRU: Anaron's Auto Inventory (русский)
+## Title-zhCN: Anaron's Auto Inventory (中文)
+## Title-zhTW: Anaron's Auto Inventory (中文)
+
+## Notes-deDE: Does inventory management.
+## Notes-enUS: Does inventory management.
+## Notes-esES: Does inventory management.
+## Notes-esMX: Does inventory management.
+## Notes-frFR: Does inventory management.
+## Notes-itIT: Does inventory management.
+## Notes-koKR: Does inventory management.
+## Notes-ptBR: Does inventory management.
+## Notes-ruRU: Does inventory management.
+## Notes-zhCN: Does inventory Management.
+## Notes-zhTW: Does inventory management.
+
+## Author: Anaron
+## Version: 1.0.0
+## DefaultState: enabled
+## SavedVariablesPerCharacter: aai_item_tags
+
+AnaronsAutoInventory_Core.lua
+AnaronsAutoInventory_Misc.lua
+AnaronsAutoInventory_Tags.lua
