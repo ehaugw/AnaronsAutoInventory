@@ -1,5 +1,8 @@
 AAI_OnAddonLoadedTags = function(instance)
-    aai_item_tags = aai_item_tags or {}
+    if aai_item_tags == nil then
+        aai_item_tags = {}
+        AAI_print("Might have reset tags")
+    end
 end
 
 
@@ -19,7 +22,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         force       = "prepend to other action to ignore precious tags",
         silent      = "ignore any prints during the following operation",
         restore     = "restore AAI after a crash",
-        bank        = "prepend to \"bank\" to use from bank rather than inventory"
+        bank        = "prepend to \"bank\" to use from bank rather than inventory",
+        display     = "display saved data"
     }
 
     -- prefixes
@@ -55,6 +59,14 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         AAI_print = AAI_print_original
         AAI_print("Restored AAI")
     
+    elseif operation == "display" then
+        for key, value in pairs(aai_item_tags) do
+            print(key)
+            for key2, value2 in pairs(value) do
+                print(string.format("- %s", key2))
+            end
+        end
+
     elseif operation == "help" then
         if option then
             AAI_print(string.format("Items tagged as %s are %s", AAI_SetColor(option, AAI_GetTagColor(option)), AAI_GetTagHelp(option)))
