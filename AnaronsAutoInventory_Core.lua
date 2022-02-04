@@ -8,6 +8,7 @@ addon_data.core.core_frame = CreateFrame("Frame", addon_name .. "CoreFrame", UIP
 addon_data.core.core_frame:RegisterEvent("ADDON_LOADED")
 addon_data.core.core_frame:RegisterEvent("MERCHANT_SHOW")
 addon_data.core.core_frame:RegisterEvent("BANKFRAME_OPENED")
+addon_data.core.core_frame:RegisterEvent("START_LOOT_ROLL")
 
 
 local function OnAddonLoadedCore(self)
@@ -28,15 +29,25 @@ local function CoreFrame_OnEvent(self, event, ...)
     elseif event == "BANKFRAME_OPENED" then
         AAI_UseAllTaggedItems("character", "bank", false, false)
 
+    elseif event == "START_LOOT_ROLL" then
+        AAI_HandleRoll(args)
     end
 end
 
 
 function AAI_AddTooltipTags()
     _, link = GameTooltip:GetItem()
+    link = AAI_CleanItemLinkForDatabase(link)
     if aai_item_tags[link] ~= nil then
         for key, value in pairs(aai_item_tags[link]) do
-            GameTooltip:AddLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)))
+            if not (aai_item_tags_global[link] and aai_item_tags_global[link][key]) then
+                GameTooltip:AddLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)))
+            end
+        end
+    end
+    if aai_item_tags_global[link] ~= nil then
+        for key, value in pairs(aai_item_tags_global[link]) do
+            GameTooltip:AddDoubleLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)), AAI_SetColor("Global", "FFFFFF"))
         end
     end
 end

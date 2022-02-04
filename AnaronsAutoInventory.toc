@@ -27,7 +27,9 @@
 ## Version: 1.0.0
 ## DefaultState: enabled
 ## SavedVariablesPerCharacter: aai_item_tags
+## SavedVariables: aai_tag_colors, aai_item_tags_global
 
 AnaronsAutoInventory_Core.lua
 AnaronsAutoInventory_Misc.lua
 AnaronsAutoInventory_Tags.lua
+AnaronsAutoInventory_Roll.lua

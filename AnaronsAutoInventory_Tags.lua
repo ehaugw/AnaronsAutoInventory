@@ -1,8 +1,7 @@
 AAI_OnAddonLoadedTags = function(instance)
-    if aai_item_tags == nil then
-        aai_item_tags = {}
-        AAI_print("Might have reset tags")
-    end
+    aai_item_tags = aai_item_tags or {}
+    aai_tag_colors = aai_tag_colors or {}
+    aai_item_tags_global = aai_item_tags_global or {}
 end
 
 
@@ -16,14 +15,18 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     local valid_operations = {
         help        = "get help with AAI",
         tag         = "assign a tag to an item",
-        remove      = "prepend to \"tag\" to remove a tag from an item",
+        remove      = "prepend to \"tag\" to remove a tag from an item\n prepend to \"tagcolor\" to reset the color of a tag",
         taglist     = "display a list of tags handled by AAI",
         use         = "use all items with the provided tag",
         force       = "prepend to other action to ignore precious tags",
         silent      = "ignore any prints during the following operation",
         restore     = "restore AAI after a crash",
         bank        = "prepend to \"bank\" to use from bank rather than inventory",
-        display     = "display saved data"
+        display     = "display saved data",
+        need        = "automatically roll \"need\" on this item",
+        greed       = "automatically roll \"greed\" on this item",
+        tagcolor    = "manually override the color of a tag",
+        global      = "prepend to \"tag\" to apply the action across all characters"
     }
 
     -- prefixes
@@ -35,6 +38,12 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     local forced = false
     if operation == "force" then
         forced = true
+        operation, option = AAI_GetLeftWord(option)
+    end
+
+    local global = false
+    if operation == "global" then
+        global = true
         operation, option = AAI_GetLeftWord(option)
     end
 
@@ -61,9 +70,12 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     
     elseif operation == "display" then
         for key, value in pairs(aai_item_tags) do
-            print(key)
-            for key2, value2 in pairs(value) do
-                print(string.format("- %s", key2))
+            if option == nil or string.match(key, string.format(".*%s.*", AAI_ReplaceLinkWithID(option))) then
+                AAI_print(string.format("%s: %s", key, key:gsub("\124", "")))
+    --         return text:gsub("(.*)(\124c[0-9a-f]+\124Hitem:([0-9]+):.*[^\124]*\124h[^\124]*\124h\124r)(.*)", "%1%3%4")
+                for key2, value2 in pairs(value) do
+                    print(string.format("- %s", key2))
+                end
             end
         end
 
@@ -71,10 +83,11 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         if option then
             AAI_print(string.format("Items tagged as %s are %s", AAI_SetColor(option, AAI_GetTagColor(option)), AAI_GetTagHelp(option)))
         else
-            AAI_print("- help [tag]: get information related to a tag")
             AAI_print("AAI options:")
+            AAI_print("help [tag]:")
+            AAI_print("- get information related to a tag")
             for key, value in pairs(valid_operations) do
-                AAI_print(string.format("- %s: %s", key, value))
+                AAI_print(string.format("%s:\n %s", key, value):gsub("\n", "\n-"))
             end
         end
 
@@ -82,6 +95,15 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         AAI_print("The tags handled by AAI are:")
         for _, value in ipairs(AAI_TagList) do
             AAI_print(string.format("%s: %s", AAI_TitleCase(AAI_SetColor(value, AAI_GetTagColor(value))), AAI_GetTagHelp(value)))
+        end
+
+    elseif operation == "tagcolor" then
+        tag, option = AAI_GetLeftWord(option)
+        if remove then
+            aai_tag_colors[tag] = nil
+
+        elseif option then
+            aai_tag_colors[tag] = option
         end
 
     elseif operation == "tag" then
@@ -93,11 +115,12 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
             if tag and option then
                 tag = string.lower(tag)
+                item_link = AAI_CleanItemLinkForDatabase(item_link)
 
                 if not remove then
-                    AAI_AddTag(item_link, tag)
+                    AAI_AddTag(item_link, tag, global)
                 else
-                    AAI_RemoveTag(item_link, tag)
+                    AAI_RemoveTag(item_link, tag, global)
                 end
             end
         end
@@ -150,28 +173,40 @@ function AAI_UseAllTaggedItems(inventory, tag, destructive, forced)
 end
 
 
-function AAI_AddTag(item, tag)
-    if aai_item_tags[item] == nil then
-        aai_item_tags[item] = {}
+function AAI_AddTag(item, tag, global)
+    tag_dict = aai_item_tags
+    if global then
+        tag_dict = aai_item_tags_global
     end
-    aai_item_tags[item][tag] = true
+
+    if tag_dict[item] == nil then
+        tag_dict[item] = {}
+    end
+    tag_dict[item][tag] = true
 
     -- _, item_link = GetItemInfo(item)
-    AAI_print(string.format("%s was tagged as %s.", item, AAI_SetColor(tag, AAI_GetTagColor(tag))))
+    AAI_print(string.format("%s was %s tagged as %s.", item, (global and "globaly" or not global and "localy"), AAI_SetColor(tag, AAI_GetTagColor(tag))))
 end
 
 
-function AAI_RemoveTag(item, tag)
-    if aai_item_tags[item] == nil then
-        aai_item_tags[item] = {}
+function AAI_RemoveTag(item, tag, global)
+    tag_dict = aai_item_tags
+    if global then
+        tag_dict = aai_item_tags_global
     end
-    aai_item_tags[item][tag] = nil
+
+    if tag_dict[item] == nil then
+        tag_dict[item] = {}
+    end
+    tag_dict[item][tag] = nil
     -- _, item_link = GetItemInfo(item)
-    AAI_print(string.format("%s is no longer tagged as %s", item, AAI_SetColor(tag, "ffffff")))
+    AAI_print(string.format("%s is no longer %s tagged as %s.", item, (global and "globaly" or not global and "localy"), AAI_SetColor(tag, AAI_GetTagColor(tag))))
 end
 
 
 function AAI_HasTag(item, tag)
+    item = AAI_CleanItemLinkForDatabase(item)
+
     if item and tag == "junk" then
         _, _, rarity = GetItemInfo(item)
         if rarity == 0 then
@@ -179,10 +214,14 @@ function AAI_HasTag(item, tag)
         end
     end
 
+    local has_tag = false
     if aai_item_tags[item] ~= nil then
-        return aai_item_tags[item][tag]
+        has_tag = has_tag or aai_item_tags[item][tag]
     end
-    return false
+    if aai_item_tags_global[item] ~= nil then
+        has_tag = has_tag or aai_item_tags_global[item][tag]
+    end
+    return has_tag
 end
 
 
@@ -217,7 +256,8 @@ function AAI_GetTagColor(tag)
         precious    = "ffff77",
         bank        = "7777ff"
     }
-    return color_table[tag] or "ffffff"
+
+    return aai_tag_colors[tag] or color_table[tag] or "ffffff"
 end
 
 
@@ -231,13 +271,45 @@ function AAI_GetTagHelp(tag)
 end
 
 
--- function AAI_ReplaceLinkWithID(text)
---     if text ~= nil then
---         return text:gsub("(.*)(\124c[0-9a-f]+\124Hitem:([0-9]+):.*[^\124]*\124h[^\124]*\124h\124r)(.*)", "%1%3%4")
---     else
---         return nil
---     end
--- end
+function AAI_ReplaceLinkWithID(text)
+    if text ~= nil then
+        return text:gsub("(.*)(\124c[0-9a-f]+\124Hitem:([0-9]+):.*[^\124]*\124h[^\124]*\124h\124r)(.*)", "%1%3%4")
+    else
+        return nil
+    end
+end
+
+
+function AAI_CleanItemLinkForDatabase(text)
+    -- remove the level component of the item link because it casues data to be "lost" whenever you levelup
+    return AAI_ClearItemLinkLevel(text)
+end
+
+
+function AAI_ClearItemLinkLevel(text)
+    return AAI_ReplaceNumberAtIndex(text, 9, "")
+end
+
+
+function AAI_ReplaceNumberAtIndex(text, index, level)
+    if text ~= nil then
+        local pre = "(.*)(\124c[0-9a-f]+\124Hitem)"
+        local post = "(\124h[^\124]*\124h\124r)(.*)"
+        local mid = "(" .. AAI_TextRepeat(":[0-9]*", index - 1) .. ":)([0-9]*)(" .. AAI_TextRepeat(":[0-9]*", 18 - index) .. ")"
+        text, _ = text:gsub(pre .. mid .. post, "%1%2%3" .. level .. "%5%6%7")
+        return text
+    end
+end
+
+
+function AAI_TextRepeat(text, repetitions)
+    local result = ""
+    while repetitions > 0 do
+        repetitions = repetitions - 1
+        result = result .. text
+    end
+    return result
+end
 
 
 AAI_TagList = {"junk", "precious", "bank"}
