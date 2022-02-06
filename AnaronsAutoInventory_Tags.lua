@@ -107,20 +107,32 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
 
     elseif operation == "tag" then
-        local tag, option = AAI_GetLeftWord(option)
+        tags = {}
+
+        while true do
+            left_word, option = AAI_GetLeftWord(option)
+            table.insert(tags, left_word)
+            if AAI_IsItemLink(option) then
+                break
+            end
+        end
+        option_back = option
         
-        while option ~= nil do
-            item_link, option = AAI_GetLeftItemLink(option)
+        for _, tag in pairs(tags) do
+            option = option_back
+            while option ~= nil do
+                item_link, option = AAI_GetLeftItemLink(option)
 
 
-            if tag and option then
-                tag = string.lower(tag)
-                item_link = AAI_CleanItemLinkForDatabase(item_link)
+                if tag and option then
+                    tag = string.lower(tag)
+                    item_link = AAI_CleanItemLinkForDatabase(item_link)
 
-                if not remove then
-                    AAI_AddTag(item_link, tag, global)
-                else
-                    AAI_RemoveTag(item_link, tag, global)
+                    if not remove then
+                        AAI_AddTag(item_link, tag, global)
+                    else
+                        AAI_RemoveTag(item_link, tag, global)
+                    end
                 end
             end
         end
@@ -237,6 +249,12 @@ end
 function AAI_GetLeftItemLink(text)
     item_link, _, _, remainer = string.match(text, "(\124c[0-9a-f]+\124Hitem:([0-9]+):[^\124]*\124h[^\124]*\124h\124r)(%s?)(.*)")
     return item_link, remainer
+end
+
+
+function AAI_IsItemLink(text)
+    item_link, _, _, remainer = string.match(text, "^(\124c[0-9a-f]+\124Hitem:([0-9]+):[^\124]*\124h[^\124]*\124h\124r)(%s?)(.*)")
+    return item_link ~= nil
 end
 
 
