@@ -138,8 +138,21 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
 
     elseif operation == "use" then
-        -- FIXME: set destructive to true when merchant is open
-        AAI_UseAllTaggedItems(inventory, option, false, forced)
+        tags = {}
+
+        while true do
+            left_word, option = AAI_GetLeftWord(option)
+            table.insert(tags, left_word)
+            if not option then
+                break
+            end
+        end
+        
+        for _, tag in pairs(tags) do
+            print(tag)
+            -- FIXME: set destructive to true when merchant is open
+            AAI_UseAllTaggedItems(inventory, tag, false, forced)
+        end
     end -- end of operation list
 
     AAI_print = AAI_print_original
