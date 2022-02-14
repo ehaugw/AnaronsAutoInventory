@@ -30,6 +30,9 @@ SendChatMessage = function(...)
     -- Replace %player with player name
     message = string.gsub(message, "%%player", "%%p")
     message = string.gsub(message, "%%p", GetUnitName("player", false))
+
+    message = string.gsub(message, "%%location", "%%l")
+    message = string.gsub(message, "%%l", GetZoneText())
     
     -- Replace %whisper with whisper recepient
     local whisper_recepient = "<no whisper recepient>"
