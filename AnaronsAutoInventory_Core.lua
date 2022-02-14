@@ -9,6 +9,8 @@ addon_data.core.core_frame:RegisterEvent("ADDON_LOADED")
 addon_data.core.core_frame:RegisterEvent("MERCHANT_SHOW")
 addon_data.core.core_frame:RegisterEvent("BANKFRAME_OPENED")
 addon_data.core.core_frame:RegisterEvent("START_LOOT_ROLL")
+addon_data.core.core_frame:RegisterEvent("CONFIRM_LOOT_ROLL")
+
 
 
 local function OnAddonLoadedCore(self)
@@ -29,8 +31,8 @@ local function CoreFrame_OnEvent(self, event, ...)
     elseif event == "BANKFRAME_OPENED" then
         AAI_UseAllTaggedItems("character", "bank", false, false)
 
-    elseif event == "START_LOOT_ROLL" then
-        AAI_HandleRoll(args)
+    elseif event == "START_LOOT_ROLL" or event == "CONFIRM_LOOT_ROLL" then
+        AAI_HandleRoll(event, args)
     end
 end
 
