@@ -26,37 +26,51 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         need        = "automatically roll \"need\" on this item",
         greed       = "automatically roll \"greed\" on this item",
         tagcolor    = "manually override the color of a tag",
-        global      = "prepend to \"tag\" to apply the action across all characters"
+        global      = "prepend to \"tag\" to apply the action across all characters",
+        auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house"
     }
 
-    -- prefixes
-    if operation == "silent" then
-        AAI_print = function() end
-        operation, option = AAI_GetLeftWord(option)
-    end
 
     local forced = false
-    if operation == "force" then
-        forced = true
-        operation, option = AAI_GetLeftWord(option)
-    end
-
     local global = false
-    if operation == "global" then
-        global = true
-        operation, option = AAI_GetLeftWord(option)
-    end
-
     local remove = false
-    if operation == "remove" then
-        remove = true
-        operation, option = AAI_GetLeftWord(option)
-    end
-
     local inventory = "character"
-    if operation == "bank" then
-        inventory = "bank"
-        operation, option = AAI_GetLeftWord(option)
+    while true do
+        local should_break = true
+        -- prefixes
+        if operation == "silent" then
+            AAI_print = function() end
+            operation, option = AAI_GetLeftWord(option)
+            should_break = false
+        end
+
+        if operation == "force" then
+            forced = true
+            operation, option = AAI_GetLeftWord(option)
+            should_break = false
+        end
+
+        if operation == "global" then
+            global = true
+            operation, option = AAI_GetLeftWord(option)
+            should_break = false
+        end
+
+        if operation == "remove" then
+            remove = true
+            operation, option = AAI_GetLeftWord(option)
+            should_break = false
+        end
+
+        if operation == "bank" then
+            inventory = "bank"
+            operation, option = AAI_GetLeftWord(option)
+            should_break = false
+        end
+
+        if should_break then
+            break
+        end
     end
 
     if valid_operations[operation] == nil then
@@ -153,6 +167,14 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
             -- FIXME: set destructive to true when merchant is open
             AAI_UseAllTaggedItems(inventory, tag, false, forced)
         end
+
+    elseif operation == "auction" then
+        stack_size, option = AAI_GetLeftWord(option)
+        bid_price, option = AAI_GetLeftWord(option)
+        buyout_price, option = AAI_GetLeftWord(option)
+        item_link = AAI_CleanItemLinkForDatabase(option)
+        
+        AAI_SellItemsOnAuctionHouse(item_link, stack_size, bid_price, buyout_price)
     end -- end of operation list
 
     AAI_print = AAI_print_original
@@ -173,6 +195,32 @@ function AAI_GetInventoryBags(inventory)
         end
     end
     return container_ids
+end
+
+
+function AAI_SellItemsOnAuctionHouse(item, stack_size, bid, buyout)
+    -- The stacks must be split in to a slot before being put on the AH
+    free_bag = -1
+    free_slot = -1
+    
+    container_ids = AAI_GetInventoryBags("character")
+
+    -- Find a free slot to split stacks into
+    for _, bag in ipairs(container_ids) do
+        for slot=1,GetContainerNumSlots(bag),1 do
+            if etContainerItemLink(bag, slot) == nil then
+                free_bag = bag
+                free_slot = slot
+                break
+            end
+        end
+    end
+
+    -- Split the stacks and sell
+    for _, bag in ipairs(container_ids) do
+        for slot=1,GetContainerNumSlots(bag),1 do
+        end
+    end
 end
 
 
