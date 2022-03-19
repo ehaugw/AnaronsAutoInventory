@@ -74,7 +74,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     end
 
     if valid_operations[operation] == nil then
-        AAI_print(string.format("\"%s\" is an invalid operation - try \"/aai h\"", operation))
+        AAI_print(string.format("\"%s\" is an invalid operation - try \"/aai help\"", operation))
     end
 
     -- operations
