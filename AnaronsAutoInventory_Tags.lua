@@ -88,6 +88,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     -- operations
     if operation == "restore" then
         AAI_print = AAI_print_original
+        AAI_CleanUpItemTagDatabase()
         AAI_print("Restored AAI")
     
     elseif operation == "display" then
@@ -409,7 +410,12 @@ end
 
 function AAI_CleanItemLinkForDatabase(text)
     -- remove the level component of the item link because it casues data to be "lost" whenever you levelup
-    return AAI_ClearItemLinkLevel(text)
+    return AAI_ClearItemLinkEnchant(AAI_ClearItemLinkLevel(text))
+end
+
+
+function AAI_ClearItemLinkEnchant(text)
+    return AAI_ReplaceNumberAtIndex(text, 2, "")
 end
 
 
@@ -436,6 +442,16 @@ function AAI_TextRepeat(text, repetitions)
         result = result .. text
     end
     return result
+end
+
+
+function AAI_CleanUpItemTagDatabase()
+    for key, val in pairs(aai_item_tags) do
+        if AAI_CleanItemLinkForDatabase(key) ~= key then
+            aai_item_tags[AAI_CleanItemLinkForDatabase(key)] = aai_item_tags[key]
+            aai_item_tags[key] = nil
+        end
+    end
 end
 
 
