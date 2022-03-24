@@ -447,7 +447,9 @@ end
 
 function AAI_CleanUpItemTagDatabase()
     for key, val in pairs(aai_item_tags) do
-        if AAI_CleanItemLinkForDatabase(key) ~= key then
+        if not AAI_IsItemLink(key) then
+            aai_item_tags[key] = nil
+        elseif AAI_CleanItemLinkForDatabase(key) ~= key then
             aai_item_tags[AAI_CleanItemLinkForDatabase(key)] = aai_item_tags[key]
             aai_item_tags[key] = nil
         end
