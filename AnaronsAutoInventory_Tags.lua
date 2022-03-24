@@ -21,8 +21,9 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         force       = "prepend to other action to ignore precious tags",
         silent      = "ignore any prints during the following operation",
         restore     = "restore AAI after a crash",
-        bank        = "prepend to \"bank\" to use from bank rather than inventory",
-        display     = "display saved data. you may prepend a list of tags",
+        bank        = "prepend to \"use\" to use from bank rather than inventory",
+        display     = "display saved data",
+        debug       = "prepend to display to show more information",
         need        = "automatically roll \"need\" on this item",
         greed       = "automatically roll \"greed\" on this item",
         tagcolor    = "manually override the color of a tag",
@@ -35,6 +36,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     local global = false
     local remove = false
     local inventory = "character"
+    local debug = false
     while true do
         local should_break = true
         -- prefixes
@@ -62,6 +64,12 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
             should_break = false
         end
 
+        if operation == "debug" then
+            debug = true
+            operation, option = AAI_GetLeftWord(option)
+            should_break = false
+        end
+
         if operation == "bank" then
             inventory = "bank"
             operation, option = AAI_GetLeftWord(option)
@@ -83,17 +91,32 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         AAI_print("Restored AAI")
     
     elseif operation == "display" then
-        -- local tags = {}
-        -- while option do
-        --     left_word, option = AAI_GetLeftWord(option)
-        --     table.insert(tags, left_word)
-        -- end
+        local links = {}
+        local tags = {}
+        while true do
+            if option then
+                if AAI_IsItemLink(option) then
+                    left_word, option = AAI_GetLeftItemLink(option)
+                    left_word = AAI_CleanItemLinkForDatabase(left_word)
+                    table.insert(links, left_word)
+                else
+                    left_word, option = AAI_GetLeftWord(option)
+                    table.insert(tags, left_word)
+                end
+            else
+                break
+            end
+        end
+
         for key, value in pairs(aai_item_tags) do
-            if option == nil or string.match(key, string.format(".*%s.*", AAI_ReplaceLinkWithID(option))) then
-                AAI_print(string.format("%s: %s", key, key:gsub("\124", "")))
-    --         return text:gsub("(.*)(\124c[0-9a-f]+\124Hitem:([0-9]+):.*[^\124]*\124h[^\124]*\124h\124r)(.*)", "%1%3%4")
-                for key2, value2 in pairs(value) do
-                    print(string.format("- %s", key2))
+            if table.getn(tags) == 0 or AAI_HasValue(links, key) or table.getn(AAI_GroupIntersect(AAI_GetKeysFromTable(value), tags)) > 0 then
+                if debug then
+                    AAI_print(string.format("%s: %s", key, key:gsub("\124", "")))
+                    for key2, value2 in pairs(value) do
+                        AAI_print(string.format("- %s", key2))
+                    end
+                else
+                    AAI_print(key)
                 end
             end
         end
@@ -168,7 +191,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
         
         for _, tag in pairs(tags) do
-            print(tag)
+            AAI_print("Used items tagged as " .. tag .. "...")
             -- FIXME: set destructive to true when merchant is open
             AAI_UseAllTaggedItems(inventory, tag, false, forced)
         end
@@ -331,6 +354,26 @@ function AAI_HasValue (tab, val)
         end
     end
     return false
+end
+
+
+function AAI_GetKeysFromTable(tab)
+    local keys = {}
+    for key, _ in pairs(tab) do
+        table.insert(keys, key)
+    end
+    return keys
+end
+
+
+function AAI_GroupIntersect(tab1, tab2)
+    local intersection = {}
+    for _, value in ipairs(tab1) do
+        if AAI_HasValue(tab2, value) then
+            table.insert(intersection, value)
+        end
+    end
+    return intersection
 end
 
 
