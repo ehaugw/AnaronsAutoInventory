@@ -22,7 +22,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         silent      = "ignore any prints during the following operation",
         restore     = "restore AAI after a crash",
         bank        = "prepend to \"bank\" to use from bank rather than inventory",
-        display     = "display saved data",
+        display     = "display saved data. you may prepend a list of tags",
         need        = "automatically roll \"need\" on this item",
         greed       = "automatically roll \"greed\" on this item",
         tagcolor    = "manually override the color of a tag",
@@ -83,6 +83,11 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         AAI_print("Restored AAI")
     
     elseif operation == "display" then
+        -- local tags = {}
+        -- while option do
+        --     left_word, option = AAI_GetLeftWord(option)
+        --     table.insert(tags, left_word)
+        -- end
         for key, value in pairs(aai_item_tags) do
             if option == nil or string.match(key, string.format(".*%s.*", AAI_ReplaceLinkWithID(option))) then
                 AAI_print(string.format("%s: %s", key, key:gsub("\124", "")))
