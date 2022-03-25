@@ -55,24 +55,7 @@ function AAI_AddTooltipTags()
 end
 
 
-function AAI_TitleCase(str)
-    return str:gsub("(%l)(%w*)", function(a,b) return string.upper(a)..b end)
-end
-
-
 -- Set the function that is run on every event.
 addon_data.core.core_frame:SetScript("OnEvent", CoreFrame_OnEvent)
 GameTooltip:HookScript("OnTooltipSetItem", AAI_AddTooltipTags)
 
-
-function AAI_print(str)
-    print(AAI_SetColor(str, "aaaaff"))
-end
-
-
-AAI_print_original = AAI_print
-
-
-function AAI_SetColor(str, color)
-    return string.format("\124cff%s%s\124r", color, str)
-end
