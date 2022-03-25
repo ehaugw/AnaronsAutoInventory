@@ -152,16 +152,12 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
 
     elseif operation == "use" then
-        tags = {}
-
-        while true do
-            left_word, option = AAI_GetLeftWord(option)
-            table.insert(tags, left_word)
-            if not option then
-                break
-            end
-        end
+        local links, tags = AAI_StringToItemLinksAndWords(option)
         
+        if table.getn(links) > 0 then
+            AAI_print("You provided item links. This feature has not yet been implemented")
+        end
+
         for _, tag in pairs(tags) do
             AAI_print("Used items tagged as " .. tag .. "...")
             -- FIXME: set destructive to true when merchant is open
