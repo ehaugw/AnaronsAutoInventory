@@ -1,4 +1,24 @@
 -- WOW SPECIFIC STRING HANDLING
+function AAI_StringToItemLinksAndWords(option)
+    local links = {}
+    local tags = {}
+    while true do
+        if option then
+            if AAI_IsItemLink(option) then
+                left_word, option = AAI_GetLeftItemLink(option)
+                left_word = AAI_CleanItemLinkForDatabase(left_word)
+                table.insert(links, left_word)
+            else
+                left_word, option = AAI_GetLeftWord(option)
+                table.insert(tags, left_word)
+            end
+        else
+            break
+        end
+    end
+    return links, tags
+end
+
 
 function AAI_SetColor(str, color)
     return string.format("\124cff%s%s\124r", color, str)

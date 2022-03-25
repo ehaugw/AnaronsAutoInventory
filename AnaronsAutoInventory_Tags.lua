@@ -93,22 +93,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         AAI_print("Restored AAI")
     
     elseif operation == "display" then
-        local links = {}
-        local tags = {}
-        while true do
-            if option then
-                if AAI_IsItemLink(option) then
-                    left_word, option = AAI_GetLeftItemLink(option)
-                    left_word = AAI_CleanItemLinkForDatabase(left_word)
-                    table.insert(links, left_word)
-                else
-                    left_word, option = AAI_GetLeftWord(option)
-                    table.insert(tags, left_word)
-                end
-            else
-                break
-            end
-        end
+        local links, tags = AAI_StringToItemLinksAndWords(option)
 
         for key, value in pairs(aai_item_tags) do
             if table.getn(tags) == 0 or AAI_HasValue(links, key) or table.getn(AAI_GroupIntersect(AAI_GetKeysFromTable(value), tags)) > 0 then
