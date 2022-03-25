@@ -136,32 +136,17 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
 
     elseif operation == "tag" then
-        tags = {}
-
-        while true do
-            left_word, option = AAI_GetLeftWord(option)
-            table.insert(tags, left_word)
-            if AAI_IsItemLink(option) then
-                break
-            end
-        end
-        option_back = option
+        local links, tags = AAI_StringToItemLinksAndWords(option)
         
         for _, tag in pairs(tags) do
-            option = option_back
-            while option ~= nil do
-                item_link, option = AAI_GetLeftItemLink(option)
+            for _, item_link in pairs(links) do
+                tag = string.lower(tag)
+                item_link = AAI_CleanItemLinkForDatabase(item_link)
 
-
-                if tag and option then
-                    tag = string.lower(tag)
-                    item_link = AAI_CleanItemLinkForDatabase(item_link)
-
-                    if not remove then
-                        AAI_AddTag(item_link, tag, global)
-                    else
-                        AAI_RemoveTag(item_link, tag, global)
-                    end
+                if not remove then
+                    AAI_AddTag(item_link, tag, global)
+                else
+                    AAI_RemoveTag(item_link, tag, global)
                 end
             end
         end
