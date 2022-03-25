@@ -182,16 +182,11 @@ function AAI_SellItemsOnAuctionHouse(item, stack_size, bid, buyout)
     free_bag = -1
     free_slot = -1
     
-    container_ids = AAI_GetInventoryBags("character")
-
-    -- Find a free slot to split stacks into
-    for _, bag in ipairs(container_ids) do
-        for slot=1,GetContainerNumSlots(bag),1 do
-            if etContainerItemLink(bag, slot) == nil then
-                free_bag = bag
-                free_slot = slot
-                break
-            end
+    for bag, slot, link in AAI_GetInventoryBagIndexLinkTuples("character") do
+        if link == nil then
+            free_bag = bag
+            free_slot = slot
+            break
         end
     end
 
@@ -204,20 +199,14 @@ end
 
 
 function AAI_UseAllTaggedItems(inventory, tag, destructive, forced)
-    container_ids = AAI_GetInventoryBags(inventory)
-
-    for _, bag in ipairs(container_ids) do
-        for slot=1,GetContainerNumSlots(bag),1 do
-            local name = GetContainerItemLink(bag,slot)
-            -- Use only items with the correct tag
-            if AAI_HasTag(name, tag) then 
-                -- precious items can not be destroyed without "forced"
-                if forced or not (AAI_HasTag(name, "precious") and destructive) then
-                    -- Equipment has a GCD in combat and can therefore not be used unless it is in destructive mode
-                    if not UnitAffectingCombat("player") or destructive then
-                        UseContainerItem(bag,slot)
-                        AAI_print(string.format("Used %s", name))
-                    end
+    for bag, slot, name in AAI_GetInventoryBagIndexLinkTuples(inventory) do
+        -- precious items can not be destroyed without "forced"
+        if AAI_HasTag(name, tag) then 
+            if forced or not (AAI_HasTag(name, "precious") and destructive) then
+                -- Equipment has a GCD in combat and can therefore not be used unless it is in destructive mode
+                if not UnitAffectingCombat("player") or destructive then
+                    UseContainerItem(bag,slot)
+                    AAI_print(string.format("Used %s", name))
                 end
             end
         end

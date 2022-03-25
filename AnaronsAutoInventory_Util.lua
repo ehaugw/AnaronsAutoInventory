@@ -106,6 +106,21 @@ AAI_print_original = AAI_print
 
 
 -- WOW ITEM AND INVENTORY HANDLING
+function AAI_GetInventoryBagIndexLinkTuples(inventory)
+    local inventory_tuple = {}
+    local container_ids = AAI_GetInventoryBags(inventory)
+
+    for _, bag in ipairs(container_ids) do
+        for slot=1,GetContainerNumSlots(bag),1 do
+            local name = GetContainerItemLink(bag,slot)
+            table.insert({bag, slot, name})
+        end
+    end
+
+    return inventory_tuple
+end
+
+
 function AAI_GetInventoryBags(inventory)
     local container_ids = {}
     if inventory == "character" then
