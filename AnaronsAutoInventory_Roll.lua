@@ -35,7 +35,7 @@ AAI_ConfirmLootRoll = ConfirmLootRoll
 function ConfirmLootRoll(roll_id, roll, ...)
     AAI_ConfirmLootRoll(roll_id, roll, ...)
     item_link = GetLootRollItemLink(roll_id)
-    if not AAI_HasTag(item_link, roll_types[roll]) then
+    if roll ~= 2 and not AAI_HasTag(item_link, roll_types[roll]) then
         AAI_AddTag(item_link, roll_types[roll])
     end
 end
