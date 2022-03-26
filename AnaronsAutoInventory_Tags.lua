@@ -28,8 +28,8 @@ end
 
 function AAI_UseAllTaggedItems(inventory, tag, destructive, forced)
     for bag, slot, name in AAI_GetInventoryBagIndexLinkTuples(inventory) do
-        -- precious items can not be destroyed without "forced"
         if AAI_HasTag(name, tag) then 
+            -- precious items can not be destroyed without "forced"
             if forced or not (AAI_HasTag(name, "precious") and destructive) then
                 -- Equipment has a GCD in combat and can therefore not be used unless it is in destructive mode
                 if not UnitAffectingCombat("player") or destructive then

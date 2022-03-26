@@ -113,11 +113,11 @@ function AAI_GetInventoryBagIndexLinkTuples(inventory)
     for _, bag in ipairs(container_ids) do
         for slot=1,GetContainerNumSlots(bag),1 do
             local name = GetContainerItemLink(bag,slot)
-            table.insert({bag, slot, name})
+            table.insert(inventory_tuple, {bag, slot, name})
         end
     end
 
-    return inventory_tuple
+    return AAI_ForEachUnpack(inventory_tuple)
 end
 
 
@@ -155,6 +155,32 @@ function AAI_GetKeysFromTable(tab)
         table.insert(keys, key)
     end
     return keys
+end
+
+
+function AAI_ForEach(tab)
+    local i = 0
+    local n = table.getn(tab)
+
+    return function()
+        i = i + 1
+        if i <= n then
+            return tab[i]
+        end
+    end
+end
+
+
+function AAI_ForEachUnpack(tab)
+    local i = 0
+    local n = table.getn(tab)
+
+    return function()
+        i = i + 1
+        if i <= n then
+            return unpack(tab[i])
+        end
+    end
 end
 
 
