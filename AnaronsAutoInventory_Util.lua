@@ -10,9 +10,7 @@ function AAI_StringToItemLinksAndWords(option)
                 table.insert(links, left_word)
             else
                 left_word, option = AAI_GetLeftWord(option)
-                if left_word ~= "" then
-                    table.insert(tags, left_word)
-                end
+                table.insert(tags, left_word)
             end
         else
             break
@@ -40,6 +38,10 @@ end
 
 
 function AAI_GetLeftWord(inputstr)
+    if inputstr == "" then
+        return nil, nil
+    end
+
     local one, two= string.match(inputstr, "(%S+)%s+(%S.*)")
     if one == nil then
         one = inputstr
