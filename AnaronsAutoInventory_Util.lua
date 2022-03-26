@@ -10,7 +10,9 @@ function AAI_StringToItemLinksAndWords(option)
                 table.insert(links, left_word)
             else
                 left_word, option = AAI_GetLeftWord(option)
-                table.insert(tags, left_word)
+                if left_word ~= "" then
+                    table.insert(tags, left_word)
+                end
             end
         else
             break
