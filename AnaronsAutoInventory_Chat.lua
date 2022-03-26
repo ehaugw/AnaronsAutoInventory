@@ -28,7 +28,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     local forced = false
     local global = false
     local remove = false
-    local inventory = "character"
+    local inventory = "inventory"
     local debug = false
     while true do
         local should_break = true

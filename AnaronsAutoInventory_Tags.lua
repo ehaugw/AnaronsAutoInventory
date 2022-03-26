@@ -10,7 +10,7 @@ function AAI_SellItemsOnAuctionHouse(item, stack_size, bid, buyout)
     free_bag = -1
     free_slot = -1
     
-    for bag, slot, link in AAI_GetInventoryBagIndexLinkTuples("character") do
+    for bag, slot, link in AAI_GetInventoryBagIndexLinkTuples("inventory") do
         if link == nil then
             free_bag = bag
             free_slot = slot

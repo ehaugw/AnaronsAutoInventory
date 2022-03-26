@@ -26,10 +26,10 @@ local function CoreFrame_OnEvent(self, event, ...)
         end
 
     elseif event == "MERCHANT_SHOW" then
-        AAI_UseAllTaggedItems("character", "junk", true, false)
+        AAI_UseAllTaggedItems("inventory", "junk", true, false)
 
     elseif event == "BANKFRAME_OPENED" then
-        AAI_UseAllTaggedItems("character", "bank", false, false)
+        AAI_UseAllTaggedItems("inventory", "bank", false, false)
 
     elseif event == "START_LOOT_ROLL" or event == "CONFIRM_LOOT_ROLL" then
         AAI_HandleRoll(event, args)

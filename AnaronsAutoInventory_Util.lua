@@ -123,7 +123,7 @@ end
 
 function AAI_GetInventoryBags(inventory)
     local container_ids = {}
-    if inventory == "character" then
+    if inventory == "inventory" then
         container_ids = {0, 1, 2, 3, 4}
     elseif inventory == "bank" then
         container_ids = {-1}
