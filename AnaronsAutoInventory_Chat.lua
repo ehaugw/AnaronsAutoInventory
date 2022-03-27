@@ -134,8 +134,6 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         for _, tag in pairs(tags) do
             for _, item_link in pairs(links) do
                 tag = string.lower(tag)
-                item_link = AAI_CleanItemLinkForDatabase(item_link)
-
                 if not remove then
                     AAI_AddTag(item_link, tag, global)
                 else

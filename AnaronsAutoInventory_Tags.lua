@@ -43,6 +43,7 @@ end
 
 
 function AAI_AddTag(item, tag, global)
+    item = AAI_CleanItemLinkForDatabase(item)
     tag_dict = aai_item_tags
     if global then
         tag_dict = aai_item_tags_global
@@ -59,6 +60,7 @@ end
 
 
 function AAI_RemoveTag(item, tag, global)
+    item = AAI_CleanItemLinkForDatabase(item)
     tag_dict = aai_item_tags
     if global then
         tag_dict = aai_item_tags_global
