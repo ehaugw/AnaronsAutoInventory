@@ -25,11 +25,10 @@ function AAI_HandleRoll(event, args)
 end
 
 
-AAI_ConfirmLootRoll = ConfirmLootRoll
+AAI_RollOnLoot = RollOnLoot
 
-
-function ConfirmLootRoll(roll_id, roll, ...)
-    AAI_ConfirmLootRoll(roll_id, roll, ...)
+function RollOnLoot(roll_id, roll, ...)
+    AAI_RollOnLoot(roll_id, roll, ...)
     item_link = GetLootRollItemLink(roll_id)
     if roll ~= 1 and not AAI_HasTag(item_link, roll_types[roll + 1]) then
         AAI_AddTag(item_link, roll_types[roll + 1])
