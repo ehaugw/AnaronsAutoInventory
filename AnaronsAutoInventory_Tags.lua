@@ -108,15 +108,7 @@ end
 
 
 function AAI_GetTagHelp(tag)
-    local help_table = {
-        junk        = "automatically sold to vendors",
-        precious    = "never sold through AAI",
-        bank        = "automaticall transfered to the bank",
-        pass        = "automatically pass on rolls",
-        greed       = "automatically greed on rolls",
-        need        = "automatically need on rolls"
-    }
-    return help_table[tag] or "not handled by AAI"
+    return AAI_HandledTagsWithHelp[tag] or "not handled by AAI"
 end
 
 
@@ -131,5 +123,12 @@ function AAI_CleanUpItemTagDatabase()
     end
 end
 
+AAI_HandledTagsWithHelp = {
+    junk        = "automatically sold to vendors",
+    precious    = "never sold through AAI",
+    bank        = "automaticall transfered to the bank",
+    pass        = "automatically pass on rolls",
+    greed       = "automatically greed on rolls",
+    need        = "automatically need on rolls"
+}
 
-AAI_TagList = {"junk", "precious", "bank"}

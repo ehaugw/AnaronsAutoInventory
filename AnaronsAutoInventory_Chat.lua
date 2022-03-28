@@ -115,7 +115,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
     elseif operation == "taglist" then
         AAI_print("The tags handled by AAI are:")
-        for _, value in ipairs(AAI_TagList) do
+        for _, value in ipairs(AAI_GetKeysFromTable(AAI_HandledTagsWithHelp)) do
             AAI_print(string.format("%s: %s", AAI_TitleCase(AAI_SetColor(value, AAI_GetTagColor(value))), AAI_GetTagHelp(value)))
         end
 
