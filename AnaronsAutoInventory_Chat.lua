@@ -21,7 +21,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         greed       = "automatically roll \"greed\" on this item",
         tagcolor    = "manually override the color of a tag",
         global      = "prepend to \"tag\" to apply the action across all characters",
-        auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house"
+        auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house",
+        replace     = "preped to \"tag\" to delete existing tags and add the new ones"
     }
 
 
@@ -30,10 +31,18 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     local remove = false
     local inventory = "inventory"
     local debug = false
+    local replace =false
+
     while true do
         local should_break = true
         if operation == "silent" then
             AAI_print = function() end
+            operation, option = AAI_GetLeftWord(option)
+            should_break = false
+        end
+
+        if operation == "replace" then
+            replace = true
             operation, option = AAI_GetLeftWord(option)
             should_break = false
         end
@@ -131,9 +140,19 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     elseif operation == "tag" then
         local links, tags = AAI_StringToItemLinksAndWords(option)
         
-        for _, tag in pairs(tags) do
-            for _, item_link in pairs(links) do
+        -- if table.getn(tags) == 0 then
+        --     AAI_RemoveAllTags(item_link, true)
+        -- end
+
+        for _, item_link in pairs(links) do
+            if replace then
+                AAI_RemoveAllTags(item_link, true)
+                AAI_RemoveAllTags(item_link, false)
+            end
+
+            for _, tag in pairs(tags) do
                 tag = string.lower(tag)
+
                 if not remove then
                     AAI_AddTag(item_link, tag, global)
                 else

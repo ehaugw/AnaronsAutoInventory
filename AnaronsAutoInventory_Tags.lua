@@ -59,6 +59,17 @@ function AAI_AddTag(item, tag, global)
 end
 
 
+function AAI_RemoveAllTags(item, global)
+    item = AAI_CleanItemLinkForDatabase(item)
+    if not global then
+        aai_item_tags[item] = nil
+    else
+        aai_item_tags_global[item] = nil
+    end
+    AAI_print(string.format("Removed all %s tags from %s.", (global and "global" or not global and "local"), item))
+end
+
+
 function AAI_RemoveTag(item, tag, global)
     item = AAI_CleanItemLinkForDatabase(item)
     tag_dict = aai_item_tags
