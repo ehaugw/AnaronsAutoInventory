@@ -1,8 +1,8 @@
 ------------------------------------
 --    SET MESSAGE OF THE DAY      --
 ------------------------------------
-SLASH_AAI_SET_MOTD1 = "/motd"
-SLASH_AAI_SET_MOTD2 = "/setmessageoftheday"
+SLASH_AAI_SET_MOTD1 = "/gmotd"
+SLASH_AAI_SET_MOTD2 = "/guildmessageoftheday"
 
 SlashCmdList["AAI_SET_MOTD"] = function(option)
     GuildSetMOTD(option)

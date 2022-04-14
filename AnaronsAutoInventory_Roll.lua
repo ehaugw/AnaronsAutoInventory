@@ -19,7 +19,7 @@ function AAI_HandleRoll(event, args)
         item_link = GetLootRollItemLink(roll_id)
         if AAI_HasTag(AAI_CleanItemLinkForDatabase(item_link), roll_types[roll + 1]) then
             ConfirmLootRoll(roll_id, roll)
-            print(string.format("Confirmed %s on %s", keyword, item_link))
+            -- print(string.format("Confirmed %s on %s", keyword, item_link))
         end
     end
 end
