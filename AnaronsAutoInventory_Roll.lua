@@ -30,7 +30,8 @@ AAI_RollOnLoot = RollOnLoot
 function RollOnLoot(roll_id, roll, ...)
     item_link = GetLootRollItemLink(roll_id)
     AAI_RollOnLoot(roll_id, roll, ...)
-    if roll ~= 1 and not AAI_HasTag(item_link, roll_types[roll + 1]) then
+    -- if roll ~= 1 and not AAI_HasTag(item_link, roll_types[roll + 1]) then
+    if roll ~= 1 and not AAI_HasTags(item_link, roll_types) then
         AAI_AddTag(item_link, roll_types[roll + 1])
     end
 end

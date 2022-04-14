@@ -107,6 +107,16 @@ function AAI_HasTag(item, tag)
 end
 
 
+function AAI_HasTags(item, tags)
+    for _, tag in ipairs(tags) do
+        if AAI_HasTag(item, tag) then
+            return true
+        end
+    end
+    return false
+end
+
+
 function AAI_GetTagColor(tag)
     local color_table = {
         junk        = "666666",
