@@ -35,3 +35,4 @@ AnaronsAutoInventory_Misc.lua
 AnaronsAutoInventory_Roll.lua
 AnaronsAutoInventory_Tags.lua
 AnaronsAutoInventory_Util.lua
+AnaronsAutoInventory_Stat.lua
