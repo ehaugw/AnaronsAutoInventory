@@ -44,7 +44,7 @@ local get_stat_api_key = {
     hitrating = "ITEM_MOD_HIT_RATING",
     stamina = "ITEM_MOD_STAMINA_SHORT",
     strength = "ITEM_MOD_STRENGTH_SHORT",
-    agilit = "ITEM_MOD_AGILITY_SHORT",
+    agility = "ITEM_MOD_AGILITY_SHORT",
 }
 
 
@@ -74,17 +74,17 @@ end
 
 
 function AAI_GetItemTotalAttackPower(item_link)
-    return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attackpower") + AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps"))
+    return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attackpower") --+ AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps"))
 end
 
 
 function AAI_GetItemTotalCritChance(item_link)
-    return AAI_AgilityToCritChance(AAI_GetItemStat(item_link, "agility")) + AAI_CritRatingToCritChance(AAI_GetItemStat(item_link, "critrating")) / 100
+    return (AAI_AgilityToCritChance(AAI_GetItemStat(item_link, "agility")) + AAI_CritRatingToCritChance(AAI_GetItemStat(item_link, "critrating"))) / 100
 end
 
 
-function AAI_GetITemTotalHitChance(item_link)
-    return AAI_HitRatingToHitChance(AAI_GetItemStat(item_link, "hitrating")) / 100
+function AAI_GetItemTotalHitChance(item_link)
+    return (AAI_HitRatingToHitChance(AAI_GetItemStat(item_link, "hitrating"))) / 100
 end
 
 
@@ -112,7 +112,7 @@ end
 
 
 function AAI_GetItemStat(item_link, stat)
-    AAI_DisplayStatKeys(item_link)
+    -- AAI_DisplayStatKeys(item_link)
     local stat_table = GetItemStats(item_link)
     return stat_table[get_stat_api_key[stat]] or 0
 end

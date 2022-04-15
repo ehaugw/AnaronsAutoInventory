@@ -40,6 +40,21 @@ end
 function AAI_AddTooltipTags()
     _, link = GameTooltip:GetItem()
     link = AAI_CleanItemLinkForDatabase(link)
+
+    local attackpower = AAI_GetItemTotalAttackPower(link)
+    local critchance = AAI_GetItemTotalCritChance(link)
+    local hitchance = AAI_GetItemTotalHitChance(link)
+
+    if attackpower > 0 then
+        GameTooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
+    end
+    if critchance > 0 then
+        GameTooltip:AddDoubleLine("Effective Crit Chance", AAI_Round(critchance * 100,2) .. "%")
+    end
+    if hitchance > 0 then
+        GameTooltip:AddDoubleLine("Effective Hit Chance", AAI_Round(hitchance * 100,2) .. "%")
+    end
+
     if aai_item_tags[link] ~= nil then
         for key, value in pairs(aai_item_tags[link]) do
             if not (aai_item_tags_global[link] and aai_item_tags_global[link][key]) then
