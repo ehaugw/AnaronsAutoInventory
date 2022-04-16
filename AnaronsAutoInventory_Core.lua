@@ -16,6 +16,7 @@ addon_data.core.core_frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 local function OnAddonLoadedCore(self)
     AAI_print("Anaron's Auto Inventory was loaded")
     AAI_OnAddonLoadedTags(self)
+    AAI_OnAddonLoadedWarn(self)
 end
 
 local function CoreFrame_OnEvent(self, event, ...)
@@ -33,6 +34,9 @@ local function CoreFrame_OnEvent(self, event, ...)
 
     elseif event == "START_LOOT_ROLL" or event == "CONFIRM_LOOT_ROLL" or event == "PLAYER_ENTERING_WORLD" then
         AAI_HandleRoll(event, args)
+    elseif event == "PARTY_MEMBERS_CHANGED" or event == "GROUP_ROSTER_UPDATE" then
+        print(1)
+        AAI_WarnAboutPartyMembers()
     end
 end
 

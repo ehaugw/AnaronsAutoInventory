@@ -27,7 +27,7 @@
 ## Version: 1.0.0
 ## DefaultState: enabled
 ## SavedVariablesPerCharacter: aai_item_tags
-## SavedVariables: aai_tag_colors, aai_item_tags_global
+## SavedVariables: aai_tag_colors, aai_item_tags_global, aai_warn_players, aai_warn_guilds
 
 AnaronsAutoInventory_Chat.lua
 AnaronsAutoInventory_Core.lua
@@ -36,3 +36,4 @@ AnaronsAutoInventory_Roll.lua
 AnaronsAutoInventory_Tags.lua
 AnaronsAutoInventory_Util.lua
 AnaronsAutoInventory_Stat.lua
+AnaronsAutoInventory_Warn.lua
