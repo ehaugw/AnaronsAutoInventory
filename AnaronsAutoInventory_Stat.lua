@@ -74,7 +74,7 @@ end
 
 
 function AAI_GetItemTotalAttackPower(item_link)
-    return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attackpower") --+ AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps"))
+    return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attackpower") + AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps"))
 end
 
 
@@ -118,17 +118,41 @@ function AAI_GetItemStat(item_link, stat)
 end
 
 
-function AAI_GetItemDamageScore(item_link)
+-- function AAI_GetItemDamageScore(item_link)
+--     local competing_item_link = AAI_GetCompetingItem(item_link)
+--     local attackpower = UnitAttackPower("player") -- unbuffed
+-- 
+--     local attackpower_diff = AAI_GetItemTotalAttackPower(item_link) - AAI_GetItemTotalAttackPower(competing_item_link)
+--     local crit_diff = AAI_GetItemTotalCritChance(item_link)         - AAI_GetItemTotalCritChance(competing_item_link)
+--     local hit_diff = AAI_GetItemTotalHitChance(item_link)         - AAI_GetItemTotalHitChance(competing_item_link)
+-- 
+--     crithit = crit_diff + hit_diff
+-- 
+--     return AAI_GetItemTotalAttackPower(item_link) + attackpower * crithit
+--     -- attackpower + attackpower_diff) * 
+-- end
+
+
+function AAI_GetItemPowerDelta(item_link)
+    a, b, _ = UnitAttackPower("player") -- unbuffed
+    local unbuffed_attackpower = a + b
     local competing_item_link = AAI_GetCompetingItem(item_link)
-    local attackpower = UnitAttackPower("player") -- unbuffed
 
-    local attackpower_diff = AAI_GetItemTotalAttackPower(item_link) - AAI_GetItemTotalAttackPower(competing_item_link)
-    local crit_diff = AAI_GetItemTotalCritChance(item_link)         - AAI_GetItemTotalCritChance(competing_item_link)
-    local hit_diff = AAI_GetItemTotalHitChance(item_link)         - AAI_GetItemTotalHitChance(competing_item_link)
+    if competing_item_link == nil then
+        return 0
+    end
 
-    crithit = crit_diff + hit_diff
-
-    return AAI_GetItemTotalAttackPower(item_link) + attackpower * crithit
-    -- attackpower + attackpower_diff) * 
+    local power = (
+        unbuffed_attackpower - AAI_GetItemTotalAttackPower(competing_item_link) + AAI_GetItemTotalAttackPower(item_link)
+    ) * (
+        1 + AAI_GetItemTotalHitChance(item_link) + AAI_GetItemTotalCritChance(item_link)
+    )
+    local competing_power = (
+        unbuffed_attackpower
+    ) * (
+        1 + AAI_GetItemTotalHitChance(competing_item_link) + AAI_GetItemTotalCritChance(competing_item_link)
+    )
+    -- print(string.format("competing: %s, new: %s", competing_power, power))
+    return power - competing_power
 end
 

@@ -44,6 +44,8 @@ function AAI_AddTooltipTags()
     local attackpower = AAI_GetItemTotalAttackPower(link)
     local critchance = AAI_GetItemTotalCritChance(link)
     local hitchance = AAI_GetItemTotalHitChance(link)
+    local powerdelta = AAI_GetItemPowerDelta(link) or 0
+    local competing_item_link = AAI_GetCompetingItem(link)
 
     if attackpower > 0 then
         GameTooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
@@ -53,6 +55,9 @@ function AAI_AddTooltipTags()
     end
     if hitchance > 0 then
         GameTooltip:AddDoubleLine("Effective Hit Chance", AAI_Round(hitchance * 100,2) .. "%")
+    end
+    if competing_item_link then
+        GameTooltip:AddDoubleLine("Power Delta", AAI_SetColor(AAI_Round(powerdelta, 2), powerdelta < 0 and "FF0000" or "00FF00"))
     end
 
     if aai_item_tags[link] ~= nil then
