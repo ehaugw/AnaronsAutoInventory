@@ -31,10 +31,10 @@ local item_slot_table = {
 };
 
 
-local str_to_attack_power = 1.9322
-local agi_to_crit_chance = 0.0504477
-local hit_rating_to_hit_chance = 0.08897
-local crit_rating_to_crit_chance = 0.06363636
+local str_to_attack_power = 2 * 1.1
+local agi_to_crit_chance = 0.05
+local hit_rating_to_hit_chance = 0.0126
+local crit_rating_to_crit_chance = 0.0581818181
 local dps_to_attack_power = 14
 
 local get_stat_api_key = {
@@ -114,7 +114,7 @@ end
 function AAI_GetItemStat(item_link, stat)
     -- AAI_DisplayStatKeys(item_link)
     local stat_table = GetItemStats(item_link)
-    return stat_table[get_stat_api_key[stat]] or 0
+    return stat_table and stat_table[get_stat_api_key[stat]] or 0
 end
 
 
