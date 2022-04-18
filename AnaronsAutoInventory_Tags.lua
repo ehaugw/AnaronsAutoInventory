@@ -168,6 +168,10 @@ AAI_HandledTagsWithHelp = {
     bank        = "automaticall transfered to the bank",
     pass        = "automatically pass on rolls",
     greed       = "automatically greed on rolls",
-    need        = "automatically need on rolls"
+    need        = "automatically need on rolls",
+    melee       = "does nothing on its own but using it can be keybound",
+    tank        = "does nothing on its own but using it can be keybound",
+    heal        = "does nothing on its own but using it can be keybound",
+    spell       = "does nothing on its own but using it can be keybound",
 }
 

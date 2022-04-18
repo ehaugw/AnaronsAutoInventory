@@ -176,7 +176,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
 
         for _, tag in pairs(tags) do
-            AAI_print("Used items tagged as " .. tag .. "...")
+            AAI_print("Used items tagged as " .. AAI_SetColor(tag, AAI_GetTagColor(tag)) .. "...")
             -- FIXME: set destructive to true when merchant is open
             AAI_UseAllTaggedItems(inventory, tag, false, forced)
         end
