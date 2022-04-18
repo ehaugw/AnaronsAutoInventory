@@ -33,7 +33,7 @@ local item_slot_table = {
 
 local str_to_attack_power = 2 * 1.1
 local agi_to_crit_chance = 0.05
-local hit_rating_to_hit_chance = 0.0126
+local hit_rating_to_hit_chance = 0.081666667
 local crit_rating_to_crit_chance = 0.0581818181
 local dps_to_attack_power = 14
 

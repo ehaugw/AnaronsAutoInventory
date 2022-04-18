@@ -121,7 +121,15 @@ function AAI_GetTagColor(tag)
     local color_table = {
         junk        = "666666",
         precious    = "ffff77",
-        bank        = "7777ff"
+        bank        = "7777ff",
+
+        greed       = "ff8888",
+        need        = "88ff88",
+
+        melee       = "ff8800",
+        spell       = "8888ff",
+        tank        = "8844ff",
+        heal        = "00ff00"
     }
 
     return aai_tag_colors[tag] or color_table[tag] or "ffffff"
@@ -140,6 +148,16 @@ function AAI_CleanUpItemTagDatabase()
         elseif AAI_CleanItemLinkForDatabase(key) ~= key then
             aai_item_tags[AAI_CleanItemLinkForDatabase(key)] = aai_item_tags[key]
             aai_item_tags[key] = nil
+        end
+    end
+end
+
+
+function AAI_RenameItemTagInDatabase(from_name, to_name)
+    for item_link, tag_dict in pairs(aai_item_tags) do
+        if AAI_HasTag(item_link, from_name) then
+            AAI_AddTag(item_link, to_name)
+            AAI_RemoveTag(item_link, from_name)
         end
     end
 end

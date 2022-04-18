@@ -22,7 +22,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         tagcolor    = "manually override the color of a tag",
         global      = "prepend to \"tag\" to apply the action across all characters",
         auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house",
-        replace     = "preped to \"tag\" to delete existing tags and add the new ones"
+        replace     = "preped to \"tag\" to delete existing tags and add the new ones",
+        tagrename   = "replace all occurences of from_name with to_name"
     }
 
 
@@ -93,7 +94,13 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         AAI_print = AAI_print_original
         AAI_CleanUpItemTagDatabase()
         AAI_print("Restored AAI")
-    
+
+    elseif operation == "tagrename" then
+        local from_name, option = AAI_GetLeftWord(option)
+        local to_name, option = AAI_GetLeftWord(option)
+        AAI_RenameItemTagInDatabase(from_name, to_name)
+        AAI_print(string.format("Replaced all occurences of %s with %s.", from_name, to_name))
+ 
     elseif operation == "display" then
         local links, tags = AAI_StringToItemLinksAndWords(option)
 
