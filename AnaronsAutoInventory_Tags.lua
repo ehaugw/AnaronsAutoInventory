@@ -81,6 +81,11 @@ function AAI_RemoveTag(item, tag, global)
         tag_dict[item] = {}
     end
     tag_dict[item][tag] = nil
+
+    if #AAI_GetKeysFromTable(tag_dict[item]) == 0 then
+        tag_dict[item] = nil
+    end
+    
     -- _, item_link = GetItemInfo(item)
     AAI_print(string.format("%s is no longer %s tagged as %s.", item, (global and "globaly" or not global and "localy"), AAI_SetColor(tag, AAI_GetTagColor(tag))))
 end
@@ -142,12 +147,14 @@ end
 
 
 function AAI_CleanUpItemTagDatabase()
-    for key, val in pairs(aai_item_tags) do
-        if not AAI_IsItemLink(key) then
-            aai_item_tags[key] = nil
-        elseif AAI_CleanItemLinkForDatabase(key) ~= key then
-            aai_item_tags[AAI_CleanItemLinkForDatabase(key)] = aai_item_tags[key]
-            aai_item_tags[key] = nil
+    for item_link, val in pairs(aai_item_tags) do
+        if not AAI_IsItemLink(item_link) then
+            aai_item_tags[item_link] = nil
+        elseif AAI_CleanItemLinkForDatabase(item_link) ~= item_link then
+            for tag, _ in pairs(val) do
+                AAI_AddTag(item_link, tag)
+            end
+            aai_item_tags[item_link] = nil
         end
     end
 end

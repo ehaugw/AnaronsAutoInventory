@@ -75,10 +75,11 @@ end
 
 
 function AAI_ReplaceNumberAtIndex(text, index, level)
+    local old = text
     if text ~= nil then
         local pre = "(.*)(\124c[0-9a-f]+\124Hitem)"
+        local mid = "(" .. AAI_TextRepeat(":%-?[0-9]*", index - 1) .. ":)(%-?[0-9]*)(" .. AAI_TextRepeat(":%-?[0-9]*", 18 - index) .. ")"
         local post = "(\124h[^\124]*\124h\124r)(.*)"
-        local mid = "(" .. AAI_TextRepeat(":[0-9]*", index - 1) .. ":)([0-9]*)(" .. AAI_TextRepeat(":[0-9]*", 18 - index) .. ")"
         text, _ = text:gsub(pre .. mid .. post, "%1%2%3" .. level .. "%5%6%7")
         return text
     end
