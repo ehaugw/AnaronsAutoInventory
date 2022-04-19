@@ -1,0 +1,14 @@
+<Bindings>
+    <Binding name="Use Melee" runOnUp="false" header="AAI Keybindings">
+        SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"]("use melee")
+    </Binding>
+    <Binding name="Use Spell" runOnUp="false">
+        SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"]("use spell")
+    </Binding>
+    <Binding name="Use Tank" runOnUp="false">
+        SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"]("use tank")
+    </Binding>
+    <Binding name="Use Heal" runOnUp="false">
+        SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"]("use heal")
+    </Binding>
+</Bindings>
