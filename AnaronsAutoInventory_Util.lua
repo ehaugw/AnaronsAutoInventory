@@ -199,6 +199,15 @@ function AAI_GroupIntersect(tab1, tab2)
 end
 
 
+function AAI_Map(tab, func, selector)
+    local output = {}
+    for key, val in pairs(tab) do
+        output[key] = not selector and func(val) or selector and select(selector, func(val))
+    end
+    return output
+end
+
+
 -- GENERAL MATH
 function AAI_Round(num, numDecimalPlaces)
     local mult = 10^(numDecimalPlaces or 0)

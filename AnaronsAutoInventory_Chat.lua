@@ -103,16 +103,18 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
  
     elseif operation == "display" then
         local links, tags = AAI_StringToItemLinksAndWords(option)
+        local link_names = AAI_Map(links, GetItemInfo, 1)
 
-        for key, value in pairs(aai_item_tags) do
-            if table.getn(tags) == 0 or AAI_HasValue(links, key) or table.getn(AAI_GroupIntersect(AAI_GetKeysFromTable(value), tags)) > 0 then
+        for item_link, tag_list in pairs(aai_item_tags) do
+            if (#tags == 0 or #AAI_GroupIntersect(AAI_GetKeysFromTable(tag_list), tags) > 0) and (#links == 0 or AAI_HasValue(link_names, GetItemInfo(item_link))) then
+            -- if table.getn(tags) == 0 or AAI_HasValue(links, item_link) or table.getn(AAI_GroupIntersect(AAI_GetKeysFromTable(tag_list), tags)) > 0 then
                 if debug then
-                    AAI_print(string.format("%s: %s", key, key:gsub("\124", "")))
-                    for key2, value2 in pairs(value) do
-                        AAI_print(string.format("- %s", key2))
+                    AAI_print(string.format("%s: %s", item_link, item_link:gsub("\124", "")))
+                    for tag, value2 in pairs(tag_list) do
+                        AAI_print(string.format("- %s", tag))
                     end
                 else
-                    AAI_print(key)
+                    AAI_print(item_link)
                 end
             end
         end
