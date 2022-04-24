@@ -123,6 +123,7 @@ end
 
 
 function AAI_GetTagColor(tag)
+    tag = string.lower(tag)
     local color_table = {
         junk        = "666666",
         precious    = "ffff77",
