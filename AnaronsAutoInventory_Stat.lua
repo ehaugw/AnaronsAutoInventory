@@ -36,6 +36,7 @@ local agi_to_crit_chance = 0.05
 local hit_rating_to_hit_chance = 0.081666667
 local crit_rating_to_crit_chance = 0.0581818181
 local dps_to_attack_power = 14
+local int_to_spell_crit_chance = 0.04842
 
 local get_stat_api_key = {
     dps = "ITEM_MOD_DAMAGE_PER_SECOND_SHORT",
@@ -45,6 +46,12 @@ local get_stat_api_key = {
     stamina = "ITEM_MOD_STAMINA_SHORT",
     strength = "ITEM_MOD_STRENGTH_SHORT",
     agility = "ITEM_MOD_AGILITY_SHORT",
+    spelldamageandhealing = "ITEM_MOD_SPELL_POWER_SHORT",
+    spellhit = "ITEM_MOD_SPELL_HIT_RATING",
+    spellcrit = "ITEM_MOD_SPELL_CRIT_RATING",
+    spellhealing = "ITEM_MOD_SPELL_HEALING_DONE_SHORT",
+    spelldamage = "ITEM_MOD_SPELL_DAMAGE_DONE_SHORT",
+    intellect = "ITEM_MOD_INTELLECT_SHORT",
 }
 
 
@@ -73,6 +80,11 @@ function AAI_DpsToAttackPower(dps)
 end
 
 
+function AAI_IntellectToSpellCritChance(intellect)
+    return intellect * int_to_spell_crit_chance
+end
+
+
 function AAI_GetItemTotalAttackPower(item_link)
     return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attackpower") + AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps"))
 end
@@ -85,6 +97,26 @@ end
 
 function AAI_GetItemTotalHitChance(item_link)
     return (AAI_HitRatingToHitChance(AAI_GetItemStat(item_link, "hitrating"))) / 100
+end
+
+
+function AAI_GetItemTotalSpellDamageAndHealing(item_link)
+    return AAI_GetItemStat(item_link, "spelldamageandhealing")
+end
+
+
+function AAI_GetItemTotalSpellHealing(item_link)
+    return AAI_GetItemStat(item_link, "spellhealing") + AAI_GetItemTotalSpellDamageAndHealing(item_link)
+end
+
+
+function AAI_GetItemTotalSpellDamage(item_link)
+    return AAI_GetItemStat(item_link, "spelldamage") + AAI_GetItemTotalSpellDamageAndHealing(item_link)
+end
+
+
+function AAI_GetItemTotalSpellCritChance(item_link)
+    return (AAI_GetItemStat(item_link, "spellcrit") + AAI_IntellectToSpellCritChance(AAI_GetItemStat(item_link, "intellect"))) / 100
 end
 
 
@@ -133,7 +165,7 @@ end
 -- end
 
 
-function AAI_GetItemPowerDelta(item_link)
+function AAI_GetItemMeleePowerDelta(item_link)
     a, b, _ = UnitAttackPower("player") -- unbuffed
     local unbuffed_attackpower = a + b
     local competing_item_link = AAI_GetCompetingItem(item_link)
@@ -151,6 +183,33 @@ function AAI_GetItemPowerDelta(item_link)
         unbuffed_attackpower
     ) * (
         1 + AAI_GetItemTotalHitChance(competing_item_link) + AAI_GetItemTotalCritChance(competing_item_link)
+    )
+    -- print(string.format("competing: %s, new: %s", competing_power, power))
+    return power - competing_power
+end
+
+
+function AAI_GetItemHealingPowerDelta(item_link)
+    local healing_power = 2100 -- Holy Light Rank 10
+    local competing_item_link = AAI_GetCompetingItem(item_link)
+
+    if competing_item_link == nil then
+        return 0
+    end
+
+    local power = (
+        healing_power - AAI_GetItemTotalSpellHealing(competing_item_link) + AAI_GetItemTotalSpellHealing(item_link)
+    ) * (
+        1 + AAI_GetItemTotalSpellCritChance(item_link)
+    ) / (
+        1 - AAI_GetItemTotalSpellCritChance(item_link) * 0.6
+    )
+    local competing_power = (
+        healing_power
+    ) * (
+        1 + AAI_GetItemTotalSpellCritChance(competing_item_link)
+    ) / (
+        1 - AAI_GetItemTotalSpellCritChance(competing_item_link) * 0.6
     )
     -- print(string.format("competing: %s, new: %s", competing_power, power))
     return power - competing_power
