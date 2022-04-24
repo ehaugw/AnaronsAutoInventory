@@ -66,8 +66,8 @@ function AAI_AddTooltipTags()
             GameTooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
         end
         if competing_item_link then
-            GameTooltip:AddDoubleLine("Melee Power Delta", AAI_SetColor(AAI_Round(meleepowerdelta, 2), meleepowerdelta < 0 and "FF0000" or "00FF00"))
-            GameTooltip:AddDoubleLine("Healing Power Delta", AAI_SetColor(AAI_Round(healingpowerdelta, 2), healingpowerdelta < 0 and "FF0000" or "00FF00"))
+            GameTooltip:AddDoubleLine(AAI_SetColor("Melee") .. " Power Delta", AAI_SetColor(AAI_Round(meleepowerdelta, 2), meleepowerdelta < 0 and "FF0000" or "00FF00"))
+            GameTooltip:AddDoubleLine(AAI_SetColor("Healing") .. " Power Delta", AAI_SetColor(AAI_Round(healingpowerdelta, 2), healingpowerdelta < 0 and "FF0000" or "00FF00"))
         end
     end
 
