@@ -45,13 +45,17 @@ function AAI_AddTooltipTags()
     link = AAI_CleanItemLinkForDatabase(link)
 
     if GetUnitName("player") == "Anaron" then
+
+        compete_with_bag = not IsShiftKeyDown()
+
         local attackpower = AAI_GetItemTotalAttackPower(link)
         local critchance = AAI_GetItemTotalCritChance(link)
         local hitchance = AAI_GetItemTotalHitChance(link)
-        local meleepowerdelta = AAI_GetItemMeleePowerDelta(link) or 0
-        local healingpowerdelta = AAI_GetItemHealingPowerDelta(link) or 0
+        local competing_melee_link = compete_with_bag and AAI_GetCompetingItemFromInventory(link, "melee") or AAI_GetCompetingItem(link)
+        local competing_healing_link = compete_with_bag and AAI_GetCompetingItemFromInventory(link, "heal") or AAI_GetCompetingItem(link)
+        local meleepowerdelta = AAI_GetItemMeleePowerDelta(link, competing_melee_link) or 0
+        local healingpowerdelta = AAI_GetItemHealingPowerDelta(link, competing_healing_link) or 0
         local spellcritchance = AAI_GetItemTotalSpellCritChance(link)
-        local competing_item_link = AAI_GetCompetingItem(link)
 
         if attackpower > 0 then
             GameTooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
@@ -65,8 +69,10 @@ function AAI_AddTooltipTags()
         if spellcritchance > 0 then
             GameTooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
         end
-        if competing_item_link then
+        if competing_melee_link then
             GameTooltip:AddDoubleLine("Melee Power Delta", AAI_SetColor(AAI_Round(meleepowerdelta, 2), meleepowerdelta < 0 and "FF0000" or "00FF00"))
+        end
+        if competing_healing_link then
             GameTooltip:AddDoubleLine("Healing Power Delta", AAI_SetColor(AAI_Round(healingpowerdelta, 2), healingpowerdelta < 0 and "FF0000" or "00FF00"))
         end
     end

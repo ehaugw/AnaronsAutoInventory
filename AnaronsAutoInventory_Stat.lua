@@ -193,10 +193,9 @@ end
 -- end
 
 
-function AAI_GetItemMeleePowerDelta(item_link)
+function AAI_GetItemMeleePowerDelta(item_link, competing_item_link)
     a, b, _ = UnitAttackPower("player") -- unbuffed
     local unbuffed_attackpower = a + b
-    local competing_item_link = AAI_GetCompetingItem(item_link)
 
     if competing_item_link == nil then
         return 0
@@ -216,10 +215,9 @@ function AAI_GetItemMeleePowerDelta(item_link)
 end
 
 
-function AAI_GetItemHealingPowerDelta(item_link)
+function AAI_GetItemHealingPowerDelta(item_link, competing_item_link)
     -- local healing_power = 2100 -- Holy Light Rank 10
     local healing_power = 538*2.5/1.5 -- Holy Light Rank 10
-    local competing_item_link = AAI_GetCompetingItem(item_link)
 
     if competing_item_link == nil then
         return 0
