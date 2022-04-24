@@ -21,6 +21,9 @@ end
 
 
 function AAI_SetColor(str, color)
+    if not color then
+        color = AAI_GetTagColor(str)
+    end
     return string.format("\124cff%s%s\124r", color, str)
 end
 
