@@ -31,7 +31,6 @@ local item_slot_table = {
 };
 
 
-local str_to_attack_power = 2 * 1.1
 local agi_to_crit_chance = 0.05
 local hit_rating_to_hit_chance = 0.081666667
 local crit_rating_to_crit_chance = 0.0581818181
@@ -70,7 +69,13 @@ local get_stat_api_key = {
 
 
 function AAI_StrengthToAttackPower(strength)
-    return strength * str_to_attack_power
+    local mod = 1
+    local _, player_class = UnitClass("player")
+    player_class = string.lower(player_class)
+    if player_class == "paladin" or player_class == "warrior" then
+         mod = 2
+    end
+    return strength * mod * (1 + 0.02 * AAI_GetDivineStrengthLevel())
 end
 
 
@@ -142,6 +147,17 @@ function AAI_DisplayStatKeys(item_link)
 end
 
 
+function AAI_GetCompetingItemFromInventory(item_link, tag)
+    local competing_item_link = AAI_GetCompetingItem(item_link)
+    for bag, slot, link in AAI_GetInventoryBagIndexLinkTuples("inventory") do
+        if AAI_HasTag(link, tag) and AAI_GetCompetingItem(link) == competing_item_link then
+            return link
+        end
+    end
+    return nil
+end
+
+
 function AAI_GetCompetingItem(item_link)
     local slot = select(9, GetItemInfo(item_link)) or nil
     slot = item_slot_table[slot]
@@ -201,7 +217,8 @@ end
 
 
 function AAI_GetItemHealingPowerDelta(item_link)
-    local healing_power = 2100 -- Holy Light Rank 10
+    -- local healing_power = 2100 -- Holy Light Rank 10
+    local healing_power = 538*2.5/1.5 -- Holy Light Rank 10
     local competing_item_link = AAI_GetCompetingItem(item_link)
 
     if competing_item_link == nil then
@@ -211,16 +228,16 @@ function AAI_GetItemHealingPowerDelta(item_link)
     local power = (
         healing_power - AAI_GetItemTotalSpellHealing(competing_item_link) + AAI_GetItemTotalSpellHealing(item_link)
     ) * (
-        1 + AAI_GetItemTotalSpellCritChance(item_link)
+        1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
     ) / (
-        1 - AAI_GetItemTotalSpellCritChance(item_link) * 0.6
+        1 - AAI_GetItemTotalSpellCritChance(item_link) * 0.2 * AAI_GetIlluminationRank()
     )
     local competing_power = (
         healing_power
     ) * (
-        1 + AAI_GetItemTotalSpellCritChance(competing_item_link)
+        1 + AAI_GetItemTotalSpellCritChance(competing_item_link) * 0.5
     ) / (
-        1 - AAI_GetItemTotalSpellCritChance(competing_item_link) * 0.6
+        1 - AAI_GetItemTotalSpellCritChance(competing_item_link) * 0.2 * AAI_GetIlluminationRank()
     )
     return power - competing_power
 end
@@ -236,4 +253,28 @@ function AAI_GetItemStats(item_link)
     end
     return aai_cached_dict 
 end
+
+
+function AAI_GetIlluminationRank()
+    return 5
+    -- return AAI_GetTalentRankForClass("paladin", 1, 9)
+end
+
+
+function AAI_GetDivineStrengthLevel()
+    return 5
+    -- return AAI_GetTalentRankForClass("paladin", 1, 1)
+end
+
+
+function AAI_GetTalentRankForClass(class, spec, talent)
+    local _, player_class = UnitClass("player")
+    player_class = string.lower(player_class)
+    if string.lower(class) == player_class then
+        _, _, _, _, rank = GetTalentInfo(spec, talent)
+        return rank
+    end
+    return 0
+end
+
 
