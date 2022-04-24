@@ -35,19 +35,17 @@ local function CoreFrame_OnEvent(self, event, ...)
     elseif event == "START_LOOT_ROLL" or event == "CONFIRM_LOOT_ROLL" or event == "PLAYER_ENTERING_WORLD" then
         AAI_HandleRoll(event, args)
     elseif event == "PARTY_MEMBERS_CHANGED" or event == "GROUP_ROSTER_UPDATE" then
-        print(1)
         AAI_WarnAboutPartyMembers()
     end
 end
 
 
 function AAI_AddTooltipTags()
-    _, link = GameTooltip:GetItem()
+    local _, link = GameTooltip:GetItem()
     link = AAI_CleanItemLinkForDatabase(link)
 
     if GetUnitName("player") == "Anaron" then
         local attackpower = AAI_GetItemTotalAttackPower(link)
-        -- local strength = AAI_GetItemStat(link, "strength")
         local critchance = AAI_GetItemTotalCritChance(link)
         local hitchance = AAI_GetItemTotalHitChance(link)
         local meleepowerdelta = AAI_GetItemMeleePowerDelta(link) or 0
@@ -58,9 +56,6 @@ function AAI_AddTooltipTags()
         if attackpower > 0 then
             GameTooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
         end
-        -- if strength > 0 then
-        --     GameTooltip:AddDoubleLine("Strength", AAI_Round(strength, 2))
-        -- end
         if critchance > 0 then
             GameTooltip:AddDoubleLine("Effective Crit Chance", AAI_Round(critchance * 100,2) .. "%")
         end
@@ -72,7 +67,7 @@ function AAI_AddTooltipTags()
         end
         if competing_item_link then
             GameTooltip:AddDoubleLine("Melee Power Delta", AAI_SetColor(AAI_Round(meleepowerdelta, 2), meleepowerdelta < 0 and "FF0000" or "00FF00"))
-            -- GameTooltip:AddDoubleLine("Healing Power Delta", AAI_SetColor(AAI_Round(healingpowerdelta, 2), healingpowerdelta < 0 and "FF0000" or "00FF00"))
+            GameTooltip:AddDoubleLine("Healing Power Delta", AAI_SetColor(AAI_Round(healingpowerdelta, 2), healingpowerdelta < 0 and "FF0000" or "00FF00"))
         end
     end
 

@@ -39,20 +39,34 @@ local dps_to_attack_power = 14
 local int_to_spell_crit_chance = 0.04842
 
 local get_stat_api_key = {
-    dps = "ITEM_MOD_DAMAGE_PER_SECOND_SHORT",
-    attackpower = "ITEM_MOD_ATTACK_POWER_SHORT",
-    critrating = "ITEM_MOD_CRIT_RATING",
-    hitrating = "ITEM_MOD_HIT_RATING",
-    stamina = "ITEM_MOD_STAMINA_SHORT",
-    strength = "ITEM_MOD_STRENGTH_SHORT",
-    agility = "ITEM_MOD_AGILITY_SHORT",
-    spelldamageandhealing = "ITEM_MOD_SPELL_POWER_SHORT",
-    spellhit = "ITEM_MOD_SPELL_HIT_RATING",
-    spellcrit = "ITEM_MOD_SPELL_CRIT_RATING",
-    spellhealing = "ITEM_MOD_SPELL_HEALING_DONE_SHORT",
-    spelldamage = "ITEM_MOD_SPELL_DAMAGE_DONE_SHORT",
-    intellect = "ITEM_MOD_INTELLECT_SHORT",
+    dps = "dps",
+    attackpower = "attack power",
+    critrating = "crit rating",
+    hitrating = "hit rating",
+    stamina = "stamina",
+    strength = "strength",
+    agility = "agility",
+    spellhit = "spell hit rating",
+    spellcrit = "spell critical hit rating",
+    spellhealing = "healing",
+    spelldamage = "damage spells",
+    intellect = "intellect",
 }
+-- local get_stat_api_key = {
+--     dps = "ITEM_MOD_DAMAGE_PER_SECOND_SHORT",
+--     attackpower = "ITEM_MOD_ATTACK_POWER_SHORT",
+--     critrating = "ITEM_MOD_CRIT_RATING",
+--     hitrating = "ITEM_MOD_HIT_RATING",
+--     stamina = "ITEM_MOD_STAMINA_SHORT",
+--     strength = "ITEM_MOD_STRENGTH_SHORT",
+--     agility = "ITEM_MOD_AGILITY_SHORT",
+--     spelldamageandhealing = "ITEM_MOD_SPELL_POWER_SHORT",
+--     spellhit = "ITEM_MOD_SPELL_HIT_RATING",
+--     spellcrit = "ITEM_MOD_SPELL_CRIT_RATING",
+--     spellhealing = "ITEM_MOD_SPELL_HEALING_DONE_SHORT",
+--     spelldamage = "ITEM_MOD_SPELL_DAMAGE_DONE_SHORT",
+--     intellect = "ITEM_MOD_INTELLECT_SHORT",
+-- }
 
 
 function AAI_StrengthToAttackPower(strength)
@@ -121,10 +135,9 @@ end
 
 
 function AAI_DisplayStatKeys(item_link)
-    local stat_table = GetItemStats(item_link)
+    local stat_table = AAI_GetItemStats(item_link)
     for key, val in pairs(stat_table) do
         print(key)
-        -- print(string.format("%s: %s", key, value))
     end
 end
 
@@ -144,8 +157,7 @@ end
 
 
 function AAI_GetItemStat(item_link, stat)
-    -- AAI_DisplayStatKeys(item_link)
-    local stat_table = GetItemStats(item_link)
+    local stat_table = AAI_GetItemStats(item_link)
     return stat_table and stat_table[get_stat_api_key[stat]] or 0
 end
 
@@ -184,7 +196,6 @@ function AAI_GetItemMeleePowerDelta(item_link)
     ) * (
         1 + AAI_GetItemTotalHitChance(competing_item_link) + AAI_GetItemTotalCritChance(competing_item_link)
     )
-    -- print(string.format("competing: %s, new: %s", competing_power, power))
     return power - competing_power
 end
 
@@ -211,7 +222,18 @@ function AAI_GetItemHealingPowerDelta(item_link)
     ) / (
         1 - AAI_GetItemTotalSpellCritChance(competing_item_link) * 0.6
     )
-    -- print(string.format("competing: %s, new: %s", competing_power, power))
     return power - competing_power
+end
+
+
+local aai_cached_item = nil
+local aai_cached_dict = nil
+
+function AAI_GetItemStats(item_link)
+    if aai_cached_item ~= item_link then
+        aai_cached_dict = AAI_GetItemStatsByScanning(item_link)
+        aai_cached_item = item_link
+    end
+    return aai_cached_dict 
 end
 
