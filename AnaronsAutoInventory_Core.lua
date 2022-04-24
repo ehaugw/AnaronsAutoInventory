@@ -46,13 +46,13 @@ function AAI_AddTooltipTags()
 
     if GetUnitName("player") == "Anaron" then
 
-        compete_with_bag = not IsShiftKeyDown()
+        compete_with_equipped = IsShiftKeyDown()
 
         local attackpower = AAI_GetItemTotalAttackPower(link)
         local critchance = AAI_GetItemTotalCritChance(link)
         local hitchance = AAI_GetItemTotalHitChance(link)
-        local competing_melee_link = compete_with_bag and AAI_GetCompetingItemFromInventory(link, "melee") or AAI_GetCompetingItem(link)
-        local competing_healing_link = compete_with_bag and AAI_GetCompetingItemFromInventory(link, "heal") or AAI_GetCompetingItem(link)
+        local competing_melee_link = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "melee")
+        local competing_healing_link = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "heal")
         local meleepowerdelta = AAI_GetItemMeleePowerDelta(link, competing_melee_link) or 0
         local healingpowerdelta = AAI_GetItemHealingPowerDelta(link, competing_healing_link) or 0
         local spellcritchance = AAI_GetItemTotalSpellCritChance(link)

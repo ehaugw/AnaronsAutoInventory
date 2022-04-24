@@ -31,11 +31,7 @@ local item_slot_table = {
 };
 
 
-local agi_to_crit_chance = 0.05
-local hit_rating_to_hit_chance = 0.081666667
-local crit_rating_to_crit_chance = 0.0581818181
-local dps_to_attack_power = 14
-local int_to_spell_crit_chance = 0.04842
+local spell_crit_rating_to_crit_chance = 1/6
 
 local get_stat_api_key = {
     dps = "dps",
@@ -68,39 +64,80 @@ local get_stat_api_key = {
 -- }
 
 
-function AAI_StrengthToAttackPower(strength)
-    local mod = 1
+function AAI_StrengthToAttackPower(ability_score)
     local _, player_class = UnitClass("player")
-    player_class = string.lower(player_class)
-    if player_class == "paladin" or player_class == "warrior" then
-         mod = 2
-    end
-    return strength * mod * (1 + 0.02 * AAI_GetDivineStrengthLevel())
+    local mod_dict = {
+        druid = 2,
+        hunter = 1,
+        mage = 1,
+        paladin = 2,
+        priest = 1,
+        rogue = 1,
+        shaman = 2,
+        warlock = 1,
+        warrior = 2
+    }
+    local mod = mod_dict[string.lower(player_class)]
+
+    return ability_score * mod * (1 + 0.02 * AAI_GetDivineStrengthLevel())
 end
 
 
-function AAI_AgilityToCritChance(agility)
-    return agility * agi_to_crit_chance
+function AAI_AgilityToCritChance(ability_score)
+    local _, player_class = UnitClass("player")
+    local mod_dict = {
+        druid = 1/25,
+        hunter = 1/40,
+        mage = 0,
+        paladin = 1/25,
+        priest = 0,
+        rogue = 1/40,
+        shaman = 1/25,
+        warlock = 0,
+        warrior = 1/33
+    }
+    local mod = mod_dict[string.lower(player_class)]
+
+    return ability_score * mod * (1 + 0.02 * AAI_GetDivineStrengthLevel())
+end
+
+
+function AAI_IntellectToSpellCritChance(ability_score)
+    local _, player_class = UnitClass("player")
+    local mod_dict = {
+        druid = 1/79.4,
+        hunter = 0,
+        mage = 1/81,
+        paladin = 1/79.4,
+        priest = 1/80,
+        rogue = 0,
+        shaman = 1/78.1,
+        warlock = 1/81.9,
+        warrior = 0
+    }
+    local mod = mod_dict[string.lower(player_class)]
+
+    return ability_score * mod * (1 + 0.02 * AAI_GetDivineStrengthLevel())
 end
 
 
 function AAI_HitRatingToHitChance(hitrating)
-    return hitrating * hit_rating_to_hit_chance
+    return hitrating / 15.8
+end
+
+
+function AAI_SpellCritRatingToCritChance(critrating)
+    return critrating / 22.1
 end
 
 
 function AAI_CritRatingToCritChance(critrating)
-    return critrating * crit_rating_to_crit_chance
+    return critrating / 22.1
 end
 
 
 function AAI_DpsToAttackPower(dps)
-    return dps * dps_to_attack_power
-end
-
-
-function AAI_IntellectToSpellCritChance(intellect)
-    return intellect * int_to_spell_crit_chance
+    return dps * 14
 end
 
 
@@ -135,7 +172,7 @@ end
 
 
 function AAI_GetItemTotalSpellCritChance(item_link)
-    return (AAI_GetItemStat(item_link, "spellcrit") + AAI_IntellectToSpellCritChance(AAI_GetItemStat(item_link, "intellect"))) / 100
+    return (AAI_SpellCritRatingToCritChance(AAI_GetItemStat(item_link, "spellcrit")) + AAI_IntellectToSpellCritChance(AAI_GetItemStat(item_link, "intellect"))) / 100
 end
 
 
@@ -148,17 +185,17 @@ end
 
 
 function AAI_GetCompetingItemFromInventory(item_link, tag)
-    local competing_item_link = AAI_GetCompetingItem(item_link)
+    local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
     for bag, slot, link in AAI_GetInventoryBagIndexLinkTuples("inventory") do
-        if AAI_HasTag(link, tag) and AAI_GetCompetingItem(link) == competing_item_link then
+        if AAI_HasTag(link, tag) and AAI_GetCompetingItemEquipped(link) == competing_item_link then
             return link
         end
     end
-    return nil
+    return AAI_HasTag(competing_item_link, tag) and competing_item_link or nil
 end
 
 
-function AAI_GetCompetingItem(item_link)
+function AAI_GetCompetingItemEquipped(item_link)
     local slot = select(9, GetItemInfo(item_link)) or nil
     slot = item_slot_table[slot]
     if slot ~= nil then

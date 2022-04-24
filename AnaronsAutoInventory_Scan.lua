@@ -193,6 +193,12 @@ function AAI_SplitTooltipText(text)
 
     if left then
         plus, text = string.match(right, "(%+?%-?[0-9]* ?)(.*)")
+        if plus == "" or plus == " " then
+            plus = nil
+        end
+        if text == "" or text == " " then
+            text = nil
+        end
         return prefix .. left, (plus or prefix) .. (text or right)
     else
         return prefix .. text, nil
