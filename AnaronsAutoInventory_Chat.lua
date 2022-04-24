@@ -99,7 +99,11 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         local from_name, option = AAI_GetLeftWord(option)
         local to_name, option = AAI_GetLeftWord(option)
         AAI_RenameItemTagInDatabase(from_name, to_name)
-        AAI_print(string.format("Replaced all occurences of %s with %s.", from_name, to_name))
+        if to_name then
+            AAI_print(string.format("Replaced all occurences of %s with %s.", from_name, to_name))
+        else
+            AAI_print(string.format("Deleted all occurences of %s.", from_name))
+        end
  
     elseif operation == "display" then
         local links, tags = AAI_StringToItemLinksAndWords(option)

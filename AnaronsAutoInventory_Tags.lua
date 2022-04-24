@@ -164,7 +164,9 @@ end
 function AAI_RenameItemTagInDatabase(from_name, to_name)
     for item_link, tag_dict in pairs(aai_item_tags) do
         if AAI_HasTag(item_link, from_name) then
-            AAI_AddTag(item_link, to_name)
+            if to_name then
+                AAI_AddTag(item_link, to_name)
+            end
             AAI_RemoveTag(item_link, from_name)
         end
     end

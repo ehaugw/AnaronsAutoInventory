@@ -41,7 +41,7 @@ end
 
 
 function AAI_GetLeftWord(inputstr)
-    if inputstr == "" then
+    if not inputstr or inputstr == "" then
         return nil, nil
     end
 
