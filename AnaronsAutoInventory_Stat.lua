@@ -106,7 +106,7 @@ function AAI_IntellectToSpellCritChance(ability_score)
         druid = 1/79.4,
         hunter = 0,
         mage = 1/81,
-        paladin = 1/79.4,
+        paladin = 1/80,
         priest = 1/80,
         rogue = 0,
         shaman = 1/78.1,
@@ -121,45 +121,35 @@ end
 
 function AAI_HitRatingToHitChance(rating)
     local level = UnitLevel("player")
-    if level <= 10 then
-        return rating / 0.7 * 22.1 / 15.8
-    elseif level <= 15 then
-        return rating / 1.88476 * 22.1 / 15.8
-    elseif level <= 20 then
-        return rating / 3.230272 * 22.1 / 15.8
-    elseif level <= 30 then
-        return rating / 5.922166 * 22.1 / 15.8
-    elseif level <= 40 then
-        return rating / 8.610086 * 22.1 / 15.8
-    elseif level <= 50 then
-        return rating / 11.308562 * 22.1 / 15.8
-    elseif level <= 60 then
-        return rating / 14.0 * 22.1 / 15.8
-    elseif level <= 70 then
-        return rating / 22.1 * 22.1 / 15.8
-    end
+    local scalars = {
+        {0,  1 / 0.2        * 1.40626341},
+        {10, 1 / 0.7        * 1.40626341},
+        {15, 1 / 1.88476    * 1.40626341},
+        {20, 1 / 3.230272   * 1.40626341},
+        {30, 1 / 5.922166   * 1.40626341},
+        {40, 1 / 8.610086   * 1.40626341},
+        {50, 1 / 11.308562  * 1.40626341},
+        {60, 1 / 14.0       * 1.40626341},
+        {70, 1 / 22.1       * 1.40626341},
+    }
+    return AAI_Interpolate(scalars, level) * rating
 end
 
 
 function AAI_CritRatingToCritChance(rating)
     local level = UnitLevel("player")
-    if level <= 10 then
-        return rating / 0.7
-    elseif level <= 15 then
-        return rating / 1.88476
-    elseif level <= 20 then
-        return rating / 3.230272
-    elseif level <= 30 then
-        return rating / 5.922166
-    elseif level <= 40 then
-        return rating / 8.610086
-    elseif level <= 50 then
-        return rating / 11.308562
-    elseif level <= 60 then
-        return rating / 14.0
-    elseif level <= 70 then
-        return rating / 22.1
-    end
+    local scalars = {
+        {1,  1 / 0.2},
+        {10, 1 / 0.7},
+        {15, 1 / 1.88476},
+        {20, 1 / 3.230272},
+        {30, 1 / 5.922166},
+        {40, 1 / 8.610086},
+        {50, 1 / 11.308562},
+        {60, 1 / 14.0},
+        {70, 1 / 22.1},
+    }
+    return AAI_Interpolate(scalars, level) * rating
 end
 
 
