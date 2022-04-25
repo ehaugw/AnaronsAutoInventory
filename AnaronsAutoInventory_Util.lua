@@ -213,6 +213,25 @@ end
 
 
 -- GENERAL MATH
+function AAI_Interpolate(tuple_list, value)
+    local smaller = nil
+    local smaller_value = nil
+    for x, y in AAI_ForEachUnpack(tuple_list) do
+        if x == value then
+            return y
+        end
+        if smaller ~= nil then
+            if x > value then
+                return ((x - value) * smaller_value + (value - smaller) * y) / (x - smaller)
+            end
+        end
+        smaller = x
+        smaller_value = y
+    end
+    return nil
+end
+
+
 function AAI_Round(num, numDecimalPlaces)
     local mult = 10^(numDecimalPlaces or 0)
     return math.floor(num * mult + 0.5) / mult
