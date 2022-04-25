@@ -31,8 +31,6 @@ local item_slot_table = {
 };
 
 
-local spell_crit_rating_to_crit_chance = 1/6
-
 local get_stat_api_key = {
     dps = "dps",
     attackpower = "attack power",
@@ -121,18 +119,47 @@ function AAI_IntellectToSpellCritChance(ability_score)
 end
 
 
-function AAI_HitRatingToHitChance(hitrating)
-    return hitrating / 15.8
+function AAI_HitRatingToHitChance(rating)
+    local level = UnitLevel("player")
+    if level <= 10 then
+        return rating / 0.7 * 22.1 / 15.8
+    elseif level <= 15 then
+        return rating / 1.88476 * 22.1 / 15.8
+    elseif level <= 20 then
+        return rating / 3.230272 * 22.1 / 15.8
+    elseif level <= 30 then
+        return rating / 5.922166 * 22.1 / 15.8
+    elseif level <= 40 then
+        return rating / 8.610086 * 22.1 / 15.8
+    elseif level <= 50 then
+        return rating / 11.308562 * 22.1 / 15.8
+    elseif level <= 60 then
+        return rating / 14.0 * 22.1 / 15.8
+    elseif level <= 70 then
+        return rating / 22.1 * 22.1 / 15.8
+    end
 end
 
 
-function AAI_SpellCritRatingToCritChance(critrating)
-    return critrating / 22.1
-end
-
-
-function AAI_CritRatingToCritChance(critrating)
-    return critrating / 22.1
+function AAI_CritRatingToCritChance(rating)
+    local level = UnitLevel("player")
+    if level <= 10 then
+        return rating / 0.7
+    elseif level <= 15 then
+        return rating / 1.88476
+    elseif level <= 20 then
+        return rating / 3.230272
+    elseif level <= 30 then
+        return rating / 5.922166
+    elseif level <= 40 then
+        return rating / 8.610086
+    elseif level <= 50 then
+        return rating / 11.308562
+    elseif level <= 60 then
+        return rating / 14.0
+    elseif level <= 70 then
+        return rating / 22.1
+    end
 end
 
 
@@ -172,7 +199,7 @@ end
 
 
 function AAI_GetItemTotalSpellCritChance(item_link)
-    return (AAI_SpellCritRatingToCritChance(AAI_GetItemStat(item_link, "spellcrit")) + AAI_IntellectToSpellCritChance(AAI_GetItemStat(item_link, "intellect"))) / 100
+    return (AAI_CritRatingToCritChance(AAI_GetItemStat(item_link, "spellcrit")) + AAI_IntellectToSpellCritChance(AAI_GetItemStat(item_link, "intellect"))) / 100
 end
 
 
