@@ -44,7 +44,7 @@ function AAI_AddTooltipTags()
     local _, link = GameTooltip:GetItem()
     link = AAI_CleanItemLinkForDatabase(link)
 
-    if GetUnitName("player") == "Anaron" then
+    -- if GetUnitName("player") == "Anaron" then
 
         compete_with_equipped = IsShiftKeyDown()
 
@@ -75,7 +75,7 @@ function AAI_AddTooltipTags()
         if competing_healing_link then
             GameTooltip:AddDoubleLine("Healing Power Delta", AAI_SetColor(AAI_Round(healingpowerdelta, 2), healingpowerdelta < 0 and "FF0000" or "00FF00"))
         end
-    end
+    -- end
 
     if aai_item_tags[link] ~= nil then
         for key, value in pairs(aai_item_tags[link]) do
