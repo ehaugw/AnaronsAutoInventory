@@ -106,7 +106,7 @@ function AAI_IntellectToSpellCritChance(ability_score)
         druid = 1/79.4,
         hunter = 0,
         mage = 1/81,
-        paladin = 1/80,
+        paladin = 1/75.8,
         priest = 1/80,
         rogue = 0,
         shaman = 1/78.1,
