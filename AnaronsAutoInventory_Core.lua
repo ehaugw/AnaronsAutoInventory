@@ -51,7 +51,7 @@ function AAI_AddTooltipTags()
         local attackpower = AAI_GetItemTotalAttackPower(link)
         local critchance = AAI_GetItemTotalCritChance(link)
         local hitchance = AAI_GetItemTotalHitChance(link)
-        local competing_melee_link = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "melee")
+        local competing_melee_link   = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "melee")
         local competing_healing_link = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "heal")
         local meleepowerdelta = AAI_GetItemMeleePowerDelta(link, competing_melee_link) or 0
         local healingpowerdelta = AAI_GetItemHealingPowerDelta(link, competing_healing_link) or 0
@@ -70,7 +70,7 @@ function AAI_AddTooltipTags()
             GameTooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
         end
         if competing_melee_link then
-            GameTooltip:AddDoubleLine("Melee Power Delta", AAI_SetColor(AAI_Round(meleepowerdelta, 2), meleepowerdelta < 0 and "FF0000" or "00FF00"))
+            GameTooltip:AddDoubleLine("Melee Power Delta",   AAI_SetColor(AAI_Round(meleepowerdelta,   2), meleepowerdelta   < 0 and "FF0000" or "00FF00"))
         end
         if competing_healing_link then
             GameTooltip:AddDoubleLine("Healing Power Delta", AAI_SetColor(AAI_Round(healingpowerdelta, 2), healingpowerdelta < 0 and "FF0000" or "00FF00"))

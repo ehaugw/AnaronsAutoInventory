@@ -231,50 +231,42 @@ end
 
 
 function AAI_GetItemMeleePowerDelta(item_link, competing_item_link)
-    a, b, _ = UnitAttackPower("player") -- unbuffed
-    local unbuffed_attackpower = a + b
-
     if competing_item_link == nil then
         return 0
     end
 
-    local power = (
-        unbuffed_attackpower - AAI_GetItemTotalAttackPower(competing_item_link) + AAI_GetItemTotalAttackPower(item_link)
+    local a, b, _ = UnitAttackPower("player") -- unbuffed
+    local unequipped_base = a + b - AAI_GetItemTotalAttackPower(AAI_GetCompetingItemEquipped(item_link))
+    return AAI_GetEquivalentMeleePower(unequipped_base, item_link) - AAI_GetEquivalentMeleePower(unequipped_base, competing_item_link)
+end
+
+
+function AAI_GetEquivalentMeleePower(unequipped_base, item_link)
+    return (
+        unequipped_base  + AAI_GetItemTotalAttackPower(item_link)
     ) * (
         1 + AAI_GetItemTotalHitChance(item_link) + AAI_GetItemTotalCritChance(item_link)
     )
-    local competing_power = (
-        unbuffed_attackpower
-    ) * (
-        1 + AAI_GetItemTotalHitChance(competing_item_link) + AAI_GetItemTotalCritChance(competing_item_link)
-    )
-    return power - competing_power
 end
 
 
 function AAI_GetItemHealingPowerDelta(item_link, competing_item_link)
-    -- local healing_power = 2100 -- Holy Light Rank 10
-    local healing_power = 538*2.5/1.5 -- Holy Light Rank 10
-
     if competing_item_link == nil then
         return 0
     end
+    unequipped_base = 538*2.5/1.5 + GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))
+    return AAI_GetEquivalentHealingPower(unequipped_base, item_link) - AAI_GetEquivalentHealingPower(unequipped_base, competing_item_link)
+end
 
-    local power = (
-        healing_power - AAI_GetItemTotalSpellHealing(competing_item_link) + AAI_GetItemTotalSpellHealing(item_link)
+
+function AAI_GetEquivalentHealingPower(unequipped_base, item_link)
+    return (
+        unequipped_base + AAI_GetItemTotalSpellHealing(item_link)
     ) * (
         1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
     ) / (
         1 - AAI_GetItemTotalSpellCritChance(item_link) * 0.2 * AAI_GetIlluminationRank()
     )
-    local competing_power = (
-        healing_power
-    ) * (
-        1 + AAI_GetItemTotalSpellCritChance(competing_item_link) * 0.5
-    ) / (
-        1 - AAI_GetItemTotalSpellCritChance(competing_item_link) * 0.2 * AAI_GetIlluminationRank()
-    )
-    return power - competing_power
 end
 
 
