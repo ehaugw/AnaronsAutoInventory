@@ -104,6 +104,9 @@ end
 
 
 function AAI_GetTooltipLineAfterSplit(item_link)
+    if item_link == nil then
+        return {}, {}
+    end
     scantip:ClearLines()
     scantip:SetHyperlink(item_link)
 
