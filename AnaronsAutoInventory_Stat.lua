@@ -84,19 +84,19 @@ end
 function AAI_AgilityToCritChance(ability_score)
     local _, player_class = UnitClass("player")
     local mod_dict = {
-        druid = 1/25,
+        druid = 1/24,
         hunter = 1/40,
         mage = 0,
-        paladin = 1/25,
+        paladin = 1/24,
         priest = 0,
         rogue = 1/40,
-        shaman = 1/25,
+        shaman = 1/24,
         warlock = 0,
         warrior = 1/33
     }
     local mod = mod_dict[string.lower(player_class)]
 
-    return ability_score * mod * (1 + 0.02 * AAI_GetDivineStrengthLevel())
+    return ability_score * mod
 end
 
 
@@ -115,7 +115,7 @@ function AAI_IntellectToSpellCritChance(ability_score)
     }
     local mod = mod_dict[string.lower(player_class)]
 
-    return ability_score * mod * (1 + 0.02 * AAI_GetDivineStrengthLevel())
+    return ability_score * mod
 end
 
 
