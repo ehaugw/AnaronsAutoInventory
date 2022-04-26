@@ -62,7 +62,7 @@ function AAI_StrengthToAttackPower(ability_score)
     }
     local mod = mod_dict[string.lower(player_class)]
 
-    return ability_score * mod * (1 + 0.02 * AAI_GetDivineStrengthLevel())
+    return ability_score * mod * (1 + 0.02 * AAI_GetDivineStrengthRank())
 end
 
 
@@ -143,8 +143,13 @@ function AAI_DpsToAttackPower(dps)
 end
 
 
-function AAI_GetItemTotalAttackPower(item_link)
-    return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attackpower") + AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps"))
+function AAI_GetItemTotalAttackPowerWithDps(item_link)
+    return AAI_GetItemTotalAttackPower(item_link, true)
+end
+
+
+function AAI_GetItemTotalAttackPower(item_link, include_dps)
+    return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attackpower") + (include_dps and AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps")) or 0)
 end
 
 
@@ -214,23 +219,6 @@ end
 function AAI_GetItemStat(item_link, stat)
     local stat_table = AAI_GetItemStats(item_link)
     return stat_table and stat_table[get_stat_api_key[stat]] or 0
-end
-
-
-function AAI_GetItemMeleePowerDelta(item_link, competing_item_link)
-    if competing_item_link == nil then return 0 end
-
-    local a, b, _ = UnitAttackPower("player") -- unbuffed
-    local unequipped_base = a + b - AAI_GetItemTotalAttackPower(AAI_GetCompetingItemEquipped(item_link))
-    return AAI_GetEquivalentMeleePower(unequipped_base, item_link) - AAI_GetEquivalentMeleePower(unequipped_base, competing_item_link)
-end
-
-
-function AAI_GetItemHealingPowerDelta(item_link, competing_item_link)
-    if competing_item_link == nil then return 0 end
-
-    unequipped_base = 538*2.5/1.5 + GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))
-    return AAI_GetEquivalentHealingPower(unequipped_base, item_link) - AAI_GetEquivalentHealingPower(unequipped_base, competing_item_link)
 end
 
 

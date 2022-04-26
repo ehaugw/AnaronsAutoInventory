@@ -48,7 +48,7 @@ function AAI_AddTooltipTags()
 
         compete_with_equipped = IsShiftKeyDown()
 
-        local attackpower = AAI_GetItemTotalAttackPower(link)
+        local attackpower = AAI_GetItemTotalAttackPowerWithDps(link)
         local critchance = AAI_GetItemTotalCritChance(link)
         local hitchance = AAI_GetItemTotalHitChance(link)
         local competing_melee_link   = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "melee")
