@@ -33,6 +33,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     local inventory = "inventory"
     local debug = false
     local replace =false
+    local distinct = false
 
     while true do
         local should_break = true
@@ -41,6 +42,13 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
             operation, option = AAI_GetLeftWord(option)
             should_break = false
         end
+
+        if operation == "distinct" then
+            distinct = true
+            operation, option = AAI_GetLeftWord(option)
+            should_break = false
+        end
+
 
         if operation == "replace" then
             replace = true
@@ -167,6 +175,9 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
                 tag = string.lower(tag)
 
                 if not remove then
+                    if distinct then
+                        AAI_RemoveTag(AAI_GetCompetingItemFromInventory(item_link, tag), tag)
+                    end
                     AAI_AddTag(item_link, tag, global)
                 else
                     AAI_RemoveTag(item_link, tag, global)
