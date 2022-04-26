@@ -39,7 +39,7 @@ end
 
 AAI_GetIlluminationRank      = function() return AAI_GetTalentRankForClass("paladin", 1, 9) end
 AAI_GetDivineStrengthRank    = function() return AAI_GetTalentRankForClass("paladin", 1, 1) end
-AAI_GetDeepWoundsRank        = function() return AAI_GetTalentRankForClass("warrior", 1, 1) end
+AAI_GetDeepWoundsRank        = function() return AAI_GetTalentRankForClass("warrior", 1, 9) end
 
 
 function AAI_GetTalentRankForClass(class, spec, talent)
