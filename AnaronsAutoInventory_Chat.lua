@@ -23,7 +23,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         global      = "prepend to \"tag\" to apply the action across all characters",
         auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house",
         replace     = "preped to \"tag\" to delete existing tags and add the new ones",
-        tagrename   = "replace all occurences of from_name with to_name"
+        tagrename   = "replace all occurences of from_name with to_name",
+        distinct    = "prepend to tag to remove other occurences of the provided tags for the same item slot before applying them to items"
     }
 
 
@@ -194,7 +195,6 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
         for _, tag in pairs(tags) do
             AAI_print("Used items tagged as " .. AAI_SetColor(tag, AAI_GetTagColor(tag)) .. "...")
-            -- FIXME: set destructive to true when merchant is open
             AAI_UseAllTaggedItems(inventory, tag, false, forced)
         end
 
