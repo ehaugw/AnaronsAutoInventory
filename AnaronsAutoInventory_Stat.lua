@@ -248,9 +248,7 @@ end
 
 
 function AAI_GetItemMeleePowerDelta(item_link, competing_item_link)
-    if competing_item_link == nil then
-        return 0
-    end
+    if competing_item_link == nil then return 0 end
 
     local a, b, _ = UnitAttackPower("player") -- unbuffed
     local unequipped_base = a + b - AAI_GetItemTotalAttackPower(AAI_GetCompetingItemEquipped(item_link))
@@ -268,9 +266,8 @@ end
 
 
 function AAI_GetItemHealingPowerDelta(item_link, competing_item_link)
-    if competing_item_link == nil then
-        return 0
-    end
+    if competing_item_link == nil then return 0 end
+
     unequipped_base = 538*2.5/1.5 + GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))
     return AAI_GetEquivalentHealingPower(unequipped_base, item_link) - AAI_GetEquivalentHealingPower(unequipped_base, competing_item_link)
 end
@@ -299,16 +296,8 @@ function AAI_GetItemStats(item_link)
 end
 
 
-function AAI_GetIlluminationRank()
-    return 5
-    -- return AAI_GetTalentRankForClass("paladin", 1, 9)
-end
-
-
-function AAI_GetDivineStrengthLevel()
-    return 5
-    -- return AAI_GetTalentRankForClass("paladin", 1, 1)
-end
+AAI_GetIlluminationRank      = function() return AAI_GetTalentRankForClass("paladin", 1, 9) end
+AAI_GetDivineStrengthLevel   = function() return AAI_GetTalentRankForClass("paladin", 1, 1) end
 
 
 function AAI_GetTalentRankForClass(class, spec, talent)
