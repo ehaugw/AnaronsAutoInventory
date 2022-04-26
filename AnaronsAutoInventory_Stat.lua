@@ -192,19 +192,25 @@ end
 
 
 function AAI_GetCompetingItemFromInventory(item_link, tag)
-    local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
+    local item_slots = AAI_GetItemSlots(item_link)
     for bag, slot, link in AAI_GetInventoryBagIndexLinkTuples("inventory") do
-        if AAI_HasTag(link, tag) and AAI_GetCompetingItemEquipped(link) == competing_item_link then
+        if AAI_HasTag(link, tag) and AAI_GetItemSlots(link) == item_slots then
             return link
         end
     end
+    local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
     return AAI_HasTag(competing_item_link, tag) and competing_item_link or nil
 end
 
 
-function AAI_GetCompetingItemEquipped(item_link)
+function AAI_GetItemSlots(item_link)
     local slot = select(9, GetItemInfo(item_link)) or nil
-    slot = item_slot_table[slot]
+    return item_slot_table[slot]
+end
+
+
+function AAI_GetCompetingItemEquipped(item_link)
+    local slot = AAI_GetItemSlots(item_link)
     if slot ~= nil then
         slot = slot[1]
     end
