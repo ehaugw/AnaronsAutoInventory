@@ -30,16 +30,18 @@ function AAI_GetEquivalentMeleePower(unequipped_base, item_link)
     return (
         unequipped_base  + AAI_GetItemTotalAttackPowerWithDps(item_link)
     ) * (
-        1 + AAI_GetItemTotalCritChance(item_link)
+        1 + AAI_GetItemTotalCritChance(item_link) * (1 + AAI_GetImpaleRank() * 0.1)
     ) / (
         1 - AAI_GetItemTotalHitChance(item_link)
     ) + (unequipped_base + AAI_GetItemTotalAttackPower(item_link)) * AAI_GetDeepWoundsRank()
 end
 
 
-AAI_GetIlluminationRank      = function() return AAI_GetTalentRankForClass("paladin", 1, 9) end
-AAI_GetDivineStrengthRank    = function() return AAI_GetTalentRankForClass("paladin", 1, 1) end
-AAI_GetDeepWoundsRank        = function() return AAI_GetTalentRankForClass("warrior", 1, 9) end
+-- fury spec "flurry" not included"
+AAI_GetIlluminationRank     = function() return AAI_GetTalentRankForClass("paladin", 1, 9)  end
+AAI_GetDivineStrengthRank   = function() return AAI_GetTalentRankForClass("paladin", 1, 1)  end
+AAI_GetDeepWoundsRank       = function() return AAI_GetTalentRankForClass("warrior", 1, 9)  end
+AAI_GetImpaleRank           = function() return AAI_GetTalentRankForClass("warrior", 1, 11) end
 
 
 function AAI_GetTalentRankForClass(class, spec, talent)
