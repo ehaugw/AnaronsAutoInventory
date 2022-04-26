@@ -45,21 +45,6 @@ local get_stat_api_key = {
     spelldamage = "damage spells",
     intellect = "intellect",
 }
--- local get_stat_api_key = {
---     dps = "ITEM_MOD_DAMAGE_PER_SECOND_SHORT",
---     attackpower = "ITEM_MOD_ATTACK_POWER_SHORT",
---     critrating = "ITEM_MOD_CRIT_RATING",
---     hitrating = "ITEM_MOD_HIT_RATING",
---     stamina = "ITEM_MOD_STAMINA_SHORT",
---     strength = "ITEM_MOD_STRENGTH_SHORT",
---     agility = "ITEM_MOD_AGILITY_SHORT",
---     spelldamageandhealing = "ITEM_MOD_SPELL_POWER_SHORT",
---     spellhit = "ITEM_MOD_SPELL_HIT_RATING",
---     spellcrit = "ITEM_MOD_SPELL_CRIT_RATING",
---     spellhealing = "ITEM_MOD_SPELL_HEALING_DONE_SHORT",
---     spelldamage = "ITEM_MOD_SPELL_DAMAGE_DONE_SHORT",
---     intellect = "ITEM_MOD_INTELLECT_SHORT",
--- }
 
 
 function AAI_StrengthToAttackPower(ability_score)
@@ -232,21 +217,6 @@ function AAI_GetItemStat(item_link, stat)
 end
 
 
--- function AAI_GetItemDamageScore(item_link)
---     local competing_item_link = AAI_GetCompetingItem(item_link)
---     local attackpower = UnitAttackPower("player") -- unbuffed
--- 
---     local attackpower_diff = AAI_GetItemTotalAttackPower(item_link) - AAI_GetItemTotalAttackPower(competing_item_link)
---     local crit_diff = AAI_GetItemTotalCritChance(item_link)         - AAI_GetItemTotalCritChance(competing_item_link)
---     local hit_diff = AAI_GetItemTotalHitChance(item_link)         - AAI_GetItemTotalHitChance(competing_item_link)
--- 
---     crithit = crit_diff + hit_diff
--- 
---     return AAI_GetItemTotalAttackPower(item_link) + attackpower * crithit
---     -- attackpower + attackpower_diff) * 
--- end
-
-
 function AAI_GetItemMeleePowerDelta(item_link, competing_item_link)
     if competing_item_link == nil then return 0 end
 
@@ -256,31 +226,11 @@ function AAI_GetItemMeleePowerDelta(item_link, competing_item_link)
 end
 
 
-function AAI_GetEquivalentMeleePower(unequipped_base, item_link)
-    return (
-        unequipped_base  + AAI_GetItemTotalAttackPower(item_link)
-    ) * (
-        1 + AAI_GetItemTotalHitChance(item_link) + AAI_GetItemTotalCritChance(item_link)
-    )
-end
-
-
 function AAI_GetItemHealingPowerDelta(item_link, competing_item_link)
     if competing_item_link == nil then return 0 end
 
     unequipped_base = 538*2.5/1.5 + GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))
     return AAI_GetEquivalentHealingPower(unequipped_base, item_link) - AAI_GetEquivalentHealingPower(unequipped_base, competing_item_link)
-end
-
-
-function AAI_GetEquivalentHealingPower(unequipped_base, item_link)
-    return (
-        unequipped_base + AAI_GetItemTotalSpellHealing(item_link)
-    ) * (
-        1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
-    ) / (
-        1 - AAI_GetItemTotalSpellCritChance(item_link) * 0.2 * AAI_GetIlluminationRank()
-    )
 end
 
 
@@ -296,18 +246,19 @@ function AAI_GetItemStats(item_link)
 end
 
 
-AAI_GetIlluminationRank      = function() return AAI_GetTalentRankForClass("paladin", 1, 9) end
-AAI_GetDivineStrengthLevel   = function() return AAI_GetTalentRankForClass("paladin", 1, 1) end
-
-
-function AAI_GetTalentRankForClass(class, spec, talent)
-    local _, player_class = UnitClass("player")
-    player_class = string.lower(player_class)
-    if string.lower(class) == player_class then
-        _, _, _, _, rank = GetTalentInfo(spec, talent)
-        return rank
-    end
-    return 0
-end
-
+-- local get_stat_api_key = {
+--     dps = "ITEM_MOD_DAMAGE_PER_SECOND_SHORT",
+--     attackpower = "ITEM_MOD_ATTACK_POWER_SHORT",
+--     critrating = "ITEM_MOD_CRIT_RATING",
+--     hitrating = "ITEM_MOD_HIT_RATING",
+--     stamina = "ITEM_MOD_STAMINA_SHORT",
+--     strength = "ITEM_MOD_STRENGTH_SHORT",
+--     agility = "ITEM_MOD_AGILITY_SHORT",
+--     spelldamageandhealing = "ITEM_MOD_SPELL_POWER_SHORT",
+--     spellhit = "ITEM_MOD_SPELL_HIT_RATING",
+--     spellcrit = "ITEM_MOD_SPELL_CRIT_RATING",
+--     spellhealing = "ITEM_MOD_SPELL_HEALING_DONE_SHORT",
+--     spelldamage = "ITEM_MOD_SPELL_DAMAGE_DONE_SHORT",
+--     intellect = "ITEM_MOD_INTELLECT_SHORT",
+-- }
 

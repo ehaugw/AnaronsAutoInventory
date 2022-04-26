@@ -38,4 +38,5 @@ AnaronsAutoInventory_Util.lua
 AnaronsAutoInventory_Stat.lua
 AnaronsAutoInventory_Warn.lua
 AnaronsAutoInventory_Scan.lua
+AnaronsAutoInventory_Spec.lua
 
