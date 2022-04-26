@@ -9,7 +9,7 @@ function AAI_HandleRoll(event, args)
             for roll_plus_one, keyword in ipairs(roll_types) do
                 if AAI_HasTag(AAI_CleanItemLinkForDatabase(item_link), keyword) then
                     RollOnLoot(roll_id, roll_plus_one - 1)
-                    print(string.format("Rolled %s on %s", keyword, item_link))
+                    -- print(string.format("Rolled %s on %s", keyword, item_link))
                 end
             end
         end
