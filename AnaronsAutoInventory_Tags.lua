@@ -108,6 +108,20 @@ function AAI_RemoveAllTags(item, global)
 end
 
 
+function AAI_ClearTagForSlots(tag, slots)
+    for _, item_link in AAI_GetEquipmentIndexLinkTuples("inventory") do
+        if item_link and AAI_HasTag(item_link, tag) and table.getn(AAI_GroupIntersect(slots, AAI_GetItemSlots(item_link))) > 0 then
+            AAI_RemoveTag(item_link, tag)
+        end
+    end
+    for _, _, item_link in AAI_GetInventoryBagIndexLinkTuples("inventory") do
+        if AAI_HasTag(item_link, tag) and table.getn(AAI_GroupIntersect(slots, AAI_GetItemSlots(item_link))) > 0 then
+            AAI_RemoveTag(item_link, tag)
+        end
+    end
+end
+
+
 function AAI_RemoveTag(item, tag, global)
     item = AAI_CleanItemLinkForDatabase(item)
     tag_dict = aai_item_tags

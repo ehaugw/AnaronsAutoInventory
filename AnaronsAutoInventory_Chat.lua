@@ -178,11 +178,9 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
                 if not remove then
                     if distinct then
-                        AAI_RemoveTag(AAI_GetCompetingItemFromInventory(item_link, tag), tag)
+                        AAI_ClearTagForSlots(tag, AAI_GetItemSlots(item_link))
                     end
                     AAI_AddTag(item_link, tag, global)
-                else
-                    AAI_RemoveTag(item_link, tag, global)
                 end
             end
         end
