@@ -24,7 +24,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house",
         replace     = "preped to \"tag\" to delete existing tags and add the new ones",
         tagrename   = "replace all occurences of from_name with to_name",
-        distinct    = "prepend to tag to remove other occurences of the provided tags for the same item slot before applying them to items"
+        distinct    = "prepend to tag to remove other occurences of the provided tags for the same item slot before applying them to items",
+        equip       = "equip all items with a given tag"
     }
 
 
@@ -184,6 +185,18 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
                     AAI_RemoveTag(item_link, tag, global)
                 end
             end
+        end
+
+    elseif operation == "equip" then
+        local links, tags = AAI_StringToItemLinksAndWords(option)
+        
+        if table.getn(links) > 0 then
+            AAI_print("You provided item links. This feature has not yet been implemented")
+        end
+
+        for _, tag in pairs(tags) do
+            AAI_print("Equipping items tagged as " .. AAI_SetColor(tag, AAI_GetTagColor(tag)) .. ".")
+            AAI_EquipAllTaggedItems(inventory, tag)
         end
 
     elseif operation == "use" then

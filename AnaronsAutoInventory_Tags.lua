@@ -26,6 +26,44 @@ function AAI_SellItemsOnAuctionHouse(item, stack_size, bid, buyout)
 end
 
 
+function AAI_EquipAllTaggedItems(inventory, tag)
+    if UnitAffectingCombat("player") then
+        AAI_print("You can not use this feature while in combat.")
+        return
+    end
+    local equipped = {}
+    for i = 1, 19 do
+        equipped[i] = false
+    end
+
+    for bag, slot, item_link in AAI_GetInventoryBagIndexLinkTuples(inventory) do
+        local was_equipped = false
+        if AAI_HasTag(item_link, tag) then 
+            local slots = AAI_GetItemSlots(item_link)
+
+            for _, equip_to in pairs(slots) do
+                if AAI_HasTag(GetInventoryItemLink("player", equip_to), tag) then
+                    equipped[equip_to] = GetInventoryItemLink("player", equip_to)
+                end
+                if not equipped[equip_to] then
+                    EquipItemByName(item_link, equip_to)
+                    equipped[equip_to] = item_link
+                    was_equipped = true
+                    break
+                end
+            end
+            if not was_equipped then
+                AAI_print(string.format("There are %s items tagged as %s for that equipment slot, but only %s slots are available:", #slots + 1, AAI_SetColor(tag), #slots))
+                AAI_print(item_link)
+                for _, occupied_slot in pairs(slots) do
+                    AAI_print(equipped[occupied_slot])
+                end
+            end
+        end
+    end
+end
+
+
 function AAI_UseAllTaggedItems(inventory, tag, destructive, forced)
     for bag, slot, item_link in AAI_GetInventoryBagIndexLinkTuples(inventory) do
         if AAI_HasTag(item_link, tag) then 
