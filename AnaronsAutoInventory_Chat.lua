@@ -25,7 +25,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         replace     = "preped to \"tag\" to delete existing tags and add the new ones",
         tagrename   = "replace all occurences of from_name with to_name",
         distinct    = "prepend to tag to remove other occurences of the provided tags for the same item slot before applying them to items",
-        equip       = "equip all items with a given tag"
+        equip       = "equip all items with a given tag",
+        gearset     = "remove the provided tag from all items and add it to each equipped item"
     }
 
 
@@ -158,6 +159,17 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
         elseif option then
             aai_tag_colors[tag] = option
+        end
+
+    elseif operation == "gearset" then
+        local links, tags = AAI_StringToItemLinksAndWords(option)
+        for _, tag in pairs(tags) do
+            AAI_RenameItemTagInDatabase(tag, nil)
+            for index, item_link in AAI_GetEquipmentIndexLinkTuples() do
+                if item_link ~= nil then
+                    AAI_AddTag(item_link, tag, false)
+                end
+            end
         end
 
     elseif operation == "tag" then
