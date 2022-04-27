@@ -11,4 +11,7 @@
     <Binding name="Equip Heal" runOnUp="false">
         SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"]("equip heal")
     </Binding>
+    <Binding name="Equip Uniform" runOnUp="false">
+        SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"]("equip uniform")
+    </Binding>
 </Bindings>
