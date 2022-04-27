@@ -114,6 +114,16 @@ AAI_print_original = AAI_print
 
 
 -- WOW ITEM AND INVENTORY HANDLING
+function AAI_GetEquipmentIndexLinkTuples()
+    local inventory_tuple = {}
+    for slot = 1, 19 do
+        local item_link = GetInventoryItemLink("player", slot)
+        table.insert(inventory_tuple, {slot, item_link})
+    end
+    return AAI_ForEachUnpack(inventory_tuple)
+end
+
+
 function AAI_GetInventoryBagIndexLinkTuples(inventory)
     local inventory_tuple = {}
     local container_ids = AAI_GetInventoryBags(inventory)
