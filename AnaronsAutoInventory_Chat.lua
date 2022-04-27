@@ -193,6 +193,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
                         AAI_ClearTagForSlots(tag, AAI_GetItemSlots(item_link))
                     end
                     AAI_AddTag(item_link, tag, global)
+                else
+                    AAI_RemoveTag(item_link, tag, global)
                 end
             end
         end
