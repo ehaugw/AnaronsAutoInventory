@@ -39,9 +39,10 @@ end
 
 -- fury spec "flurry" not included"
 AAI_GetIlluminationRank     = function() return AAI_GetTalentRankForClass("paladin", 1, 9)  end
-AAI_GetDivineStrengthRank   = function() return AAI_GetTalentRankForClass("paladin", 1, 1)  end
+AAI_GetDivineStrengthRank   = function() return 5 end --AAI_GetTalentRankForClass("paladin", 1, 1)  end
 AAI_GetDeepWoundsRank       = function() return AAI_GetTalentRankForClass("warrior", 1, 9)  end
 AAI_GetImpaleRank           = function() return AAI_GetTalentRankForClass("warrior", 1, 11) end
+AAI_HolyGuidanceRank        = function() return AAI_GetTalentRankForClass("warrior", 1, 19) end
 
 
 function AAI_GetTalentRankForClass(class, spec, talent)

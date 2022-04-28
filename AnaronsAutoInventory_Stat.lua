@@ -164,7 +164,7 @@ end
 
 
 function AAI_GetItemTotalSpellDamageAndHealing(item_link)
-    return AAI_GetItemStat(item_link, "spelldamageandhealing")
+    return AAI_GetItemStat(item_link, "spelldamageandhealing") + AAI_GetItemStat(item_link, "intellect") * AAI_HolyGuidanceRank() * 0.07
 end
 
 
