@@ -165,10 +165,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         local links, tags = AAI_StringToItemLinksAndWords(option)
         for _, tag in pairs(tags) do
             AAI_RenameItemTagInDatabase(tag, nil)
-            for index, item_link in AAI_GetEquipmentIndexLinkTuples() do
-                if item_link ~= nil then
-                    AAI_AddTag(item_link, tag, false)
-                end
+            for index, item_link in AAI_EquipmentIterator() do
+                AAI_AddTag(item_link, tag, false)
             end
         end
 

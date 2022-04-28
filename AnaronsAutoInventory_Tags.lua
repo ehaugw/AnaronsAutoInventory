@@ -10,7 +10,7 @@ function AAI_SellItemsOnAuctionHouse(item, stack_size, bid, buyout)
     free_bag = -1
     free_slot = -1
     
-    for bag, slot, link in AAI_GetInventoryBagIndexLinkTuples("inventory") do
+    for bag, slot, link in AAI_InventoryIterator("inventory") do
         if link == nil then
             free_bag = bag
             free_slot = slot
@@ -36,7 +36,7 @@ function AAI_EquipAllTaggedItems(inventory, tag)
         equipped[i] = false
     end
 
-    for bag, slot, item_link in AAI_GetInventoryBagIndexLinkTuples(inventory) do
+    for bag, slot, item_link in AAI_InventoryIterator(inventory) do
         local was_equipped = false
         if AAI_HasTag(item_link, tag) then 
             local slots = AAI_GetItemSlots(item_link)
@@ -64,8 +64,64 @@ function AAI_EquipAllTaggedItems(inventory, tag)
 end
 
 
+function AAI_ResupplyItems()
+    for bag, slot, item_link in AAI_InventoryIterator("inventory") do
+        if item_link and AAI_HasTag(item_link, "resupply") then
+            local _, stack_size, stack_size_max = AAI_GetInventoryStackInfo(bag, slot)
+            if stack_size < stack_size_max then
+                for bank_bag, bank_slot, bank_item_link in AAI_InventoryIterator("bank") do
+                    _, _, locked = GetContainerItemInfo(bank_bag, bank_slot)
+                    if bank_item_link == item_link and not locked then
+                        local _, bank_stack_size = AAI_GetInventoryStackInfo(bank_bag, bank_slot)
+                        PickupContainerItem(bank_bag, bank_slot)
+                        PickupContainerItem(bag, slot)
+                        AAI_print(string.format("Resupplied %s", item_link))
+                        if bank_stack_size + stack_size < stack_size_max then
+                            AAI_print(AAI_SetColor(string.format("Could not fully resupply %s. Try opening the source again, or resupply the source if it is running low on supply!", item_link), "FF0000"))
+                        end
+                        break
+                    end
+                end
+            end
+        end
+    end
+    for item_link in AAI_TaggedItemIterator("resupply") do
+        if AAI_CountInBag("inventory", item_link) == 0 then
+            local found_one = false
+            for bag, slot, bank_item_link in AAI_InventoryIterator("bank") do
+                if AAI_CleanItemLinkForDatabase(bank_item_link) == item_link then
+                    UseContainerItem(bag, slot)
+                    local _, stack_size, stack_size_max = AAI_GetInventoryStackInfo(bag, slot)
+                    AAI_print(string.format("Resupplied %s", item_link))
+                    if stack_size < stack_size_max then
+                        AAI_print(AAI_SetColor(string.format("Could not fully resupply %s. Try opening the source again, or resupply the source if it is running low on supply!", item_link), "FF0000"))
+                    end
+                    found_one = true
+                    break
+                end
+            end
+            if not found_one then
+                        AAI_print(AAI_SetColor(string.format("Could not fully resupply %s. Try opening the source again, or resupply the source if it is running low on supply!", item_link), "FF0000"))
+            end
+        end
+    end
+end
+
+
+function AAI_CountInBag(inventory, item_link)
+    local count = 0
+    for bag, slot, container_item_link in AAI_InventoryIterator(inventory) do
+        if AAI_CleanItemLinkForDatabase(container_item_link) == item_link then
+            local _, stack_size, stack_size_max = AAI_GetInventoryStackInfo(bag, slot)
+            count = count + stack_size
+        end
+    end
+    return count
+end
+
+
 function AAI_UseAllTaggedItems(inventory, tag, destructive, forced)
-    for bag, slot, item_link in AAI_GetInventoryBagIndexLinkTuples(inventory) do
+    for bag, slot, item_link in AAI_InventoryIterator(inventory) do
         if AAI_HasTag(item_link, tag) then 
             -- precious items can not be destroyed without "forced"
             if forced or not (AAI_HasTag(item_link, "precious") and destructive) then
@@ -109,12 +165,12 @@ end
 
 
 function AAI_ClearTagForSlots(tag, slots)
-    for _, item_link in AAI_GetEquipmentIndexLinkTuples("inventory") do
-        if item_link and AAI_HasTag(item_link, tag) and table.getn(AAI_GroupIntersect(slots, AAI_GetItemSlots(item_link))) > 0 then
+    for _, item_link in AAI_EquipmentIterator("inventory") do
+        if AAI_HasTag(item_link, tag) and table.getn(AAI_GroupIntersect(slots, AAI_GetItemSlots(item_link))) > 0 then
             AAI_RemoveTag(item_link, tag)
         end
     end
-    for _, _, item_link in AAI_GetInventoryBagIndexLinkTuples("inventory") do
+    for _, _, item_link in AAI_InventoryIterator("inventory") do
         if AAI_HasTag(item_link, tag) and table.getn(AAI_GroupIntersect(slots, AAI_GetItemSlots(item_link))) > 0 then
             AAI_RemoveTag(item_link, tag)
         end
@@ -171,6 +227,18 @@ function AAI_HasTags(item, tags)
         end
     end
     return false
+end
+
+
+function AAI_TaggedItemIterator(tag)
+    local item_tuples = {}
+    for item_link, tag_list in pairs(aai_item_tags) do
+        if AAI_HasTag(item_link, tag) then
+            table.insert(item_tuples, {item_link, tag_list})
+        end
+    end
+
+    return AAI_ForEachUnpack(item_tuples)
 end
 
 

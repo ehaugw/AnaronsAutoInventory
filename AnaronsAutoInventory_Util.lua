@@ -121,24 +121,28 @@ function AAI_GetInventoryStackInfo(bag, slot)
 end
 
 
-function AAI_GetEquipmentIndexLinkTuples()
+function AAI_EquipmentIterator()
     local inventory_tuple = {}
     for slot = 1, 19 do
         local item_link = GetInventoryItemLink("player", slot)
-        table.insert(inventory_tuple, {slot, item_link})
+        if item_link then
+            table.insert(inventory_tuple, {slot, item_link})
+        end
     end
     return AAI_ForEachUnpack(inventory_tuple)
 end
 
 
-function AAI_GetInventoryBagIndexLinkTuples(inventory)
+function AAI_InventoryIterator(inventory)
     local inventory_tuple = {}
     local container_ids = AAI_GetInventoryBags(inventory)
 
     for _, bag in ipairs(container_ids) do
         for slot=1,GetContainerNumSlots(bag),1 do
-            local name = GetContainerItemLink(bag,slot)
-            table.insert(inventory_tuple, {bag, slot, name})
+            local item_link = GetContainerItemLink(bag, slot)
+            if item_link then
+                table.insert(inventory_tuple, {bag, slot, item_link})
+            end
         end
     end
 
