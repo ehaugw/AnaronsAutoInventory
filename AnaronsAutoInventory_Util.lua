@@ -114,6 +114,13 @@ AAI_print_original = AAI_print
 
 
 -- WOW ITEM AND INVENTORY HANDLING
+function AAI_GetInventoryStackInfo(bag, slot)
+    local texture, item_count, locked, quality, readable, lootable, item_link = GetContainerItemInfo(bag, slot);
+    local itemName, _, _, _, _, _, _, item_stack_max = GetItemInfo(item_link)
+    return item_link, item_count, item_stack_max
+end
+
+
 function AAI_GetEquipmentIndexLinkTuples()
     local inventory_tuple = {}
     for slot = 1, 19 do
