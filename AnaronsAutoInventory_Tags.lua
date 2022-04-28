@@ -299,6 +299,7 @@ AAI_HandledTagsWithHelp = {
     pass        = "automatically pass on rolls",
     greed       = "automatically greed on rolls",
     need        = "automatically need on rolls",
+    resupply    = "automatically resupply your inventory when opening the bank",
     melee       = "does nothing on its own but using it can be keybound",
     uniform     = "does nothing on its own but using it can be keybound",
     tank        = "does nothing on its own but using it can be keybound",
