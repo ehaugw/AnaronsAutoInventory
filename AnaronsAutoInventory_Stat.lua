@@ -247,7 +247,11 @@ end
 
 function AAI_GetItemStat(item_link, stat)
     local stat_table = AAI_GetItemStats(item_link)
-    return stat_table and stat_table[get_stat_api_key[stat]] or 0
+    local value = stat_table and stat_table[get_stat_api_key[stat]] or 0
+    if AAI_HasValue({"strength", "stamina", "agility", "intellect", "spirit"}, stat) then
+        -- value = value * 1.1
+    end
+    return value
 end
 
 

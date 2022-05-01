@@ -69,6 +69,7 @@ function AAI_ResupplyItems()
         if item_link and AAI_HasTag(item_link, "resupply") then
             local _, stack_size, stack_size_max = AAI_GetInventoryStackInfo(bag, slot)
             if stack_size < stack_size_max then
+                local found_one = false
                 for bank_bag, bank_slot, bank_item_link in AAI_InventoryIterator("bank") do
                     _, _, locked = GetContainerItemInfo(bank_bag, bank_slot)
                     if bank_item_link == item_link and not locked then
@@ -79,8 +80,12 @@ function AAI_ResupplyItems()
                         if bank_stack_size + stack_size < stack_size_max then
                             AAI_print(AAI_SetColor(string.format("Could not fully resupply %s. Try opening the source again, or resupply the source if it is running low on supply!", item_link), "FF0000"))
                         end
+                        found_one = true
                         break
                     end
+                end
+                if not found_one then
+                    AAI_print(AAI_SetColor(string.format("Could not fully resupply %s. Try opening the source again, or resupply the source if it is running low on supply!", item_link), "FF0000"))
                 end
             end
         end
