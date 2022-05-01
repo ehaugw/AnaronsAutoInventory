@@ -26,7 +26,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         tagrename   = "replace all occurences of from_name with to_name",
         distinct    = "prepend to tag to remove other occurences of the provided tags for the same item slot before applying them to items",
         equip       = "equip all items with a given tag",
-        gearset     = "remove the provided tag from all items and add it to each equipped item"
+        gearset     = "remove the provided tag from all items and add it to each equipped item",
+        playerwarn  = "Set a note about a players negative behaviour"
     }
 
 
@@ -105,6 +106,15 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         AAI_print = AAI_print_original
         AAI_CleanUpItemTagDatabase()
         AAI_print("Restored AAI")
+
+    elseif operation == "warn" then
+        AAI_WarnAboutPartyMembers()
+
+    elseif operation == "playerwarn" then
+        option = AAI_GeneralStringFormat(option)
+        local name, remainder = AAI_GetLeftWord(option)
+        aai_warn_players[name] = remainder
+        AAI_print(string.format("Warning set for %s: %s", name, remainder))
 
     elseif operation == "tagrename" then
         local from_name, option = AAI_GetLeftWord(option)

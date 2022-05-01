@@ -10,6 +10,16 @@ end
 
 
 ------------------------------------
+--    DISPLAY WISHLIST COMMAND    --
+------------------------------------
+SLASH_AAI_WISHLIST1 = "/wishlist"
+
+SlashCmdList["AAI_WISHLIST"] = function(option)
+    SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"]("display wishlist")
+end
+
+
+------------------------------------
 --    RELOAD UIT SLASH COMMAND    --
 ------------------------------------
 SLASH_RELOAD_UI1 = "/reui"
@@ -27,12 +37,7 @@ local OldSendChatMessage = SendChatMessage
 SendChatMessage = function(...)
     message, chat_type, language, channel = ...
 
-    -- Replace %player with player name
-    message = string.gsub(message, "%%player", "%%p")
-    message = string.gsub(message, "%%p", GetUnitName("player", false))
-
-    message = string.gsub(message, "%%location", "%%l")
-    message = string.gsub(message, "%%l", GetZoneText())
+    message = AAI_GeneralStringFormat(message)
     
     -- Replace %whisper with whisper recepient
     local whisper_recepient = "<no whisper recepient>"

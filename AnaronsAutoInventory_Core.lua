@@ -43,41 +43,42 @@ end
 
 function AAI_AddTooltipTags()
     local _, link = GameTooltip:GetItem()
+
+    compete_with_equipped = IsShiftKeyDown()
+
+    local attackpower = AAI_GetItemTotalAttackPowerWithDps(link)
+    local critchance = AAI_GetItemTotalCritChance(link)
+    local hitchance = AAI_GetItemTotalHitChance(link)
+    local competing_melee_link   = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "melee")
+    local competing_healing_link = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "heal")
+    local meleepowerdelta = AAI_GetItemMeleePowerDelta(link, competing_melee_link) or 0
+    local healingpowerdelta = AAI_GetItemHealingPowerDelta(link, competing_healing_link) or 0
+    local spellcritchance = AAI_GetItemTotalSpellCritChance(link)
+    local expertise = AAI_GetItemTotalExpertise(link)
+
+    if attackpower > 0 then
+        GameTooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
+    end
+    if expertise > 0 then
+        GameTooltip:AddDoubleLine("Effective Expertise", AAI_Round(expertise * 100, 2))
+    end
+    if critchance > 0 then
+        GameTooltip:AddDoubleLine("Effective Crit Chance", AAI_Round(critchance * 100,2) .. "%")
+    end
+    if hitchance > 0 then
+        GameTooltip:AddDoubleLine("Effective Hit Chance", AAI_Round(hitchance * 100,2) .. "%")
+    end
+    if spellcritchance > 0 then
+        GameTooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
+    end
+    if competing_melee_link then
+        GameTooltip:AddDoubleLine("Melee Power Delta",   AAI_SetColor(AAI_Round(meleepowerdelta,   2), meleepowerdelta   < 0 and "FF0000" or "00FF00"))
+    end
+    if competing_healing_link then
+        GameTooltip:AddDoubleLine("Healing Power Delta", AAI_SetColor(AAI_Round(healingpowerdelta, 2), healingpowerdelta < 0 and "FF0000" or "00FF00"))
+    end
+
     link = AAI_CleanItemLinkForDatabase(link)
-
-    -- if GetUnitName("player") == "Anaron" then
-
-        compete_with_equipped = IsShiftKeyDown()
-
-        local attackpower = AAI_GetItemTotalAttackPowerWithDps(link)
-        local critchance = AAI_GetItemTotalCritChance(link)
-        local hitchance = AAI_GetItemTotalHitChance(link)
-        local competing_melee_link   = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "melee")
-        local competing_healing_link = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "heal")
-        local meleepowerdelta = AAI_GetItemMeleePowerDelta(link, competing_melee_link) or 0
-        local healingpowerdelta = AAI_GetItemHealingPowerDelta(link, competing_healing_link) or 0
-        local spellcritchance = AAI_GetItemTotalSpellCritChance(link)
-
-        if attackpower > 0 then
-            GameTooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
-        end
-        if critchance > 0 then
-            GameTooltip:AddDoubleLine("Effective Crit Chance", AAI_Round(critchance * 100,2) .. "%")
-        end
-        if hitchance > 0 then
-            GameTooltip:AddDoubleLine("Effective Hit Chance", AAI_Round(hitchance * 100,2) .. "%")
-        end
-        if spellcritchance > 0 then
-            GameTooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
-        end
-        if competing_melee_link then
-            GameTooltip:AddDoubleLine("Melee Power Delta",   AAI_SetColor(AAI_Round(meleepowerdelta,   2), meleepowerdelta   < 0 and "FF0000" or "00FF00"))
-        end
-        if competing_healing_link then
-            GameTooltip:AddDoubleLine("Healing Power Delta", AAI_SetColor(AAI_Round(healingpowerdelta, 2), healingpowerdelta < 0 and "FF0000" or "00FF00"))
-        end
-    -- end
-
     if aai_item_tags[link] ~= nil then
         for key, value in pairs(aai_item_tags[link]) do
             if not (aai_item_tags_global[link] and aai_item_tags_global[link][key]) then

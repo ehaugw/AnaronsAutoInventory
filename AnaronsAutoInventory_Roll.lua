@@ -32,11 +32,17 @@ function RollOnLoot(roll_id, roll, ...)
     AAI_RollOnLoot(roll_id, roll, ...)
     -- if roll ~= 1 and not AAI_HasTag(item_link, roll_types[roll + 1]) then
     if IsShiftKeyDown() then
-        if not AAI_HasTags(item_link, roll_types) then
-            AAI_AddTag(item_link, roll_types[roll + 1])
-            if IsAltKeyDown() then
-                AAI_AddTag(item_link, "junk")
+        for _, roll_tag in pairs(roll_types) do
+            if AAI_HasTag(item_link, roll_tag) then
+                AAI_RemoveTag(item_link, roll_tag)
             end
         end
+        AAI_AddTag(item_link, roll_types[roll + 1])
+    end
+    if IsAltKeyDown() then
+        AAI_AddTag(item_link, "junk")
+    end
+    if IsControlKeyDown() then
+        AAI_AddTag(item_link, "disenchant")
     end
 end

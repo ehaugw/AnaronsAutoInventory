@@ -1,4 +1,18 @@
 -- WOW SPECIFIC STRING HANDLING
+function AAI_GeneralStringFormat(message)
+    message = string.gsub(message, "%%player", "%%p")
+    message = string.gsub(message, "%%p", GetUnitName("player", false))
+
+    message = string.gsub(message, "%%location", "%%l")
+    message = string.gsub(message, "%%l", GetZoneText())
+
+    message = string.gsub(message, "%%player", "%%p")
+    message = string.gsub(message, "%%p", GetZoneText())
+
+    return message
+end
+
+    
 function AAI_StringToItemLinksAndWords(option)
     local links = {}
     local tags = {}

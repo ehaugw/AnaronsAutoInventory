@@ -44,6 +44,7 @@ local get_stat_api_key = {
     spellhealing = "healing",
     spelldamage = "damage spells",
     intellect = "intellect",
+    expertiserating = "expertise rating"
 }
 
 
@@ -104,6 +105,23 @@ function AAI_IntellectToSpellCritChance(ability_score)
 end
 
 
+function AAI_ExpertiseRatingPerExpertise(rating)
+    local level = UnitLevel("player")
+    local scalars = {
+        {0,  1 / 0.2        * 1.39466},
+        {10, 1 / 0.7        * 1.39466},
+        {15, 1 / 1.88476    * 1.39466},
+        {20, 1 / 3.230272   * 1.39466},
+        {30, 1 / 5.922166   * 1.39466},
+        {40, 1 / 8.610086   * 1.39466},
+        {50, 1 / 11.308562  * 1.39466},
+        {60, 1 / 14.0       * 1.39466},
+        {70, 1 / 22.1       * 1.39466},
+    }
+    return AAI_Interpolate(scalars, level) * rating
+end
+
+
 function AAI_HitRatingToHitChance(rating)
     local level = UnitLevel("player")
     local scalars = {
@@ -155,6 +173,11 @@ end
 
 function AAI_GetItemTotalCritChance(item_link)
     return (AAI_AgilityToCritChance(AAI_GetItemStat(item_link, "agility")) + AAI_CritRatingToCritChance(AAI_GetItemStat(item_link, "critrating"))) / 100
+end
+
+
+function AAI_GetItemTotalExpertise(item_link)
+    return (AAI_ExpertiseRatingPerExpertise(AAI_GetItemStat(item_link, "expertiserating"))) / 100
 end
 
 
