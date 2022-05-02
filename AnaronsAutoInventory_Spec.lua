@@ -1,41 +1,39 @@
-function AAI_GetItemMeleePowerDelta(item_link, competing_item_link)
-    if competing_item_link == nil then return 0 end
+local spec_evaluators = {
+    melee = function(item_link)
+        local a, b, _ = UnitAttackPower("player") -- unbuffed
+        local unequipped_base = a + b - AAI_GetItemTotalAttackPowerWithDps(AAI_GetCompetingItemEquipped(item_link))
 
-    local a, b, _ = UnitAttackPower("player") -- unbuffed
-    local unequipped_base = a + b - AAI_GetItemTotalAttackPowerWithDps(AAI_GetCompetingItemEquipped(item_link))
-    return AAI_GetEquivalentMeleePower(unequipped_base, item_link) - AAI_GetEquivalentMeleePower(unequipped_base, competing_item_link)
-end
+        return (
+            unequipped_base  + AAI_GetItemTotalAttackPowerWithDps(item_link)
+        ) * (
+            1 + AAI_GetItemTotalCritChance(item_link) * (1 + AAI_GetImpaleRank() * 0.1)
+        ) / (
+            1 - AAI_GetItemTotalExpertise(item_link)
+        ) / (
+            1 - AAI_GetItemTotalHitChance(item_link)
+        ) + (unequipped_base + AAI_GetItemTotalAttackPower(item_link)) * AAI_GetDeepWoundsRank()
+    end,
+
+    heal = function(item_link)
+        local unequipped_base = 538*2.5/1.5 + GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))
+
+        return (
+            unequipped_base + AAI_GetItemTotalSpellHealing(item_link)
+        ) * (
+            1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
+        ) / (
+            1 - AAI_GetItemTotalSpellCritChance(item_link) * 0.2 * AAI_GetIlluminationRank()
+        )
+    end
+}
 
 
-function AAI_GetItemHealingPowerDelta(item_link, competing_item_link)
-    if competing_item_link == nil then return 0 end
+function AAI_GetItemScoreComparison(item_link, compete_with_equipped, spec_name)
+    local competing_item_link   = compete_with_equipped and AAI_GetCompetingItemEquipped(item_link) or AAI_GetCompetingItemFromInventory(item_link, spec_name)
 
-    unequipped_base = 538*2.5/1.5 + GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))
-    return AAI_GetEquivalentHealingPower(unequipped_base, item_link) - AAI_GetEquivalentHealingPower(unequipped_base, competing_item_link)
-end
-
-
-function AAI_GetEquivalentHealingPower(unequipped_base, item_link)
-    return (
-        unequipped_base + AAI_GetItemTotalSpellHealing(item_link)
-    ) * (
-        1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
-    ) / (
-        1 - AAI_GetItemTotalSpellCritChance(item_link) * 0.2 * AAI_GetIlluminationRank()
-    )
-end
-
-
-function AAI_GetEquivalentMeleePower(unequipped_base, item_link)
-    return (
-        unequipped_base  + AAI_GetItemTotalAttackPowerWithDps(item_link)
-    ) * (
-        1 + AAI_GetItemTotalCritChance(item_link) * (1 + AAI_GetImpaleRank() * 0.1)
-    ) / (
-        1 - AAI_GetItemTotalExpertise(item_link)
-    ) / (
-        1 - AAI_GetItemTotalHitChance(item_link)
-    ) + (unequipped_base + AAI_GetItemTotalAttackPower(item_link)) * AAI_GetDeepWoundsRank()
+    local this_score = spec_evaluators[spec_name](item_link)
+    local competing_score = spec_evaluators[spec_name](competing_item_link)
+    return competing_item_link, this_score - competing_score, this_score, competing_score
 end
 
 

@@ -227,7 +227,7 @@ end
 
 
 function AAI_GetItemSlots(item_link)
-    local slot = select(9, GetItemInfo(item_link)) or nil
+    local slot = item_link and select(9, GetItemInfo(item_link)) or nil
     return item_slot_table[slot]
 end
 

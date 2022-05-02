@@ -42,52 +42,49 @@ end
 
 
 function AAI_AddTooltipTags()
-    local _, link = GameTooltip:GetItem()
+    local _, item_link = GameTooltip:GetItem()
 
-    compete_with_equipped = IsShiftKeyDown()
+    if AAI_GetItemSlots(item_link) ~= nil then
+        compete_with_equipped = IsShiftKeyDown()
 
-    local attackpower = AAI_GetItemTotalAttackPowerWithDps(link)
-    local critchance = AAI_GetItemTotalCritChance(link)
-    local hitchance = AAI_GetItemTotalHitChance(link)
-    local competing_melee_link   = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "melee")
-    local competing_healing_link = compete_with_equipped and AAI_GetCompetingItemEquipped(link) or AAI_GetCompetingItemFromInventory(link, "heal")
-    local meleepowerdelta = AAI_GetItemMeleePowerDelta(link, competing_melee_link) or 0
-    local healingpowerdelta = AAI_GetItemHealingPowerDelta(link, competing_healing_link) or 0
-    local spellcritchance = AAI_GetItemTotalSpellCritChance(link)
-    local expertise = AAI_GetItemTotalExpertise(link)
+        local attackpower = AAI_GetItemTotalAttackPowerWithDps(item_link)
+        local critchance = AAI_GetItemTotalCritChance(item_link)
+        local hitchance = AAI_GetItemTotalHitChance(item_link)
+        local spellcritchance = AAI_GetItemTotalSpellCritChance(item_link)
+        local expertise = AAI_GetItemTotalExpertise(item_link)
 
-    if attackpower > 0 then
-        GameTooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
-    end
-    if expertise > 0 then
-        GameTooltip:AddDoubleLine("Effective Expertise", AAI_Round(expertise * 100, 2))
-    end
-    if critchance > 0 then
-        GameTooltip:AddDoubleLine("Effective Crit Chance", AAI_Round(critchance * 100,2) .. "%")
-    end
-    if hitchance > 0 then
-        GameTooltip:AddDoubleLine("Effective Hit Chance", AAI_Round(hitchance * 100,2) .. "%")
-    end
-    if spellcritchance > 0 then
-        GameTooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
-    end
-    if competing_melee_link then
-        GameTooltip:AddDoubleLine("Melee Power Delta",   AAI_SetColor(AAI_Round(meleepowerdelta,   2), meleepowerdelta   < 0 and "FF0000" or "00FF00"))
-    end
-    if competing_healing_link then
-        GameTooltip:AddDoubleLine("Healing Power Delta", AAI_SetColor(AAI_Round(healingpowerdelta, 2), healingpowerdelta < 0 and "FF0000" or "00FF00"))
+        if attackpower > 0 then
+            GameTooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
+        end
+        if expertise > 0 then
+            GameTooltip:AddDoubleLine("Effective Expertise", AAI_Round(expertise * 100, 2))
+        end
+        if critchance > 0 then
+            GameTooltip:AddDoubleLine("Effective Crit Chance", AAI_Round(critchance * 100,2) .. "%")
+        end
+        if hitchance > 0 then
+            GameTooltip:AddDoubleLine("Effective Hit Chance", AAI_Round(hitchance * 100,2) .. "%")
+        end
+        if spellcritchance > 0 then
+            GameTooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
+        end
+
+        for spec_name, description in pairs({melee = "Melee Score Delta", heal = "Healing Score Delta"}) do
+            local competing_item_link, score_delta, provided_score, competing_score = AAI_GetItemScoreComparison(item_link, compete_with_equipped, spec_name)
+            GameTooltip:AddDoubleLine(description,   AAI_SetColor(AAI_Round(score_delta,   2), score_delta   < 0 and "FF0000" or "00FF00"))
+        end
     end
 
-    link = AAI_CleanItemLinkForDatabase(link)
-    if aai_item_tags[link] ~= nil then
-        for key, value in pairs(aai_item_tags[link]) do
-            if not (aai_item_tags_global[link] and aai_item_tags_global[link][key]) then
+    item_link = AAI_CleanItemLinkForDatabase(item_link)
+    if aai_item_tags[item_link] ~= nil then
+        for key, value in pairs(aai_item_tags[item_link]) do
+            if not (aai_item_tags_global[item_link] and aai_item_tags_global[item_link][key]) then
                 GameTooltip:AddLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)))
             end
         end
     end
-    if aai_item_tags_global[link] ~= nil then
-        for key, value in pairs(aai_item_tags_global[link]) do
+    if aai_item_tags_global[item_link] ~= nil then
+        for key, value in pairs(aai_item_tags_global[item_link]) do
             GameTooltip:AddDoubleLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)), AAI_SetColor("Global", "FFFFFF"))
         end
     end
