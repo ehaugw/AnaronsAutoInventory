@@ -42,7 +42,7 @@ local get_stat_api_key = {
     spellhit = "spell hit rating",
     spellcrit = "spell critical hit rating",
     spellhealing = "healing",
-    spelldamage = "damage spells",
+    spelldamage = "spell damage",
     intellect = "intellect",
     expertiserating = "expertise rating"
 }
@@ -272,8 +272,10 @@ function AAI_GetItemSpec(item_link)
         return "melee"
     elseif AAI_GetItemTotalSpellHealing(item_link) > 0 then
         return "heal"
+    elseif AAI_GetItemTotalSpellDamage(item_link) >= max(0, AAI_GetItemTotalSpellHealing(item_link)) then
+        return "spell"
     else
-        return nil
+        return "tank"
     end
 end
 
