@@ -41,8 +41,31 @@ local function CoreFrame_OnEvent(self, event, ...)
 end
 
 
-function AAI_AddTooltipTags()
-    local _, item_link = GameTooltip:GetItem()
+function AAI_SetComparetooltip(tooltip_self, anchorFrame)
+    -- taken from https://github.com/tomrus88/BlizzardInterfaceCode/blob/master/Interface/FrameXML/GameTooltip.lua
+    local tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(tooltip_self, anchorFrame);
+    local primaryItemShown, secondaryItemShown = shoppingTooltip1:SetCompareItem(shoppingTooltip2, tooltip);
+    GameTooltip_AnchorComparisonTooltips(tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2, primaryItemShown, secondaryItemShown);
+
+    -- private code
+    if primaryItemShown then
+        local _, item_link = GameTooltip:GetItem()
+        local competing_item_link = AAI_GetCompetingItemFromInventory(item_link, "melee")
+
+        if competing_item_link then
+            shoppingTooltip1:SetCompareItem(shoppingTooltip2, tooltip);
+            shoppingTooltip1:ClearLines()
+            shoppingTooltip1:SetHyperlink(competing_item_link)
+
+            AAI_AddTooltipInformation(shoppingTooltip1, competing_item_link, true)
+            shoppingTooltip1:Show()
+        end
+    end
+
+end
+
+
+function AAI_AddTooltipInformation(tooltip, item_link, compare)
 
     if AAI_GetItemSlots(item_link) ~= nil then
         compete_with_equipped = IsShiftKeyDown()
@@ -54,24 +77,28 @@ function AAI_AddTooltipTags()
         local expertise = AAI_GetItemTotalExpertise(item_link)
 
         if attackpower > 0 then
-            GameTooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
+            tooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
         end
         if expertise > 0 then
-            GameTooltip:AddDoubleLine("Effective Expertise", AAI_Round(expertise * 100, 2))
+            tooltip:AddDoubleLine("Effective Expertise", AAI_Round(expertise * 100, 2))
         end
         if critchance > 0 then
-            GameTooltip:AddDoubleLine("Effective Crit Chance", AAI_Round(critchance * 100,2) .. "%")
+            tooltip:AddDoubleLine("Effective Crit Chance", AAI_Round(critchance * 100,2) .. "%")
         end
         if hitchance > 0 then
-            GameTooltip:AddDoubleLine("Effective Hit Chance", AAI_Round(hitchance * 100,2) .. "%")
+            tooltip:AddDoubleLine("Effective Hit Chance", AAI_Round(hitchance * 100,2) .. "%")
         end
         if spellcritchance > 0 then
-            GameTooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
+            tooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
         end
 
-        for spec_name, description in pairs({melee = "Melee Score Delta", heal = "Healing Score Delta"}) do
-            local competing_item_link, score_delta, provided_score, competing_score = AAI_GetItemScoreComparison(item_link, compete_with_equipped, spec_name)
-            GameTooltip:AddDoubleLine(description,   AAI_SetColor(AAI_Round(score_delta,   2), score_delta   < 0 and "FF0000" or "00FF00"))
+        if compare then
+            for spec_name, description in pairs({melee = "Melee Score Delta", heal = "Healing Score Delta"}) do
+                local competing_item_link, score_delta, provided_score, competing_score = AAI_GetItemScoreComparison(item_link, compete_with_equipped, spec_name)
+                if provided_score > 0 then
+                    tooltip:AddDoubleLine(description,   AAI_SetColor(AAI_Round(score_delta,   2), score_delta   < 0 and "FF0000" or "00FF00"))
+                end
+            end
         end
     end
 
@@ -79,15 +106,27 @@ function AAI_AddTooltipTags()
     if aai_item_tags[item_link] ~= nil then
         for key, value in pairs(aai_item_tags[item_link]) do
             if not (aai_item_tags_global[item_link] and aai_item_tags_global[item_link][key]) then
-                GameTooltip:AddLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)))
+                tooltip:AddLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)))
             end
         end
     end
     if aai_item_tags_global[item_link] ~= nil then
         for key, value in pairs(aai_item_tags_global[item_link]) do
-            GameTooltip:AddDoubleLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)), AAI_SetColor("Global", "FFFFFF"))
+            tooltip:AddDoubleLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)), AAI_SetColor("Global", "FFFFFF"))
         end
     end
+end
+
+
+function AAI_AddTooltipTags()
+    local _, item_link = GameTooltip:GetItem()
+
+    if IsAltKeyDown() then
+        AAI_SetComparetooltip(GameTooltip, GameTooltip)
+    end
+
+    AAI_AddTooltipInformation(GameTooltip, item_link, true)
+
 end
 
 

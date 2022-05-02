@@ -1,24 +1,26 @@
 local spec_evaluators = {
     melee = function(item_link)
+        local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
+
         local a, b, _ = UnitAttackPower("player") -- unbuffed
-        local unequipped_base = a + b - AAI_GetItemTotalAttackPowerWithDps(AAI_GetCompetingItemEquipped(item_link))
+        local power = a + b - AAI_GetItemTotalAttackPower(competing_item_link)
 
         return (
-            unequipped_base  + AAI_GetItemTotalAttackPowerWithDps(item_link)
+            power  + AAI_GetItemTotalAttackPowerWithDps(item_link)
         ) * (
             1 + AAI_GetItemTotalCritChance(item_link) * (1 + AAI_GetImpaleRank() * 0.1)
         ) / (
             1 - AAI_GetItemTotalExpertise(item_link)
         ) / (
             1 - AAI_GetItemTotalHitChance(item_link)
-        ) + (unequipped_base + AAI_GetItemTotalAttackPower(item_link)) * AAI_GetDeepWoundsRank()
+        ) + (power + AAI_GetItemTotalAttackPower(item_link)) * AAI_GetDeepWoundsRank()
     end,
 
     heal = function(item_link)
-        local unequipped_base = 538*2.5/1.5 + GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))
+        local power = 538*2.5/1.5 + GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))
 
         return (
-            unequipped_base + AAI_GetItemTotalSpellHealing(item_link)
+            power + AAI_GetItemTotalSpellHealing(item_link)
         ) * (
             1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
         ) / (
