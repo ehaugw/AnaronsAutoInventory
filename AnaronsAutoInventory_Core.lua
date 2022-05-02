@@ -17,7 +17,8 @@ local function OnAddonLoadedCore(self)
     AAI_print("Anaron's Auto Inventory was loaded")
     AAI_OnAddonLoadedTags(self)
     AAI_OnAddonLoadedWarn(self)
-    -- AAI_OnAddonLoadedSpec(self)
+    AAI_OnAddonLoadedSpec(self)
+    AAI_OnAddonLoadedStat(self)
 end
 
 local function CoreFrame_OnEvent(self, event, ...)

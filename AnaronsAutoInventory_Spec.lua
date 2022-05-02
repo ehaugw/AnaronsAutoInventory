@@ -1,9 +1,20 @@
+function AAI_OnAddonLoadedSpec(instance)
+    aai_spec_settings = aai_spec_settings or {}
+end
+
+
 local spec_evaluators = {
     melee = function(item_link)
         local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
 
         local a, b, _ = UnitAttackPower("player") -- unbuffed
         local power = a + b - AAI_GetItemTotalAttackPower(competing_item_link)
+
+        local hit_chance = AAI_GetItemTotalHitChance(item_link)
+        if IsControlKeyDown() and hit_chance > 0 then
+            local total_hit_chance = GetCombatRatingBonus(CR_HIT_MELEE) / 100 - AAI_GetItemTotalHitChance(competing_item_link) 
+            hit_chance = max(0, min(AAI_GetHitCap() - total_hit_chance, hit_chance))
+        end
 
         return (
             power  + AAI_GetItemTotalAttackPowerWithDps(item_link)
@@ -14,7 +25,7 @@ local spec_evaluators = {
         ) / (
             1 - AAI_GetItemTotalExpertise(item_link)
         ) / (
-            1 - AAI_GetItemTotalHitChance(item_link)
+            1 - hit_chance
         ) + (power + AAI_GetItemTotalAttackPower(item_link)) * AAI_GetDeepWoundsRank()
     end,
 
@@ -57,4 +68,13 @@ function AAI_GetTalentRankForClass(class, spec, talent)
     return 0
 end
 
+
+function AAI_GetHitCap()
+    local _, player_class = UnitClass("player")
+    if string.lower(player_class) == "paladin" then
+        return 6.5 / 100
+    else
+        return nil
+    end
+end
 

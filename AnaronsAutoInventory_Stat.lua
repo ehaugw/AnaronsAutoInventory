@@ -1,3 +1,8 @@
+function AAI_OnAddonLoadedStat(instance)
+    aai_stat_settings = aai_stat_settings or {}
+end
+
+
 local item_slot_table = {
     --Source: http://wowwiki.wikia.com/wiki/ItemEquipLoc
     ["INVTYPE_AMMO"] =           { 0 },
@@ -179,12 +184,12 @@ function AAI_DpsToAttackPower(dps)
 end
 
 
-function AAI_GetItemTotalAttackPowerWithDps(item_link)
-    return AAI_GetItemTotalAttackPower(item_link, true)
+function AAI_GetItemTotalAttackPowerWithDps(item_link, blessing_of_kings)
+    return AAI_GetItemTotalAttackPower(item_link, true, blessing_of_kings)
 end
 
 
-function AAI_GetItemTotalAttackPower(item_link, include_dps)
+function AAI_GetItemTotalAttackPower(item_link, include_dps, blessing_of_kings)
     return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attackpower") + (include_dps and AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps")) or 0)
 end
 
@@ -268,11 +273,11 @@ function AAI_GetCompetingItemEquipped(item_link)
 end
 
 
-function AAI_GetItemStat(item_link, stat)
+function AAI_GetItemStat(item_link, stat, blessing_of_kings)
     local stat_table = AAI_GetItemStats(item_link)
     local value = stat_table and stat_table[get_stat_api_key[stat]] or 0
     if AAI_HasValue({"strength", "stamina", "agility", "intellect", "spirit"}, stat) then
-        -- value = value * 1.1
+        if blessing_of_kings or aai_stat_settings["blessingofkings"] then value = value * 1.1 end
     end
     return value
 end

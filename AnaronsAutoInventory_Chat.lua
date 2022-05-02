@@ -27,7 +27,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         distinct    = "prepend to tag to remove other occurences of the provided tags for the same item slot before applying them to items",
         equip       = "equip all items with a given tag",
         gearset     = "remove the provided tag from all items and add it to each equipped item",
-        playerwarn  = "Set a note about a players negative behaviour"
+        playerwarn  = "Set a note about a players negative behaviour",
+        stats       = "configure how stats are calculated",
     }
 
 
