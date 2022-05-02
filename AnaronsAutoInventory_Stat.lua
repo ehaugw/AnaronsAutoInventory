@@ -217,7 +217,7 @@ end
 function AAI_GetCompetingItemFromInventory(item_link, tag)
     local item_slots = AAI_GetItemSlots(item_link)
     for bag, slot, link in AAI_InventoryIterator("inventory") do
-        if AAI_HasTag(link, tag) and AAI_GetItemSlots(link) == item_slots then
+        if AAI_HasTag(link, tag) and AAI_GetItemSlots(link)[1] == item_slots[1] then
             return link
         end
     end
