@@ -17,6 +17,7 @@ local function OnAddonLoadedCore(self)
     AAI_print("Anaron's Auto Inventory was loaded")
     AAI_OnAddonLoadedTags(self)
     AAI_OnAddonLoadedWarn(self)
+    -- AAI_OnAddonLoadedSpec(self)
 end
 
 local function CoreFrame_OnEvent(self, event, ...)
@@ -79,12 +80,16 @@ function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
         local hitchance = AAI_GetItemTotalHitChance(item_link)
         local spellcritchance = AAI_GetItemTotalSpellCritChance(item_link)
         local expertise = AAI_GetItemTotalExpertise(item_link)
+        local haste = AAI_GetItemTotalHaste(item_link)
 
         if attackpower > 0 then
             tooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
         end
         if expertise > 0 then
-            tooltip:AddDoubleLine("Effective Expertise", AAI_Round(expertise * 100, 2))
+            tooltip:AddDoubleLine("Effective Expertise", AAI_Round(expertise * 100, 2) .. "%")
+        end
+        if haste > 0 then
+            tooltip:AddDoubleLine("Effective Haste", AAI_Round(haste * 100, 2) .. "%")
         end
         if critchance > 0 then
             tooltip:AddDoubleLine("Effective Crit Chance", AAI_Round(critchance * 100,2) .. "%")

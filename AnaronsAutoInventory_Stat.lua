@@ -44,7 +44,8 @@ local get_stat_api_key = {
     spellhealing = "healing",
     spelldamage = "spell damage",
     intellect = "intellect",
-    expertiserating = "expertise rating"
+    expertiserating = "expertise rating",
+    hasterating = "haste rating"
 }
 
 
@@ -102,6 +103,23 @@ function AAI_IntellectToSpellCritChance(ability_score)
     local mod = mod_dict[string.lower(player_class)]
 
     return ability_score * mod
+end
+
+
+function AAI_HasterRatingPerHaste(rating)
+    local level = UnitLevel("player")
+    local scalars = {
+        {0,  1 / 0.2        * 1.398734},
+        {10, 1 / 0.7        * 1.398734},
+        {15, 1 / 1.88476    * 1.398734},
+        {20, 1 / 3.230272   * 1.398734},
+        {30, 1 / 5.922166   * 1.398734},
+        {40, 1 / 8.610086   * 1.398734},
+        {50, 1 / 11.308562  * 1.398734},
+        {60, 1 / 14.0       * 1.398734},
+        {70, 1 / 22.1       * 1.398734},
+    }
+    return AAI_Interpolate(scalars, level) * rating
 end
 
 
@@ -173,6 +191,11 @@ end
 
 function AAI_GetItemTotalCritChance(item_link)
     return (AAI_AgilityToCritChance(AAI_GetItemStat(item_link, "agility")) + AAI_CritRatingToCritChance(AAI_GetItemStat(item_link, "critrating"))) / 100
+end
+
+
+function AAI_GetItemTotalHaste(item_link)
+    return (AAI_HasterRatingPerHaste(AAI_GetItemStat(item_link, "hasterating"))) / 100
 end
 
 

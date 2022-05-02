@@ -9,6 +9,8 @@ local spec_evaluators = {
             power  + AAI_GetItemTotalAttackPowerWithDps(item_link)
         ) * (
             1 + AAI_GetItemTotalCritChance(item_link) * (1 + AAI_GetImpaleRank() * 0.1)
+        ) * (
+            1 + AAI_GetItemTotalHaste(item_link) * 0.75
         ) / (
             1 - AAI_GetItemTotalExpertise(item_link)
         ) / (
