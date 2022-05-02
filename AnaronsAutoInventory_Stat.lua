@@ -270,10 +270,10 @@ end
 function AAI_GetItemSpec(item_link)
     if AAI_GetItemTotalAttackPower(item_link) > 0 then
         return "melee"
-    elseif AAI_GetItemTotalSpellHealing(item_link) > 0 then
-        return "heal"
     elseif AAI_GetItemTotalSpellDamage(item_link) >= max(0, AAI_GetItemTotalSpellHealing(item_link)) then
         return "spell"
+    elseif AAI_GetItemTotalSpellHealing(item_link) > 0 then
+        return "heal"
     else
         return "tank"
     end
