@@ -30,12 +30,10 @@ local spec_evaluators = {
 }
 
 
-function AAI_GetItemScoreComparison(item_link, compete_with_equipped, spec_name)
-    local competing_item_link   = compete_with_equipped and AAI_GetCompetingItemEquipped(item_link) or AAI_GetCompetingItemFromInventory(item_link, spec_name)
-
+function AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
     local this_score = spec_evaluators[spec_name](item_link)
     local competing_score = spec_evaluators[spec_name](competing_item_link)
-    return competing_item_link, this_score - competing_score, this_score, competing_score
+    return this_score - competing_score, this_score, competing_score
 end
 
 

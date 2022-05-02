@@ -50,25 +50,29 @@ function AAI_SetComparetooltip(tooltip_self, anchorFrame)
     -- private code
     if primaryItemShown then
         local _, item_link = GameTooltip:GetItem()
-        local competing_item_link = AAI_GetCompetingItemFromInventory(item_link, "melee")
 
-        if competing_item_link then
-            shoppingTooltip1:SetCompareItem(shoppingTooltip2, tooltip);
-            shoppingTooltip1:ClearLines()
-            shoppingTooltip1:SetHyperlink(competing_item_link)
+        local item_spec = AAI_GetItemSpec(item_link)
+        if item_spec then
+            local competing_item_link = AAI_GetCompetingItemFromInventory(item_link, item_spec)
 
-            AAI_AddTooltipInformation(shoppingTooltip1, competing_item_link, true)
-            shoppingTooltip1:Show()
+            if competing_item_link then
+                shoppingTooltip1:SetCompareItem(shoppingTooltip2, tooltip);
+                shoppingTooltip1:ClearLines()
+                shoppingTooltip1:SetHyperlink(competing_item_link)
+
+                AAI_AddTooltipInformation(shoppingTooltip1, competing_item_link, item_spec)
+                shoppingTooltip1:Show()
+            end
         end
     end
 
 end
 
 
-function AAI_AddTooltipInformation(tooltip, item_link, compare)
+function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
 
     if AAI_GetItemSlots(item_link) ~= nil then
-        compete_with_equipped = IsShiftKeyDown()
+        compete_with_equipped = item_spec == nil and IsShiftKeyDown()
 
         local attackpower = AAI_GetItemTotalAttackPowerWithDps(item_link)
         local critchance = AAI_GetItemTotalCritChance(item_link)
@@ -92,12 +96,12 @@ function AAI_AddTooltipInformation(tooltip, item_link, compare)
             tooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
         end
 
-        if compare then
-            for spec_name, description in pairs({melee = "Melee Score Delta", heal = "Healing Score Delta"}) do
-                local competing_item_link, score_delta, provided_score, competing_score = AAI_GetItemScoreComparison(item_link, compete_with_equipped, spec_name)
-                if provided_score > 0 then
-                    tooltip:AddDoubleLine(description,   AAI_SetColor(AAI_Round(score_delta,   2), score_delta   < 0 and "FF0000" or "00FF00"))
-                end
+        for spec_name, description in pairs({melee = "Melee Score Delta", heal = "Healing Score Delta"}) do
+            local competing_item_link = compete_with_equipped and AAI_GetCompetingItemEquipped(item_link) or AAI_GetCompetingItemFromInventory(item_link, item_spec or spec_name)
+
+            local score_delta, provided_score, competing_score = AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
+            if provided_score > 0 then
+                tooltip:AddDoubleLine(description,   AAI_SetColor(AAI_Round(score_delta,   2), score_delta   < 0 and "FF0000" or "00FF00"))
             end
         end
     end
@@ -125,7 +129,7 @@ function AAI_AddTooltipTags()
         AAI_SetComparetooltip(GameTooltip, GameTooltip)
     end
 
-    AAI_AddTooltipInformation(GameTooltip, item_link, true)
+    AAI_AddTooltipInformation(GameTooltip, item_link, IsAltKeyDown() and AAI_GetItemSpec(item_link) or nil)
 
 end
 
