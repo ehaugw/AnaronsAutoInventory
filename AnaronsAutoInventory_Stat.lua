@@ -267,6 +267,17 @@ function AAI_GetItemStats(item_link)
 end
 
 
+function AAI_GetItemSpec(item_link)
+    if AAI_GetItemTotalAttackPower(item_link) > 0 then
+        return "melee"
+    elseif AAI_GetItemTotalSpellHealing(item_link) > 0 then
+        return "heal"
+    else
+        return nil
+    end
+end
+
+
 -- local get_stat_api_key = {
 --     dps = "ITEM_MOD_DAMAGE_PER_SECOND_SHORT",
 --     attackpower = "ITEM_MOD_ATTACK_POWER_SHORT",
