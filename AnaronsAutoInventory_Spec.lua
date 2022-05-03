@@ -78,3 +78,38 @@ function AAI_GetHitCap()
     end
 end
 
+
+function AAI_CalculateYellowDps(dps, period, crit, attack_power, haste)
+    dps = dps + attack_power / 14
+
+    local actual_period = period / (1 + haste / 100)
+    local effective_judgement_cd = 8 --AAI_GetCooldownBetweenSwings(8, actual_period)
+
+    local proc_per_minute = 7
+    local damage = dps * period * (1 + crit / 100)
+    local white = damage / actual_period
+    local soc_rate = 1 * period * 7 / 60 * period / actual_period
+    local soc = damage * 0.7 * soc_rate / effective_judgement_cd
+    local sob = white * 0.35
+    local sob_twist = damage * 0.35 * soc_rate / effective_judgement_cd
+    local crusader_strike = damage * 1.1 / 6
+    local judgement = 346 / effective_judgement_cd * (1 + crit / 100)
+
+    local total = (white + sob + sob_twist + sob + crusader_strike + judgement)
+
+    print(string.format("White DPS: %s (%s)", white, AAI_Round(white / total * 100, 1)))
+    print(string.format("SoC DPS: %s (%s)", soc, AAI_Round(soc / total * 100, 1)))
+    -- print(string.format("SoB DPS: %s (%s)", sob, AAI_Round(sob / total * 100, 1)))
+    -- print(string.format("SoB Twist DPS: %s (%s)", sob_twist, AAI_Round(sob_twist / total * 100, 1)))
+    print(string.format("SoB Total DPS: %s (%s)", sob + sob_twist, AAI_Round((sob + sob_twist) / total * 100, 1)))
+    print(string.format("Crusader Strike DPS: %s (%s)", crusader_strike, AAI_Round(crusader_strike / total * 100, 1)))
+    print(string.format("Judgement DPS: %s (%s)", judgement, AAI_Round(judgement / total * 100, 1)))
+    print(string.format("Total DPS: %s", total))
+end
+
+
+function AAI_GetCooldownBetweenSwings(cooldown, period)
+    return period * ceil(cooldown / period)
+end
+
+
