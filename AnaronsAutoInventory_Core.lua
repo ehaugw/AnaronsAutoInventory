@@ -32,7 +32,28 @@ local function CoreFrame_OnEvent(self, event, ...)
         AAI_UseAllTaggedItems("inventory", "junk", true, false)
 
     elseif event == "BANKFRAME_OPENED" then
-        AAI_UseAllTaggedItems("inventory", "bank", false, false)
+        AAI_MoveToDesiredBag(
+            AAI_InventoryIterator("inventory"),
+            AAI_BagIterator(11, true),
+            function(item_link)
+                return AAI_HasTag(item_link, "bank") and AAI_HasTag(item_link, "engineering")
+            end
+        )
+        AAI_MoveToDesiredBag(
+            AAI_InventoryIterator("inventory"),
+            AAI_BagIterator(5, true),
+            function(item_link)
+                return AAI_HasTag(item_link, "bank") and AAI_HasTag(item_link, "engineering")
+            end
+        )
+        AAI_MoveToDesiredBag(
+            AAI_InventoryIterator("inventory"),
+            AAI_InventoryIterator("bank"),
+            function(item_link)
+                return AAI_HasTag(item_link, "bank")
+            end
+        )
+        -- AAI_UseAllTaggedItems("inventory", "bank", false, false)
         AAI_ResupplyItems()
 
     elseif event == "START_LOOT_ROLL" or event == "CONFIRM_LOOT_ROLL" or event == "PLAYER_ENTERING_WORLD" then

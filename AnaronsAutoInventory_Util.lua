@@ -135,29 +135,79 @@ function AAI_GetInventoryStackInfo(bag, slot)
 end
 
 
-function AAI_EquipmentIterator()
+function AAI_BagSlotToItemLink(bag)
+    return GetInventoryItemLink("player", ContainerIDToInventoryID(bag))
+end
+
+
+function AAI_BagCanContainItem(bag, item_link)
+    if bag == 0 or bag == -1 then return true end
+    local bag_family = GetItemFamily(AAI_BagSlotToItemLink(bag))
+    return bag_family == 0 or bit.band(bag_family, GetItemFamily(item_link)) ~= 0
+end
+
+function AAI_EquipmentIterator(reverse)
     local inventory_tuple = {}
     for slot = 1, 19 do
         local item_link = GetInventoryItemLink("player", slot)
-        if item_link then
-            table.insert(inventory_tuple, {slot, item_link})
+        -- if item_link then
+        if reverse then
+            table.insert(inventory_tuple, 0, {bag, slot, item_link})
+        else
+            table.insert(inventory_tuple, {bag, slot, item_link})
         end
+        -- end
     end
     return AAI_ForEachUnpack(inventory_tuple)
 end
 
 
-function AAI_InventoryIterator(inventory)
+function AAI_InventoryIterator(inventory, reverse)
     local inventory_tuple = {}
     local container_ids = AAI_GetInventoryBags(inventory)
+
+    -- if include_equipment then
+    --     local bag = 0
+    --     for slot=-3-19,-3-1 do
+    --         local item_link = GetContainerItemLink(bag, slot)
+    --         -- if item_link then
+    --         if reverse then
+    --             table.insert(inventory_tuple, 0, {bag, slot, item_link})
+    --         else
+    --             table.insert(inventory_tuple, {bag, slot, item_link})
+    --         end
+    --     end
+    -- end
 
     for _, bag in ipairs(container_ids) do
         for slot=1,GetContainerNumSlots(bag),1 do
             local item_link = GetContainerItemLink(bag, slot)
-            if item_link then
+            -- if item_link then
+            if reverse then
+                table.insert(inventory_tuple, 0, {bag, slot, item_link})
+            else
                 table.insert(inventory_tuple, {bag, slot, item_link})
             end
+            -- end
         end
+    end
+
+    return AAI_ForEachUnpack(inventory_tuple)
+end
+
+
+function AAI_BagIterator(bag, reverse)
+    local inventory_tuple = {}
+
+    for slot=1,GetContainerNumSlots(bag),1 do
+        local item_link = GetContainerItemLink(bag, slot)
+        -- if item_link then
+        if reverse then
+            table.insert(inventory_tuple, 1, {bag, slot, item_link})
+        else
+            table.insert(inventory_tuple, {bag, slot, item_link})
+        end
+        -- end
     end
 
     return AAI_ForEachUnpack(inventory_tuple)
