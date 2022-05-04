@@ -277,6 +277,20 @@ function AAI_ForEachUnpack(tab)
 end
 
 
+function AAI_GroupUnion(tab1, tab2)
+    local union = {}
+    for _, value in ipairs(tab1) do
+        table.insert(union, value)
+    end
+    for _, value in ipairs(tab2) do
+        if not AAI_HasValue(union, value) then
+            table.insert(union, value)
+        end
+    end
+    return union
+end
+
+
 function AAI_GroupIntersect(tab1, tab2)
     local intersection = {}
     for _, value in ipairs(tab1) do

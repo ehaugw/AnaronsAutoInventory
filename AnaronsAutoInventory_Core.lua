@@ -30,7 +30,7 @@ local function CoreFrame_OnEvent(self, event, ...)
         end
 
     elseif event == "MERCHANT_SHOW" then
-        AAI_UseAllTaggedItems("inventory", "junk", true, false)
+        AAI_UseAllTaggedItems("inventory", {"junk"}, true, false)
 
     elseif event == "BANKFRAME_OPENED" then
         AAI_DepositItemsToBank(true)

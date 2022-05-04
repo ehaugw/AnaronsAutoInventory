@@ -29,6 +29,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         gearset     = "remove the provided tag from all items and add it to each equipped item",
         playerwarn  = "Set a note about a players negative behaviour",
         stats       = "configure how stats are calculated",
+        exact       = "prepent to use to only use items with the exact provided tags",
     }
 
 
@@ -39,6 +40,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     local debug = false
     local replace =false
     local distinct = false
+    local exact = false
 
     while true do
         local should_break = true
@@ -47,6 +49,13 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
             operation, option = AAI_GetLeftWord(option)
             should_break = false
         end
+
+        if operation == "exact" then
+            exact = true
+            operation, option = AAI_GetLeftWord(option)
+            should_break = false
+        end
+
 
         if operation == "distinct" then
             distinct = true
@@ -229,8 +238,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
         for _, tag in pairs(tags) do
             AAI_print("Used items tagged as " .. AAI_SetColor(tag, AAI_GetTagColor(tag)) .. "...")
-            AAI_UseAllTaggedItems(inventory, tag, false, forced)
         end
+        AAI_UseAllTaggedItems(inventory, tags, false, forced, exact)
 
     elseif operation == "auction" then
         stack_size, option = AAI_GetLeftWord(option)

@@ -125,10 +125,10 @@ function AAI_CountInBag(inventory, item_link)
 end
 
 
-function AAI_UseAllTaggedItems(inventory, tag, destructive, forced)
+function AAI_UseAllTaggedItems(inventory, tags, destructive, forced, exact)
     for bag, slot, item_link in AAI_InventoryIterator(inventory) do
         _, _, locked = GetContainerItemInfo(bag, slot)
-        if not locked and AAI_HasTag(item_link, tag) then 
+        if not locked and ((not exact and AAI_HasTags(item_link, tags)) or (exact and AAI_HasTagsExact(item_link, tags))) then 
             -- precious items can not be destroyed without "forced"
             if forced or not (AAI_HasTag(item_link, "precious") and destructive) then
                 -- Equipment has a GCD in combat and can therefore not be used unless it is in destructive mode
@@ -226,13 +226,22 @@ function AAI_HasTag(item, tag)
 end
 
 
-function AAI_HasTags(item, tags)
+function AAI_HasTagsExact(item, tags)
+    item = AAI_CleanItemLinkForDatabase(item)
+    local all_tags = AAI_GroupUnion(AAI_GetKeysFromTable(aai_item_tags[item] or {}), AAI_GetKeysFromTable(aai_item_tags_global[item] or {}))
+    return #tags == #all_tags and #tags == #AAI_GroupIntersect(tags, all_tags)
+end
+
+
+function AAI_HasTags(item, tags, require_all_tags)
     for _, tag in ipairs(tags) do
-        if AAI_HasTag(item, tag) then
+        if not require_all_tags and AAI_HasTag(item, tag) then
             return true
+        elseif require_all_tags and not AAI_HasTag(item, tag) then
+            return false
         end
     end
-    return false
+    return require_all_tags
 end
 
 
