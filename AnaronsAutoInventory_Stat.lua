@@ -282,7 +282,7 @@ end
 
 function AAI_GetItemStat(item_link, stat, blessing_of_kings)
     local stat_table = AAI_GetItemStats(item_link)
-    local value = stat_table and stat_table[get_stat_api_key[stat]] or 0
+    local value = stat_table and stat_table[get_stat_api_key[stat] or stat] or 0
     if AAI_HasValue({"strength", "stamina", "agility", "intellect", "spirit"}, stat) then
         if blessing_of_kings or aai_stat_settings["blessingofkings"] then value = value * 1.1 end
     end
@@ -303,7 +303,9 @@ end
 
 
 function AAI_GetItemSpec(item_link)
-    if AAI_GetItemTotalAttackPower(item_link) > 0 then
+    if AAI_GetItemStat(item_link, "shield block rating") > 0 or AAI_GetItemStat(item_link, "dodge rating") > 0 or AAI_GetItemStat(item_link, "parry rating") > 0 or AAI_GetItemStat(item_link, "defense rating") > 0 then
+        return "tank"
+    elseif AAI_GetItemTotalAttackPower(item_link) > 0 then
         return "melee"
     elseif AAI_GetItemTotalSpellDamage(item_link) >= max(0, AAI_GetItemTotalSpellHealing(item_link)) then
         return "spell"
