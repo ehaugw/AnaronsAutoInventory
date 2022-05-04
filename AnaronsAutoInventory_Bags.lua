@@ -1,21 +1,37 @@
 function AAI_OnAddonLoadedBags(instance)
     aai_bag_preferences = aai_bag_preferences or {tags = {}, items = {}}
+    aai_cached_bank = aai_cached_bank or {}
 end
 
 
-function AAI_OnBankFrameOpened()
+function AAI_CacheBank()
+    local cleared = false
+    for _, _, item_link in AAI_InventoryIterator("bank") do
+        if item_link then
+            if not cleared then
+                aai_cached_bank = {}
+                cleared = true
+                AAI_print("Updated bank cache")
+            end
+            table.insert(aai_cached_bank, item_link)
+        end
+    end
+end
+
+
+function AAI_DepositItemsToBank(require_bank_tag)
     for tag, preferences in pairs(aai_bag_preferences["tags"]) do
         for _, bag in pairs(preferences) do
             AAI_MoveToDesiredBag(
                 AAI_InventoryIterator("inventory"),
                 AAI_BagIterator(bag, true),
                 function(item_link)
-                    return AAI_HasTag(item_link, "bank") and AAI_HasTag(item_link, tag)
+                    return not require_bank_tag or AAI_HasTag(item_link, "bank") and AAI_HasTag(item_link, tag)
                 end
             )
         end
     end
-    -- AAI_UseAllTaggedItems("inventory", "bank", false, false)
+    AAI_UseAllTaggedItems("inventory", "bank", false, false)
     AAI_ResupplyItems()
 end
 

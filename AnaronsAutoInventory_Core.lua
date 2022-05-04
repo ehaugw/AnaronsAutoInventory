@@ -33,7 +33,7 @@ local function CoreFrame_OnEvent(self, event, ...)
         AAI_UseAllTaggedItems("inventory", "junk", true, false)
 
     elseif event == "BANKFRAME_OPENED" then
-        AAI_OnBankFrameOpened()
+        AAI_DepositItemsToBank(true)
     elseif event == "START_LOOT_ROLL" or event == "CONFIRM_LOOT_ROLL" or event == "PLAYER_ENTERING_WORLD" then
         AAI_HandleRoll(event, args)
     elseif event == "PARTY_MEMBERS_CHANGED" or event == "GROUP_ROSTER_UPDATE" then
