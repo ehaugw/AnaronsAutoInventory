@@ -26,7 +26,7 @@
 ## Author: Anaron
 ## Version: 1.0.0
 ## DefaultState: enabled
-## SavedVariablesPerCharacter: aai_item_tags, aai_spec_settings, aai_stat_settings
+## SavedVariablesPerCharacter: aai_item_tags, aai_spec_settings, aai_stat_settings, aai_bag_preferences
 ## SavedVariables: aai_tag_colors, aai_item_tags_global, aai_warn_players, aai_warn_guilds
 
 AnaronsAutoInventory_Chat.lua

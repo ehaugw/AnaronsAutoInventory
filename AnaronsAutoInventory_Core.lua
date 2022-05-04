@@ -19,6 +19,7 @@ local function OnAddonLoadedCore(self)
     AAI_OnAddonLoadedWarn(self)
     AAI_OnAddonLoadedSpec(self)
     AAI_OnAddonLoadedStat(self)
+    AAI_OnAddonLoadedBags(self)
 end
 
 local function CoreFrame_OnEvent(self, event, ...)
@@ -32,30 +33,7 @@ local function CoreFrame_OnEvent(self, event, ...)
         AAI_UseAllTaggedItems("inventory", "junk", true, false)
 
     elseif event == "BANKFRAME_OPENED" then
-        AAI_MoveToDesiredBag(
-            AAI_InventoryIterator("inventory"),
-            AAI_BagIterator(11, true),
-            function(item_link)
-                return AAI_HasTag(item_link, "bank") and AAI_HasTag(item_link, "engineering")
-            end
-        )
-        AAI_MoveToDesiredBag(
-            AAI_InventoryIterator("inventory"),
-            AAI_BagIterator(5, true),
-            function(item_link)
-                return AAI_HasTag(item_link, "bank") and AAI_HasTag(item_link, "engineering")
-            end
-        )
-        AAI_MoveToDesiredBag(
-            AAI_InventoryIterator("inventory"),
-            AAI_InventoryIterator("bank"),
-            function(item_link)
-                return AAI_HasTag(item_link, "bank")
-            end
-        )
-        -- AAI_UseAllTaggedItems("inventory", "bank", false, false)
-        AAI_ResupplyItems()
-
+        AAI_OnBankFrameOpened()
     elseif event == "START_LOOT_ROLL" or event == "CONFIRM_LOOT_ROLL" or event == "PLAYER_ENTERING_WORLD" then
         AAI_HandleRoll(event, args)
     elseif event == "PARTY_MEMBERS_CHANGED" or event == "GROUP_ROSTER_UPDATE" then
