@@ -251,7 +251,7 @@ function AAI_GetCompetingItemFromInventory(item_link, tag)
             end
         end
     end
-    for _, link in pairs(aai_cached_bank) do
+    for _, _, link in AAI_ForEachUnpack(aai_cached_bank) do
         if AAI_HasTag(link, tag) and AAI_GetItemSlots(link)[1] == item_slots[1] then
             return link
         end

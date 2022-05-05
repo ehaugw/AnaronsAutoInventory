@@ -127,110 +127,6 @@ end
 AAI_print_original = AAI_print
 
 
--- WOW ITEM AND INVENTORY HANDLING
-function AAI_GetInventoryStackInfo(bag, slot)
-    local texture, item_count, locked, quality, readable, lootable, item_link = GetContainerItemInfo(bag, slot);
-    local itemName, _, _, _, _, _, _, item_stack_max = GetItemInfo(item_link)
-    return item_link, item_count, item_stack_max
-end
-
-
-function AAI_BagSlotToItemLink(bag)
-    return GetInventoryItemLink("player", ContainerIDToInventoryID(bag))
-end
-
-
-function AAI_BagCanContainItem(bag, item_link)
-    if bag == 0 or bag == -1 then return true end
-    local bag_family = GetItemFamily(AAI_BagSlotToItemLink(bag))
-    return bag_family == 0 or bit.band(bag_family, GetItemFamily(item_link)) ~= 0
-end
-
-function AAI_EquipmentIterator(reverse)
-    local inventory_tuple = {}
-    for slot = 1, 19 do
-        local item_link = GetInventoryItemLink("player", slot)
-        -- if item_link then
-        if reverse then
-            table.insert(inventory_tuple, 0, {bag, slot, item_link})
-        else
-            table.insert(inventory_tuple, {bag, slot, item_link})
-        end
-        -- end
-    end
-    return AAI_ForEachUnpack(inventory_tuple)
-end
-
-
-function AAI_InventoryIterator(inventory, reverse)
-    local inventory_tuple = {}
-    local container_ids = AAI_GetInventoryBags(inventory)
-
-    -- if include_equipment then
-    --     local bag = 0
-    --     for slot=-3-19,-3-1 do
-    --         local item_link = GetContainerItemLink(bag, slot)
-    --         -- if item_link then
-    --         if reverse then
-    --             table.insert(inventory_tuple, 0, {bag, slot, item_link})
-    --         else
-    --             table.insert(inventory_tuple, {bag, slot, item_link})
-    --         end
-    --     end
-    -- end
-
-    for _, bag in ipairs(container_ids) do
-        for slot=1,GetContainerNumSlots(bag),1 do
-            local item_link = GetContainerItemLink(bag, slot)
-            -- if item_link then
-            if reverse then
-                table.insert(inventory_tuple, 0, {bag, slot, item_link})
-            else
-                table.insert(inventory_tuple, {bag, slot, item_link})
-            end
-            -- end
-        end
-    end
-
-    return AAI_ForEachUnpack(inventory_tuple)
-end
-
-
-function AAI_BagIterator(bag, reverse)
-    local inventory_tuple = {}
-
-    for slot=1,GetContainerNumSlots(bag),1 do
-        local item_link = GetContainerItemLink(bag, slot)
-        -- if item_link then
-        if reverse then
-            table.insert(inventory_tuple, 1, {bag, slot, item_link})
-        else
-            table.insert(inventory_tuple, {bag, slot, item_link})
-        end
-        -- end
-    end
-
-    return AAI_ForEachUnpack(inventory_tuple)
-end
-
-
-function AAI_GetInventoryBags(inventory)
-    local container_ids = {}
-    if inventory == "inventory" then
-        container_ids = {0, 1, 2, 3, 4}
-    elseif inventory == "bank" then
-        container_ids = {-1}
-        local bank_slots, _ = GetNumBankSlots()
-        if bank_slots then
-            for bank_bag_id = 5, 5 + bank_slots, 1 do
-                table.insert(container_ids, bank_bag_id)
-            end
-        end
-    end
-    return container_ids
-end
-
-
 -- GENERAL TABLE OPERATIONS
 function AAI_HasValue (tab, val)
     for index, value in pairs(tab) do
@@ -251,24 +147,22 @@ function AAI_GetKeysFromTable(tab)
 end
 
 
-function AAI_ForEach(tab)
-    local i = 0
-    local n = table.getn(tab)
-
-    return function()
-        i = i + 1
-        if i <= n then
-            return tab[i]
-        end
-    end
-end
-
-
 function AAI_ForEachUnpack(tab)
     local i = 0
     local n = table.getn(tab)
+    local recover = 0
 
-    return function()
+    return function(options)
+        if options and options.recover then
+            i = recover
+            recover = 0
+            return
+        elseif options and options.reset then
+            recover = i
+            i = 0
+            return
+        end
+
         i = i + 1
         if i <= n then
             return unpack(tab[i])
