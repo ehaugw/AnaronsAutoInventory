@@ -151,24 +151,23 @@ end
 
 
 function AAI_InventoryIterator(inventory, reverse)
-    local slot = nil
+    local bag_iterator = nil
     local bags_index = nil
     local bags = AAI_GetInventoryBags(inventory)
     local reversed = reverse
 
-    local recover_slot = nil
+    local recover_bag_iterator = nil
     local recover_bags_index = nil
+
     local step = reversed and -1 or 1
     
     return function(options)
         if options and options.recover then
-            slot = recover_slot
+            bag_iterator = recover_bag_iterator
             bags_index = recover_bags_index
             return
         elseif options and options.reset then
-            recover_slot = slot
-            slot = nil
-
+            recover_bag_iterator = bag_iterator
             recover_bags_index = bags_index
             bags_index = nil
             return
@@ -176,26 +175,19 @@ function AAI_InventoryIterator(inventory, reverse)
 
         if bags_index == nil then
             bags_index = reversed and #bags or 1
-            slot = nil
+            bag_iterator = AAI_BagIterator(bags[bags_index], reversed)
         end
 
-        local bag = bags[bags_index]
-        local bag_space = GetContainerNumSlots(bags[bags_index]) 
-
-        if slot == nil then
-            slot = reversed and bag_space or 1
-        else
-            slot = slot + step
-            if slot < 1 or slot > bag_space then
-                bags_index = bags_index + step
-                if bags_index < 1 or bags_index > #bags then
-                    return
-                end
-                slot = reversed and GetContainerNumSlots(bags[bags_index])  or 1
+        local bag, slot, item_link = bag_iterator()
+        if bag == nil then
+            bags_index = bags_index + step
+            if bags_index < 1 or bags_index > #bags then
+                return
             end
+            bag_iterator = AAI_BagIterator(bags[bags_index], reversed)
+            bag, slot, item_link = bag_iterator()
         end
-
-        return bag, slot, GetContainerItemLink(bag, slot)
+        return bag, slot, item_link
     end
 end
 
@@ -205,6 +197,7 @@ function AAI_BagIterator(bag, reverse)
     local reversed = reverse
     local iterated_bag = bag
     local recover = nil
+    local bag_space = GetContainerNumSlots(iterated_bag) 
 
     return function(options)
         if options and options.recover then
@@ -217,10 +210,10 @@ function AAI_BagIterator(bag, reverse)
         end
 
         if slot == nil then
-            slot = reversed and GetContainerNumSlots(iterated_bag) or 1
+            slot = reversed and bag_space or 1
         else
             slot = slot + (reversed and -1 or 1)
-            if slot < 1 or slot > GetContainerNumSlots(iterated_bag) then
+            if slot < 1 or slot > bag_space then
                 return
             end
         end
