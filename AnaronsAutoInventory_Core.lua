@@ -44,7 +44,7 @@ local function CoreFrame_OnEvent(self, event, ...)
     elseif event == "PARTY_MEMBERS_CHANGED" or event == "GROUP_ROSTER_UPDATE" then
         AAI_WarnAboutPartyMembers()
     elseif event =="ITEM_LOCK_CHANGED" then
-
+        AAI_ItemLockChanged(unpack(args))
     end
 end
 

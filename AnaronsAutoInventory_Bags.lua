@@ -9,6 +9,37 @@ function AAI_GetCachedInventoryIterator(inventory, reverse)
 end
 
 
+function AAI_ItemLockChanged(source_bag, slot)
+    if slot then
+        local _, _, locked = GetContainerItemInfo(source_bag, slot);
+        if not locked then
+            local inventory = AAI_GetBagInventory(source_bag)
+            local inventory_iterator = AAI_InventoryIterator(inventory)
+            local next_bag, next_slot, item_link = inventory_iterator()
+
+            while next_bag ~= source_bag or next_slot ~= slot do
+                if not item_link then
+                    return -- this means that the item was not auto put into the container
+                end
+                next_bag, next_slot, item_link = inventory_iterator()
+            end
+            for tag, preferences in pairs(aai_bag_preferences["tags"]) do
+                if AAI_HasTag(item_link, tag) then
+                    for _, bag in pairs(preferences) do
+                        if source_bag ~= bag and AAI_GetBagInventory(bag) == inventory then
+                            AAI_MoveToDesiredBag(
+                                AAI_ForEachUnpack({{source_bag, slot, item_link}}),
+                                AAI_BagIterator(bag, true),
+                                function(item_link) return true end
+                            )
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
 
 function AAI_ItemTableFromIterator(source_iterator)
     local result = {}
@@ -51,7 +82,7 @@ end
 function AAI_DepositItemsToBank(require_bank_tag)
     for tag, preferences in pairs(aai_bag_preferences["tags"]) do
         for _, bag in pairs(preferences) do
-            if AAI_HasValue(AAI_GetInventoryBags("bank"), bag) then
+            if AAI_GetBagInventory(bag) == "bank" and AAI_HasValue(AAI_GetInventoryBags("bank"), bag) then
                 AAI_MoveToDesiredBag(
                     AAI_InventoryIterator("inventory"),
                     AAI_BagIterator(bag, true),
@@ -237,3 +268,14 @@ function AAI_GetInventoryBags(inventory)
     end
     return container_ids
 end
+
+
+function AAI_GetBagInventory(bag)
+    for _, inventory in pairs({"inventory", "bank"}) do
+        if AAI_HasValue(AAI_GetInventoryBags(inventory), bag) then
+            return inventory
+        end
+    end
+    AAI_print("Unknown inventory!")
+end
+
