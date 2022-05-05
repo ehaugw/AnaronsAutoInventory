@@ -8,6 +8,7 @@ addon_data.core.core_frame = CreateFrame("Frame", addon_name .. "CoreFrame", UIP
 addon_data.core.core_frame:RegisterEvent("ADDON_LOADED")
 addon_data.core.core_frame:RegisterEvent("MERCHANT_SHOW")
 addon_data.core.core_frame:RegisterEvent("BANKFRAME_OPENED")
+addon_data.core.core_frame:RegisterEvent("BANKFRAME_CLOSED")
 addon_data.core.core_frame:RegisterEvent("START_LOOT_ROLL")
 addon_data.core.core_frame:RegisterEvent("CONFIRM_LOOT_ROLL")
 addon_data.core.core_frame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -34,6 +35,8 @@ local function CoreFrame_OnEvent(self, event, ...)
 
     elseif event == "BANKFRAME_OPENED" then
         AAI_DepositItemsToBank(true)
+    elseif event == "BANKFRAME_CLOSED" then
+        AAI_CacheInventory("bank")
     elseif event == "START_LOOT_ROLL" or event == "CONFIRM_LOOT_ROLL" or event == "PLAYER_ENTERING_WORLD" then
         AAI_HandleRoll(event, args)
     elseif event == "PARTY_MEMBERS_CHANGED" or event == "GROUP_ROSTER_UPDATE" then

@@ -32,26 +32,24 @@ function AAI_ItemTableFromIterator(source_iterator)
 end
 
 
-function AAI_CacheBank()
+function AAI_CacheInventory(inventory)
     local cleared = false
 
-    for bag, slot, item_link in AAI_InventoryIterator("bank") do
+    for bag, slot, item_link in AAI_InventoryIterator(inventory) do
         if item_link then
             local _, stack_size = AAI_GetInventoryStackInfo(bag, slot)
             if not cleared then
-                aai_item_cache["bank"] = {}
+                aai_item_cache[inventory] = {}
                 cleared = true
-                AAI_print("Updated bank cache")
+                -- AAI_print(string.format("Updated %s cache", inventory))
             end
-            table.insert(aai_item_cache["bank"], {bag, slot, item_link, stack_size})
+            table.insert(aai_item_cache[inventory], {bag, slot, item_link, stack_size})
         end
     end
 end
 
 
 function AAI_DepositItemsToBank(require_bank_tag)
-    AAI_CacheBank()
-
     for tag, preferences in pairs(aai_bag_preferences["tags"]) do
         for _, bag in pairs(preferences) do
             AAI_MoveToDesiredBag(

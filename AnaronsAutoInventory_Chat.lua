@@ -30,7 +30,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         playerwarn  = "Set a note about a players negative behaviour",
         stats       = "configure how stats are calculated",
         exact       = "prepent to use to only use items with the exact provided tags",
-        cache       = "cache an inventory"
+        cache       = "cache an inventory",
+        count       = "prepend to cache to print a count of items in the provided inventory"
     }
 
 
@@ -42,6 +43,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     local replace =false
     local distinct = false
     local exact = false
+    local print_count = false
 
     while true do
         local should_break = true
@@ -95,6 +97,12 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
             should_break = false
         end
 
+        if operation == "count" then
+            print_count = true
+            operation, option = AAI_GetLeftWord(option)
+            should_break = false
+        end
+
         if operation == "bank" then
             inventory = "bank"
             operation, option = AAI_GetLeftWord(option)
@@ -117,6 +125,33 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         AAI_print = AAI_print_original
         AAI_CleanUpItemTagDatabase()
         AAI_print("Restored AAI")
+
+    elseif operation == "cache" then
+        if not print_count then
+            AAI_CacheInventory(inventory)
+            AAI_print(string.format("Updated %s cache", inventory))
+        else
+            local links, tags = AAI_StringToItemLinksAndWords(option)
+            for _, tag in pairs(tags) do
+                local count = 0
+                for _, _, item_link_cached, stack_size in AAI_GetCachedInventoryIterator(inventory) do
+                    if AAI_HasTag(item_link_cached, tag) then
+                        count = count + stack_size
+                    end
+                end
+                print(string.format("%s x%s", tag, count))
+            end
+            for _, item_link in pairs(links) do
+                local count = 0
+
+                for _, _, item_link_cached, stack_size in AAI_GetCachedInventoryIterator(inventory) do
+                    if AAI_ClearItemLinkLevel(item_link_cached) == AAI_ClearItemLinkLevel(item_link) then
+                        count = count + stack_size
+                    end
+                end
+                print(string.format("%s x%s", item_link, count))
+            end
+        end
 
     elseif operation == "warn" then
         AAI_WarnAboutPartyMembers()
