@@ -155,7 +155,6 @@ function AAI_ForEachUnpack(tab)
     return function(options)
         if options and options.recover then
             i = recover
-            recover = 0
             return
         elseif options and options.reset then
             recover = i
