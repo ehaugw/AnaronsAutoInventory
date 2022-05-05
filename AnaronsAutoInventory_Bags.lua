@@ -1,12 +1,13 @@
 local inventory_lock_table = {}
 
 local function set_inventory_lock_status(bag, slot, flag) 
-    inventory_lock_table[string.format("%s,%s", bag, slot)] = flag
+    inventory_lock_table[string.format("%s,%s", bag, slot)] = time() + (flag and 10 or 0)
 end
 
 
 local function get_inventory_lock_status(bag, slot) 
-    return inventory_lock_table[string.format("%s,%s", bag, slot)] or false
+    local timestamp = inventory_lock_table[string.format("%s,%s", bag, slot)]
+    return (timestamp ~= nil) and (time() - timestamp <= 0)
 end
 
 
@@ -117,32 +118,35 @@ function AAI_MoveToDesiredBag(source_iterator, target_bag_iterator, evaluator)
     target_bag_iterator{reset = true}
     local item_table = AAI_ItemTableFromIterator(target_bag_iterator)
     target_bag_iterator{recover = true}
+    source_iterator{reset = true}
 
     for bag, slot, item_link in source_iterator do
         if item_link and evaluator(item_link) then
             local _, stack_size, stack_size_max = AAI_GetInventoryStackInfo(bag, slot)
 
-            local deposited = false
-            if item_table[item_link] then
-                for target_bag, target_slot, target_item_link, target_stack_size in AAI_ForEachUnpack(item_table[item_link]) do
-                    local _, _, locked = GetContainerItemInfo(target_bag, target_slot);
-                    if not locked and not get_inventory_lock_status(target_bag, target_slot) and target_stack_size + stack_size <= stack_size_max then
-                        PickupContainerItem(bag, slot)
-                        PickupContainerItem(target_bag, target_slot)
-                        set_inventory_lock_status(target_bag, target_slot, true)
-                        deposited = true
-                        break
+            if not select(3, GetContainerItemInfo(bag, slot)) then
+                local deposited = false
+                if item_table[item_link] then
+                    for target_bag, target_slot, target_item_link, target_stack_size in AAI_ForEachUnpack(item_table[item_link]) do
+                        local _, _, locked = GetContainerItemInfo(target_bag, target_slot);
+                        if not locked and not get_inventory_lock_status(target_bag, target_slot) and target_stack_size + stack_size <= stack_size_max then
+                            PickupContainerItem(bag, slot)
+                            PickupContainerItem(target_bag, target_slot)
+                            set_inventory_lock_status(target_bag, target_slot, true)
+                            deposited = true
+                            break
+                        end
                     end
                 end
-            end
-            if not deposited then
-                for target_bag, target_slot, target_item_link in target_bag_iterator do -- note that this iterator is not reset between each source iteratation
-                    local _, _, locked = GetContainerItemInfo(target_bag, target_slot);
-                    if not locked and not get_inventory_lock_status(target_bag, target_slot) and target_item_link == nil then
-                        PickupContainerItem(bag, slot)
-                        PickupContainerItem(target_bag, target_slot)
-                        set_inventory_lock_status(target_bag, target_slot, true)
-                        break
+                if not deposited then
+                    for target_bag, target_slot, target_item_link in target_bag_iterator do -- note that this iterator is not reset between each source iteratation
+                        local _, _, locked = GetContainerItemInfo(target_bag, target_slot);
+                        if not locked and not get_inventory_lock_status(target_bag, target_slot) and target_item_link == nil then
+                            PickupContainerItem(bag, slot)
+                            PickupContainerItem(target_bag, target_slot)
+                            set_inventory_lock_status(target_bag, target_slot, true)
+                            break
+                        end
                     end
                 end
             end
