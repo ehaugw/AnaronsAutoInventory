@@ -30,6 +30,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         playerwarn  = "Set a note about a players negative behaviour",
         stats       = "configure how stats are calculated",
         exact       = "prepent to use to only use items with the exact provided tags",
+        cache       = "cache an inventory"
     }
 
 

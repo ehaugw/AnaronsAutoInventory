@@ -1,7 +1,13 @@
 function AAI_OnAddonLoadedBags(instance)
     aai_bag_preferences = aai_bag_preferences or {tags = {}, items = {}}
-    aai_cached_bank = aai_cached_bank or {}
+    aai_item_cache = aai_item_cache or {}
 end
+
+
+function AAI_GetCachedInventoryIterator(inventory, reverse)
+    return aai_item_cache[inventory] and AAI_ForEachUnpack(aai_item_cache[inventory], reverse) or function() return nil end
+end
+
 
 
 function AAI_ItemTableFromIterator(source_iterator)
@@ -28,15 +34,16 @@ end
 
 function AAI_CacheBank()
     local cleared = false
+
     for bag, slot, item_link in AAI_InventoryIterator("bank") do
         if item_link then
             local _, stack_size = AAI_GetInventoryStackInfo(bag, slot)
             if not cleared then
-                aai_cached_bank = {}
+                aai_item_cache["bank"] = {}
                 cleared = true
                 AAI_print("Updated bank cache")
             end
-            table.insert(aai_cached_bank, {bag, slot, item_link, stack_size})
+            table.insert(aai_item_cache["bank"], {bag, slot, item_link, stack_size})
         end
     end
 end
