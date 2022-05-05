@@ -52,13 +52,15 @@ end
 function AAI_DepositItemsToBank(require_bank_tag)
     for tag, preferences in pairs(aai_bag_preferences["tags"]) do
         for _, bag in pairs(preferences) do
-            AAI_MoveToDesiredBag(
-                AAI_InventoryIterator("inventory"),
-                AAI_BagIterator(bag, true),
-                function(item_link)
-                    return not require_bank_tag or AAI_HasTag(item_link, "bank") and AAI_HasTag(item_link, tag)
-                end
-            )
+            if AAI_HasValue(AAI_GetInventoryBags("bank"), bag) then
+                AAI_MoveToDesiredBag(
+                    AAI_InventoryIterator("inventory"),
+                    AAI_BagIterator(bag, true),
+                    function(item_link)
+                        return not require_bank_tag or AAI_HasTag(item_link, "bank") and AAI_HasTag(item_link, tag)
+                    end
+                )
+            end
         end
     end
     AAI_UseAllTaggedItems("inventory", {"bank"}, false, false)

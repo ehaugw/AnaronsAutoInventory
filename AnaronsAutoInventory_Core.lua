@@ -12,6 +12,8 @@ addon_data.core.core_frame:RegisterEvent("BANKFRAME_CLOSED")
 addon_data.core.core_frame:RegisterEvent("START_LOOT_ROLL")
 addon_data.core.core_frame:RegisterEvent("CONFIRM_LOOT_ROLL")
 addon_data.core.core_frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+addon_data.core.core_frame:RegisterEvent("ITEM_LOCK_CHANGED")
+
 
 
 local function OnAddonLoadedCore(self)
@@ -41,6 +43,8 @@ local function CoreFrame_OnEvent(self, event, ...)
         AAI_HandleRoll(event, args)
     elseif event == "PARTY_MEMBERS_CHANGED" or event == "GROUP_ROSTER_UPDATE" then
         AAI_WarnAboutPartyMembers()
+    elseif event =="ITEM_LOCK_CHANGED" then
+
     end
 end
 
