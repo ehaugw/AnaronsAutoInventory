@@ -31,7 +31,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         stats       = "configure how stats are calculated",
         exact       = "prepent to use to only use items with the exact provided tags",
         cache       = "cache an inventory",
-        count       = "prepend to cache to print a count of items in the provided inventory"
+        count       = "prepend to cache to print a count of items in the provided inventory",
+        bagpreference = "set the prefered bags for a tag"
     }
 
 
@@ -125,6 +126,11 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         AAI_print = AAI_print_original
         AAI_CleanUpItemTagDatabase()
         AAI_print("Restored AAI")
+
+    elseif operation == "bagpreference" then
+        local tag, option = AAI_GetLeftWord(option)
+        local _, tags = AAI_StringToItemLinksAndWords(option)
+        aai_bag_preferences["tags"][tag] = AAI_Map(tags, tonumber, 1)
 
     elseif operation == "cache" then
         if not print_count then
