@@ -5,7 +5,7 @@ end
 
 
 function AAI_GetCachedInventoryIterator(inventory, reverse)
-    return aai_item_cache[inventory] and AAI_ForEachUnpack(aai_item_cache[inventory], reverse) or function() return nil end
+    return aai_item_cache[inventory] and AAI_ForEachUnpack(aai_item_cache[inventory]) or function() return nil end
 end
 
 
@@ -41,7 +41,6 @@ function AAI_CacheInventory(inventory)
             if not cleared then
                 aai_item_cache[inventory] = {}
                 cleared = true
-                -- AAI_print(string.format("Updated %s cache", inventory))
             end
             table.insert(aai_item_cache[inventory], {bag, slot, item_link, stack_size})
         end
@@ -121,60 +120,112 @@ function AAI_BagCanContainItem(bag, item_link)
     return bag_family == 0 or bit.band(bag_family, GetItemFamily(item_link)) ~= 0
 end
 
+
 function AAI_EquipmentIterator(reverse)
-    local inventory_tuple = {}
-    for slot = 1, 19 do
-        local item_link = GetInventoryItemLink("player", slot)
-        -- if item_link then
-        if reverse then
-            table.insert(inventory_tuple, 0, {bag, slot, item_link})
-        else
-            table.insert(inventory_tuple, {bag, slot, item_link})
+    local slot = nil
+    local reversed = reverse
+    local recover = nil
+
+    return function(options)
+        if options and options.recover then
+            slot = recover
+            return
+        elseif options and options.reset then
+            recover = slot
+            slot = nil
+            return
         end
-        -- end
+
+        if slot == nil then
+            slot = reversed and 19 or 1
+        else
+            slot = slot + (reversed and -1 or 1)
+            if slot < 1 or slot > 19 then
+                return
+            end
+        end
+
+        return slot, GetInventoryItemLink("player", slot)
     end
-    return AAI_ForEachUnpack(inventory_tuple)
 end
 
 
 function AAI_InventoryIterator(inventory, reverse)
-    local inventory_tuple = {}
-    local container_ids = AAI_GetInventoryBags(inventory)
+    local slot = nil
+    local bags_index = nil
+    local bags = AAI_GetInventoryBags(inventory)
+    local reversed = reverse
 
-    for _, bag in ipairs(container_ids) do
-        for slot=1,GetContainerNumSlots(bag),1 do
-            local item_link = GetContainerItemLink(bag, slot)
-            -- local _, stack_size = item_link and AAI_GetInventoryStackInfo(bag, slot) or nil
-            -- if item_link then
-            if reverse then
-                table.insert(inventory_tuple, 0, {bag, slot, item_link})
-            else
-                table.insert(inventory_tuple, {bag, slot, item_link})
-            end
-            -- end
+    local recover_slot = nil
+    local recover_bags_index = nil
+    local step = reversed and -1 or 1
+    
+    return function(options)
+        if options and options.recover then
+            slot = recover_slot
+            bags_index = recover_bags_index
+            return
+        elseif options and options.reset then
+            recover_slot = slot
+            slot = nil
+
+            recover_bags_index = bags_index
+            bags_index = nil
+            return
         end
-    end
 
-    return AAI_ForEachUnpack(inventory_tuple)
+        if bags_index == nil then
+            bags_index = reversed and #bags or 1
+            slot = nil
+        end
+
+        local bag = bags[bags_index]
+        local bag_space = GetContainerNumSlots(bags[bags_index]) 
+
+        if slot == nil then
+            slot = reversed and bag_space or 1
+        else
+            slot = slot + step
+            if slot < 1 or slot > bag_space then
+                bags_index = bags_index + step
+                if bags_index < 1 or bags_index > #bags then
+                    return
+                end
+                slot = reversed and GetContainerNumSlots(bags[bags_index])  or 1
+            end
+        end
+
+        return bag, slot, GetContainerItemLink(bag, slot)
+    end
 end
 
 
 function AAI_BagIterator(bag, reverse)
-    local inventory_tuple = {}
+    local slot = nil
+    local reversed = reverse
+    local iterated_bag = bag
+    local recover = nil
 
-    for slot=1,GetContainerNumSlots(bag),1 do
-        local item_link = GetContainerItemLink(bag, slot)
-        -- local _, stack_size = item_link and AAI_GetInventoryStackInfo(bag, slot) or nil
-        -- if item_link then
-        if reverse then
-            table.insert(inventory_tuple, 1, {bag, slot, item_link})
-        else
-            table.insert(inventory_tuple, {bag, slot, item_link})
+    return function(options)
+        if options and options.recover then
+            slot = recover
+            return
+        elseif options and options.reset then
+            recover = slot
+            slot = nil
+            return
         end
-        -- end
-    end
 
-    return AAI_ForEachUnpack(inventory_tuple)
+        if slot == nil then
+            slot = reversed and GetContainerNumSlots(iterated_bag) or 1
+        else
+            slot = slot + (reversed and -1 or 1)
+            if slot < 1 or slot > GetContainerNumSlots(iterated_bag) then
+                return
+            end
+        end
+        return iterated_bag, slot, GetContainerItemLink(bag, slot)
+    end
 end
 
 
