@@ -214,6 +214,11 @@ function AAI_HasTag(item, tag)
             return true
         end
     end
+    if item and tag == "quest" then
+        if select(6, GetItemInfo(item)) == "Quest" then
+            return true
+        end
+    end
 
     local has_tag = false
     if aai_item_tags[item] ~= nil then
