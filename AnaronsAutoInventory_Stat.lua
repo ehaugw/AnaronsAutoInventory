@@ -36,24 +36,6 @@ local item_slot_table = {
 };
 
 
-local get_stat_api_key = {
-    dps = "dps",
-    attackpower = "attack power",
-    critrating = "critical hit rating",
-    hitrating = "hit rating",
-    stamina = "stamina",
-    strength = "strength",
-    agility = "agility",
-    spellhit = "spell hit rating",
-    spellcrit = "spell critical hit rating",
-    spellhealing = "healing",
-    spelldamage = "spell damage",
-    intellect = "intellect",
-    expertiserating = "expertise rating",
-    hasterating = "haste rating"
-}
-
-
 function AAI_StrengthToAttackPower(ability_score)
     local _, player_class = UnitClass("player")
     local mod_dict = {
@@ -190,47 +172,47 @@ end
 
 
 function AAI_GetItemTotalAttackPower(item_link, include_dps, blessing_of_kings)
-    return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attackpower") + (include_dps and AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps")) or 0)
+    return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attack power") + (include_dps and AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps")) or 0)
 end
 
 
 function AAI_GetItemTotalCritChance(item_link)
-    return (AAI_AgilityToCritChance(AAI_GetItemStat(item_link, "agility")) + AAI_CritRatingToCritChance(AAI_GetItemStat(item_link, "critrating"))) / 100
+    return (AAI_AgilityToCritChance(AAI_GetItemStat(item_link, "agility")) + AAI_CritRatingToCritChance(AAI_GetItemStat(item_link, "critical strike rating"))) / 100
 end
 
 
 function AAI_GetItemTotalHaste(item_link)
-    return (AAI_HasterRatingPerHaste(AAI_GetItemStat(item_link, "hasterating"))) / 100
+    return (AAI_HasterRatingPerHaste(AAI_GetItemStat(item_link, "haste rating"))) / 100
 end
 
 
 function AAI_GetItemTotalExpertise(item_link)
-    return (AAI_ExpertiseRatingPerExpertise(AAI_GetItemStat(item_link, "expertiserating"))) / 100
+    return (AAI_ExpertiseRatingPerExpertise(AAI_GetItemStat(item_link, "expertise rating"))) / 100
 end
 
 
 function AAI_GetItemTotalHitChance(item_link)
-    return (AAI_HitRatingToHitChance(AAI_GetItemStat(item_link, "hitrating"))) / 100
+    return (AAI_HitRatingToHitChance(AAI_GetItemStat(item_link, "hit rating"))) / 100
 end
 
 
 function AAI_GetItemTotalSpellDamageAndHealing(item_link)
-    return AAI_GetItemStat(item_link, "spelldamageandhealing") + AAI_GetItemStat(item_link, "intellect") * AAI_HolyGuidanceRank() * 0.07
+    return  AAI_GetItemStat(item_link, "intellect") * AAI_HolyGuidanceRank() * 0.07
 end
 
 
 function AAI_GetItemTotalSpellHealing(item_link)
-    return AAI_GetItemStat(item_link, "spellhealing") + AAI_GetItemTotalSpellDamageAndHealing(item_link)
+    return AAI_GetItemStat(item_link, "healing") + AAI_GetItemTotalSpellDamageAndHealing(item_link)
 end
 
 
 function AAI_GetItemTotalSpellDamage(item_link)
-    return AAI_GetItemStat(item_link, "spelldamage") + AAI_GetItemTotalSpellDamageAndHealing(item_link)
+    return AAI_GetItemStat(item_link, "spell damage") + AAI_GetItemTotalSpellDamageAndHealing(item_link)
 end
 
 
 function AAI_GetItemTotalSpellCritChance(item_link)
-    return (AAI_CritRatingToCritChance(AAI_GetItemStat(item_link, "spellcrit")) + AAI_IntellectToSpellCritChance(AAI_GetItemStat(item_link, "intellect"))) / 100
+    return (AAI_CritRatingToCritChance(AAI_GetItemStat(item_link, "spell critical strike rating")) + AAI_IntellectToSpellCritChance(AAI_GetItemStat(item_link, "intellect"))) / 100
 end
 
 
@@ -282,7 +264,7 @@ end
 
 function AAI_GetItemStat(item_link, stat, blessing_of_kings)
     local stat_table = AAI_GetItemStats(item_link)
-    local value = stat_table and stat_table[get_stat_api_key[stat] or stat] or 0
+    local value = stat_table and stat_table[stat] or 0
     if AAI_HasValue({"strength", "stamina", "agility", "intellect", "spirit"}, stat) then
         if blessing_of_kings or aai_stat_settings["blessingofkings"] then value = value * 1.1 end
     end
@@ -303,7 +285,7 @@ end
 
 
 function AAI_GetItemSpec(item_link)
-    if AAI_GetItemStat(item_link, "shield block rating") > 0 or AAI_GetItemStat(item_link, "dodge rating") > 0 or AAI_GetItemStat(item_link, "parry rating") > 0 or AAI_GetItemStat(item_link, "defense rating") > 0 then
+    if AAI_GetItemStat(item_link, "shield block rating") > 0 or AAI_GetItemStat(item_link, "resilience rating") > 0 or AAI_GetItemStat(item_link, "dodge rating") > 0 or AAI_GetItemStat(item_link, "parry rating") > 0 or AAI_GetItemStat(item_link, "defense rating") > 0 then
         return "tank"
     elseif AAI_GetItemTotalAttackPower(item_link) > 0 then
         return "melee"

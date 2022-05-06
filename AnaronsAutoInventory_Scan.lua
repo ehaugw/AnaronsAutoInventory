@@ -81,7 +81,6 @@ function AAI_GeneraliseTooltipText(text)
     text = string.gsub(text, " *magical *", " ")
     text = string.gsub(text, "healing spells", "healing")
     text = string.gsub(text, "damage spells", "spell damage")
-    text = string.gsub(text, "critical strike", "critical hit")
 
     text = string.gsub(text, "increases your", "increases")
     text = string.gsub(text, "decreases your", "decreases")
