@@ -109,7 +109,6 @@ function AAI_DepositItemsToBank(require_bank_tag)
         end
     end
     AAI_UseAllTaggedItems("inventory", {"bank"}, false, false)
-    AAI_ResupplyItems()
 end
 
 

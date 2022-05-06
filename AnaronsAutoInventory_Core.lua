@@ -15,7 +15,6 @@ addon_data.core.core_frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 addon_data.core.core_frame:RegisterEvent("ITEM_LOCK_CHANGED")
 
 
-
 local function OnAddonLoadedCore(self)
     AAI_print("Anaron's Auto Inventory was loaded")
     AAI_OnAddonLoadedTags(self)
@@ -34,9 +33,11 @@ local function CoreFrame_OnEvent(self, event, ...)
 
     elseif event == "MERCHANT_SHOW" then
         AAI_UseAllTaggedItems("inventory", {"junk"}, true, false)
-
     elseif event == "BANKFRAME_OPENED" then
-        AAI_DepositItemsToBank(true)
+        if not IsShiftKeyDown() then
+            AAI_DepositItemsToBank(true)
+        end
+        AAI_ResupplyItems()
     elseif event == "BANKFRAME_CLOSED" then
         AAI_CacheInventory("bank")
     elseif event == "START_LOOT_ROLL" or event == "CONFIRM_LOOT_ROLL" or event == "PLAYER_ENTERING_WORLD" then
