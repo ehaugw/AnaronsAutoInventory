@@ -179,21 +179,29 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
  
     elseif operation == "display" then
-        local links, tags = AAI_StringToItemLinksAndWords(option)
-        local link_names = AAI_Map(links, GetItemInfo, 1)
+        local mode, option = AAI_GetLeftWord(option)
+        if mode == "bagpreference" then
+            local tag, option = AAI_GetLeftWord(option)
+            print(unpack(aai_bag_preferences["tags"][tag]))
+        elseif mode == "tag" then
+            local links, tags = AAI_StringToItemLinksAndWords(option)
+            local link_names = AAI_Map(links, GetItemInfo, 1)
 
-        for item_link, tag_list in pairs(aai_item_tags) do
-            if (#tags == 0 or #AAI_GroupIntersect(AAI_GetKeysFromTable(tag_list), tags) > 0) and (#links == 0 or AAI_HasValue(link_names, GetItemInfo(item_link))) then
-            -- if table.getn(tags) == 0 or AAI_HasValue(links, item_link) or table.getn(AAI_GroupIntersect(AAI_GetKeysFromTable(tag_list), tags)) > 0 then
-                if debug then
-                    AAI_print(string.format("%s: %s", item_link, item_link:gsub("\124", "")))
-                    for tag, value2 in pairs(tag_list) do
-                        AAI_print(string.format("- %s", tag))
+            for item_link, tag_list in pairs(aai_item_tags) do
+                if (#tags == 0 or #AAI_GroupIntersect(AAI_GetKeysFromTable(tag_list), tags) > 0) and (#links == 0 or AAI_HasValue(link_names, GetItemInfo(item_link))) then
+                -- if table.getn(tags) == 0 or AAI_HasValue(links, item_link) or table.getn(AAI_GroupIntersect(AAI_GetKeysFromTable(tag_list), tags)) > 0 then
+                    if debug then
+                        AAI_print(string.format("%s: %s", item_link, item_link:gsub("\124", "")))
+                        for tag, value2 in pairs(tag_list) do
+                            AAI_print(string.format("- %s", tag))
+                        end
+                    else
+                        AAI_print(item_link)
                     end
-                else
-                    AAI_print(item_link)
                 end
             end
+        else
+            AAI_print("Invalid option for display. Try \"bagpreference\" or \"tag\"")
         end
 
     elseif operation == "help" then
