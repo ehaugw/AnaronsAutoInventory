@@ -32,7 +32,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         exact       = "prepent to use to only use items with the exact provided tags",
         cache       = "cache an inventory",
         count       = "prepend to cache to print a count of items in the provided inventory",
-        bagpreference = "set the prefered bags for a tag"
+        bagpreference = "set the prefered bags for a tag",
+        delete      = "delete all times with the given tags, prepend force to actually delete",
     }
 
 
@@ -278,6 +279,18 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
             AAI_print("Equipping items tagged as " .. AAI_SetColor(tag, AAI_GetTagColor(tag)) .. ".")
             AAI_EquipAllTaggedItems(inventory, tag)
         end
+
+    elseif operation == "delete" then
+        local links, tags = AAI_StringToItemLinksAndWords(option)
+        
+        if table.getn(links) > 0 then
+            AAI_print("You provided item links. This feature has not yet been implemented")
+        end
+
+        for _, tag in pairs(tags) do
+            AAI_print("Delete items tagged as " .. AAI_SetColor(tag, AAI_GetTagColor(tag)) .. "...")
+        end
+        AAI_DeleteAllTaggedItems(inventory, tags, forced, exact)
 
     elseif operation == "use" then
         local links, tags = AAI_StringToItemLinksAndWords(option)

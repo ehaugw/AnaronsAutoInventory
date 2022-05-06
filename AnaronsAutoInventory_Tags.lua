@@ -125,6 +125,20 @@ function AAI_CountInBag(inventory, item_link)
 end
 
 
+function AAI_DeleteAllTaggedItems(inventory, tags, forced, exact)
+    for bag, slot, item_link in AAI_InventoryIterator(inventory) do
+        _, _, locked = GetContainerItemInfo(bag, slot)
+        if not locked and ((not exact and AAI_HasTags(item_link, tags)) or (exact and AAI_HasTagsExact(item_link, tags))) then 
+            AAI_print(string.format("Delete %s", item_link))
+            if forced and not CursorHasItem() then
+                PickupContainerItem(bag, slot)
+                DeleteCursorItem()
+            end
+        end
+    end
+end
+
+
 function AAI_UseAllTaggedItems(inventory, tags, destructive, forced, exact)
     for bag, slot, item_link in AAI_InventoryIterator(inventory) do
         _, _, locked = GetContainerItemInfo(bag, slot)
