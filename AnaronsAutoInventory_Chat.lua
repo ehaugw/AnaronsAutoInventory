@@ -237,7 +237,9 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         for _, tag in pairs(tags) do
             AAI_RenameItemTagInDatabase(tag, nil)
             for index, item_link in AAI_EquipmentIterator() do
-                AAI_AddTag(item_link, tag, false)
+                if item_link then
+                    AAI_AddTag(item_link, tag, false)
+                end
             end
         end
 
