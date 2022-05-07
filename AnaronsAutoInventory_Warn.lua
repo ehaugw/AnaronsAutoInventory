@@ -25,3 +25,8 @@ function AAI_WarnAboutPlayer(name, chat)
         SendChatMessage(string.format("WARNING! I have saved a note regarding %s: %s", name, aai_warn_players[name]), chat)
     end
 end
+
+
+-- AAI_SubscribeEvent("PARTY_MEMBERS_CHANGED", function(...) AAI_WarnAboutPartyMembers() end)
+AAI_SubscribeEvent("GROUP_ROSTER_UPDATE", function(...) AAI_WarnAboutPartyMembers() end)
+

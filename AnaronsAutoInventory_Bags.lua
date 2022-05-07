@@ -1,5 +1,6 @@
 local inventory_lock_table = {}
 
+
 local function set_inventory_lock_status(bag, slot, flag) 
     inventory_lock_table[string.format("%s,%s", bag, slot)] = time() + (flag and 10 or 0)
 end
@@ -156,6 +157,7 @@ end
 
 function AAI_GetInventoryStackInfo(bag, slot)
     local texture, item_count, locked, quality, readable, lootable, item_link = GetContainerItemInfo(bag, slot);
+    if not item_link then return end
     local itemName, _, _, _, _, _, _, item_stack_max = GetItemInfo(item_link)
     return item_link, item_count, item_stack_max
 end
@@ -299,4 +301,46 @@ function AAI_GetBagInventory(bag)
     end
     AAI_print("Unknown inventory!")
 end
+
+
+function AAI_SplitAllStacks(item_link, stack_size)
+    local _item_link = item_link
+    local _stack_size = stack_size
+    local inventory_iterator = AAI_InventoryIterator("inventory")
+    -- local done_slots = {}
+    
+    AAI_SubscribeEvent("ITEM_LOCK_CHANGED", function(_, _, bag, slot)
+        if not select(3, GetContainerItemInfo(bag, slot)) then
+            set_inventory_lock_status(bag, slot, false)
+
+            local item_link, remaining_stacks, max_stack_size = AAI_GetInventoryStackInfo(bag, slot)
+            if item_link == _item_link then
+                if remaining_stacks > _stack_size then
+                    for target_bag, target_slot, target_item_link in inventory_iterator do
+                        if not target_item_link or (false and target_item_link == _item_link and select(2, AAI_GetInventoryStackInfo(target_bag, target_slot)) < _stack_size) then
+                            SplitContainerItem(bag, slot, _stack_size)
+                            PickupContainerItem(target_bag, target_slot)
+
+                            -- set_inventory_lock_status(bag, slot, true)
+                            -- done_slots[string.format("%s,%s", bag, slot)] = {target_bag, target_slot}
+                            -- done_slots[string.format("%s,%s", target_bag, target_slot)] = nil
+                            return
+                        end
+                    end
+                    -- inventory_iterator = AAI_InventoryIterator("inventory")
+                end
+                AAI_UnsubscribeEvent("ITEM_LOCK_CHANGED", "SPLIT_ITERATOR_EVENT_HANDLER")
+                print("done")
+            end
+        end
+    end,
+    "SPLIT_ITERATOR_EVENT_HANDLER"
+    )
+end
+
+
+AAI_SubscribeEvent("BANKFRAME_OPENED", function(...) if not IsShiftKeyDown() then AAI_DepositItemsToBank(true) end AAI_ResupplyItems() end)
+AAI_SubscribeEvent("BANKFRAME_CLOSED", function(...) AAI_CacheInventory("bank") end)
+AAI_SubscribeEvent("ITEM_LOCK_CHANGED", function(_, _, bag, slot) AAI_ItemLockChanged(bag, slot) end)
+AAI_SubscribeEvent("MERCHANT_SHOW", function(...) AAI_UseAllTaggedItems("inventory", {"junk"}, true, false) end)
 

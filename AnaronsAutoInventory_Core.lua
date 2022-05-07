@@ -2,52 +2,40 @@ local addon_name, addon_data = ...
 
 addon_data = {}
 addon_data.core = {}
-
--- Create frame that has the addon loaded event.
-addon_data.core.core_frame = CreateFrame("Frame", addon_name .. "CoreFrame", UIParent)
-addon_data.core.core_frame:RegisterEvent("ADDON_LOADED")
-addon_data.core.core_frame:RegisterEvent("MERCHANT_SHOW")
-addon_data.core.core_frame:RegisterEvent("BANKFRAME_OPENED")
-addon_data.core.core_frame:RegisterEvent("BANKFRAME_CLOSED")
-addon_data.core.core_frame:RegisterEvent("START_LOOT_ROLL")
-addon_data.core.core_frame:RegisterEvent("CONFIRM_LOOT_ROLL")
-addon_data.core.core_frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-addon_data.core.core_frame:RegisterEvent("ITEM_LOCK_CHANGED")
+addon_data.event_frames = {}
 
 
-local function OnAddonLoadedCore(self)
-    AAI_print("Anaron's Auto Inventory was loaded")
-    AAI_OnAddonLoadedTags(self)
-    AAI_OnAddonLoadedWarn(self)
-    AAI_OnAddonLoadedSpec(self)
-    AAI_OnAddonLoadedStat(self)
-    AAI_OnAddonLoadedBags(self)
+function AAI_SubscribeEvent(event, callable, identifier)
+    local name = addon_name .. (identifier or string.gsub(tostring(callable), " ", "")) .. event
+    local frame = addon_data.event_frames[name] or CreateFrame("Frame", name , UIParent)
+    frame:RegisterEvent(event)
+    frame:SetScript("OnEvent", callable)
+    addon_data.event_frames[name] = frame
 end
 
-local function CoreFrame_OnEvent(self, event, ...)
-    local args = {...}
-    if event == "ADDON_LOADED" then
-        if args[1] == "AnaronsAutoInventory" then
-            OnAddonLoadedCore()
-        end
 
-    elseif event == "MERCHANT_SHOW" then
-        AAI_UseAllTaggedItems("inventory", {"junk"}, true, false)
-    elseif event == "BANKFRAME_OPENED" then
-        if not IsShiftKeyDown() then
-            AAI_DepositItemsToBank(true)
-        end
-        AAI_ResupplyItems()
-    elseif event == "BANKFRAME_CLOSED" then
-        AAI_CacheInventory("bank")
-    elseif event == "START_LOOT_ROLL" or event == "CONFIRM_LOOT_ROLL" or event == "PLAYER_ENTERING_WORLD" then
-        AAI_HandleRoll(event, args)
-    elseif event == "PARTY_MEMBERS_CHANGED" or event == "GROUP_ROSTER_UPDATE" then
-        AAI_WarnAboutPartyMembers()
-    elseif event =="ITEM_LOCK_CHANGED" then
-        AAI_ItemLockChanged(unpack(args))
+function AAI_UnsubscribeEvent(event, identifier)
+    local name = addon_name .. identifier .. event
+    local frame = addon_data.event_frames[name]
+    frame:UnregisterEvent(event)
+    print("unsubscribed")
+
+end
+
+
+local function OnAddonLoadedCore(addon_name)
+    if addon_name == "AnaronsAutoInventory" then
+        AAI_print("Anaron's Auto Inventory was loaded")
+        AAI_OnAddonLoadedTags(self)
+        AAI_OnAddonLoadedWarn(self)
+        AAI_OnAddonLoadedSpec(self)
+        AAI_OnAddonLoadedStat(self)
+        AAI_OnAddonLoadedBags(self)
     end
 end
+
+
+AAI_SubscribeEvent("ADDON_LOADED", function(_, _, addon_name) OnAddonLoadedCore(addon_name) end)
 
 
 function AAI_SetComparetooltip(tooltip_self, anchorFrame)
@@ -147,7 +135,5 @@ function AAI_AddTooltipTags()
 end
 
 
--- Set the function that is run on every event.
-addon_data.core.core_frame:SetScript("OnEvent", CoreFrame_OnEvent)
 GameTooltip:HookScript("OnTooltipSetItem", AAI_AddTooltipTags)
 

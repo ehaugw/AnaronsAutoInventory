@@ -40,3 +40,4 @@ AnaronsAutoInventory_Warn.lua
 AnaronsAutoInventory_Scan.lua
 AnaronsAutoInventory_Spec.lua
 AnaronsAutoInventory_Bags.lua
+

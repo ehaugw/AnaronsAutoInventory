@@ -46,3 +46,9 @@ function RollOnLoot(roll_id, roll, ...)
         AAI_AddTag(item_link, "disenchant")
     end
 end
+
+
+AAI_SubscribeEvent("START_LOOT_ROLL",       function(_, event, ...) AAI_HandleRoll(event, {...}) end)
+AAI_SubscribeEvent("CONFIRM_LOOT_ROLL",     function(_, event, ...) AAI_HandleRoll(event, {...}) end)
+AAI_SubscribeEvent("PLAYER_ENTERING_WORLD", function(_, event, ...) AAI_HandleRoll(event, {...}) end)
+
