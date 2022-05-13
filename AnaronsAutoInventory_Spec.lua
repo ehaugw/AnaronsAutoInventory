@@ -18,6 +18,8 @@ local spec_evaluators = {
 
         return (
             power  + AAI_GetItemTotalAttackPowerWithDps(item_link)
+        ) / (
+            1
         ) * (
             1 + AAI_GetItemTotalCritChance(item_link) * (1 + AAI_GetImpaleRank() * 0.1)
         ) * (
@@ -30,10 +32,13 @@ local spec_evaluators = {
     end,
 
     heal = function(item_link)
-        local power = 538*2.5/1.5 + GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))
+        local base_power, cast_time = AAI_GetSavedHealPowerAndCastTime()
+        local power = base_power + (GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))) / 3.5 * cast_time
 
         return (
-            power + AAI_GetItemTotalSpellHealing(item_link)
+            power + (AAI_GetItemTotalSpellHealing(item_link)) / 3.5 * cast_time
+        ) / (
+            cast_time
         ) * (
             1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
         ) / (
@@ -41,6 +46,16 @@ local spec_evaluators = {
         )
     end
 }
+
+
+function AAI_GetSavedHealPowerAndCastTime()
+    local saved = aai_stat_settings["defaultheal"]
+    if saved then
+        return unpack(saved)
+    end
+    AAI_print("Default healing spell is not configurated!")
+    return 500, 1.5
+end
 
 
 function AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
@@ -111,5 +126,4 @@ end
 function AAI_GetCooldownBetweenSwings(cooldown, period)
     return period * ceil(cooldown / period)
 end
-
 

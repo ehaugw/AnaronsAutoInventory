@@ -4,7 +4,7 @@ function AAI_OnAddonLoadedWarn()
 end
 
 
-function AAI_WarnAboutPartyMembers()
+function AAI_WarnAboutPartyMembers(args)
     for i = 1,4 do
         local name = GetUnitName("party" .. i)
         if name then
@@ -28,5 +28,5 @@ end
 
 
 -- AAI_SubscribeEvent("PARTY_MEMBERS_CHANGED", function(...) AAI_WarnAboutPartyMembers() end)
-AAI_SubscribeEvent("GROUP_ROSTER_UPDATE", function(...) AAI_WarnAboutPartyMembers() end)
+AAI_SubscribeEvent("GROUP_ROSTER_UPDATE", function(args, ...) AAI_WarnAboutPartyMembers(args) end)
 

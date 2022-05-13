@@ -97,7 +97,7 @@ function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
             tooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
         end
 
-        for spec_name, description in pairs({melee = "Melee Score Delta", heal = "Healing Score Delta"}) do
+        for spec_name, description in pairs({melee = "Melee Power Delta", heal = "Healing/Second Delta"}) do
             local competing_item_link = compete_with_equipped and AAI_GetCompetingItemEquipped(item_link) or AAI_GetCompetingItemFromInventory(item_link, item_spec or spec_name)
 
             local score_delta, provided_score, competing_score = AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
