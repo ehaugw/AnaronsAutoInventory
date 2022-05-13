@@ -117,7 +117,7 @@ function AAI_GetTooltipLineAfterSplit(item_link)
         local right_text = _G["AAI_ScanningTooltipTextRight"..line_index]:GetText()
 
         left_text = AAI_CleanTooltipText(left_text)
-
+        left_text = AAI_FillEmptyGems(left_text)
         left_text, left_text_2 = AAI_SplitTooltipText(left_text)
 
         table.insert(left_texts, left_text)
@@ -155,6 +155,16 @@ function AAI_CleanTooltipText(text)
     text = string.gsub(text, "spells and effects", "spells_and_effects")
     text = string.gsub(text, "Equip: ", "")
     text = string.gsub(text, " up to ", " ")
+    return text
+end
+
+
+function AAI_FillEmptyGems(text)
+    for _, color in pairs({"red", "blue", "yellow", "meta"}) do
+        if aai_stat_settings["defaultsocket" .. color] then
+            text = string.gsub(text, AAI_TitleCase(color) .. " Socket", aai_stat_settings["defaultsocket" .. color])
+        end
+    end
     return text
 end
 
