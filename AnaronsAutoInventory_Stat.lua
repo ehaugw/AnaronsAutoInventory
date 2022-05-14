@@ -216,6 +216,11 @@ function AAI_GetItemTotalSpellCritChance(item_link)
 end
 
 
+function AAI_GetItemCriticalDamageBonus(item_link)
+    return AAI_GetItemStat(item_link, "critical damage") / 100
+end
+
+
 function AAI_DisplayStatKeys(item_link)
     local stat_table = AAI_GetItemStats(item_link)
     for key, val in pairs(stat_table) do
@@ -285,17 +290,18 @@ end
 
 
 function AAI_GetItemSpec(item_link)
-    if AAI_GetItemStat(item_link, "shield block rating") > 0 or AAI_GetItemStat(item_link, "resilience rating") > 0 or AAI_GetItemStat(item_link, "dodge rating") > 0 or AAI_GetItemStat(item_link, "parry rating") > 0 or AAI_GetItemStat(item_link, "defense rating") > 0 then
-        return "tank"
-    elseif AAI_GetItemTotalAttackPower(item_link) > 0 then
-        return "melee"
-    elseif AAI_GetItemTotalSpellDamage(item_link) >= max(0, AAI_GetItemTotalSpellHealing(item_link)) then
-        return "spell"
-    elseif AAI_GetItemTotalSpellHealing(item_link) > 0 then
-        return "heal"
-    else
-        return "tank"
-    end
+    local tank_stats = AAI_GetItemStat(item_link, "shield block rating") + AAI_GetItemStat(item_link, "resilience rating") + AAI_GetItemStat(item_link, "dodge rating") + AAI_GetItemStat(item_link, "parry rating") + AAI_GetItemStat(item_link, "defense rating")
+    local melee_stats = AAI_GetItemTotalAttackPower(item_link) + (AAI_GetItemTotalCritChance(item_link) + AAI_GetItemTotalHitChance(item_link))*40
+    local spell_stats = AAI_GetItemTotalSpellDamage(item_link)
+    local heal_stats = AAI_GetItemTotalSpellHealing(item_link)
+
+    highest = max(tank_stats, melee_stats, spell_stats, heal_stats)
+
+    if highest == tank_stats then return "tank" end
+    if highest == melee_stats then return "melee" end
+    if highest == spell_stats then return "spell" end
+    if highest == heal_stats then return "heal" end
+
 end
 
 
