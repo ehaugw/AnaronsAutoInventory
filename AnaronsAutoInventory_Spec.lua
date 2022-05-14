@@ -6,11 +6,13 @@ end
 local spec_evaluators = {
     melee = function(item_link)
         local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
+        -- competing_item_link = AAI_ClearItemLinkEnchant(item_link)
 
         local a, b, _ = UnitAttackPower("player") -- unbuffed
         local power = a + b - AAI_GetItemTotalAttackPower(competing_item_link)
 
         local hit_chance = AAI_GetItemTotalHitChance(item_link)
+        local total_crit_chance = GetCritChance() / 100 - AAI_GetItemTotalCritChance(competing_item_link) 
         if IsControlKeyDown() and hit_chance > 0 then
             local total_hit_chance = GetCombatRatingBonus(CR_HIT_MELEE) / 100 - AAI_GetItemTotalHitChance(competing_item_link) 
             hit_chance = max(0, min(AAI_GetHitCap() - total_hit_chance, hit_chance))
@@ -21,7 +23,7 @@ local spec_evaluators = {
         ) / (
             1
         ) * (
-            1 + AAI_GetItemTotalCritChance(item_link) * (1 + AAI_GetImpaleRank() * 0.1)
+            1 + total_crit_chance + AAI_GetItemTotalCritChance(item_link) * (1 + AAI_GetImpaleRank() * 0.1) -- * (1 + AAI_GetItemCriticalDamageBonus(item_link))
         ) * (
             1 + AAI_GetItemTotalHaste(item_link) * 0.75
         ) / (
