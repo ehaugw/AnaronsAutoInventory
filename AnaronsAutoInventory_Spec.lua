@@ -23,7 +23,7 @@ local spec_evaluators = {
         ) / (
             1
         ) * (
-            1 + total_crit_chance + AAI_GetItemTotalCritChance(item_link) * (1 + AAI_GetImpaleRank() * 0.1) -- * (1 + AAI_GetItemCriticalDamageBonus(item_link))
+            1 + (total_crit_chance + AAI_GetItemTotalCritChance(item_link)) * (1 + AAI_GetImpaleRank() * 0.1) * (1 + AAI_GetItemCriticalDamageBonus(item_link))
         ) * (
             1 + AAI_GetItemTotalHaste(item_link) * 0.75
         ) / (
