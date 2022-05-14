@@ -91,6 +91,7 @@ function AAI_GeneraliseTooltipText(text)
     text = string.gsub(text, "improves +(.*) by ([0-9]+)%.", "+ %2 %1")
     text = string.gsub(text, "decreases +(.*) by ([0-9]+)%.", "- %2 %1")
     text = string.gsub(text, "reduces +(.*) by ([0-9]+)%.", "- %2 %1")
+    text = string.gsub(text, "(.*)% +increased", "+ %1")
     text = string.gsub(text, "([0-9]+) armor", "+ %1 armor")
 
     text = string.gsub(text, "%(([^ ]+) damage per second%)", "+ %1 dps")
@@ -170,6 +171,7 @@ end
 
 
 function AAI_SplitTooltipText(text)
+    text = string.gsub(text, "&","and")
     local increases, remainder = string.match(text, "(.*[Ii]ncreases)(.*)")
     if not increases then
         increases, remainder = string.match(text, "(.*[Ii]mproves)(.*)")
