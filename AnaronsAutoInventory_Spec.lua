@@ -8,8 +8,10 @@ local spec_evaluators = {
         local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
         -- competing_item_link = AAI_ClearItemLinkEnchant(item_link)
 
-        local a, b, _ = UnitAttackPower("player") -- unbuffed
-        local power = a + b - AAI_GetItemTotalAttackPower(competing_item_link)
+        -- local a, b, _ = UnitAttackPower("player") -- unbuffed
+        -- local power = a + b - AAI_GetItemTotalAttackPower(competing_item_link)
+        local low, high = UnitDamage("player")
+        local power = (low + high)/2/UnitAttackSpeed("player")*14
 
         local hit_chance = AAI_GetItemTotalHitChance(item_link)
         local total_crit_chance = GetCritChance() / 100 - AAI_GetItemTotalCritChance(competing_item_link) 
@@ -39,6 +41,8 @@ local spec_evaluators = {
 
         return (
             power + (AAI_GetItemTotalSpellHealing(item_link)) / 3.5 * cast_time
+        ) * (
+            1 + AAI_GetItemTotalSpellHaste(item_link)
         ) / (
             cast_time
         ) * (
