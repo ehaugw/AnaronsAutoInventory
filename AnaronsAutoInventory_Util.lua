@@ -77,7 +77,15 @@ end
 
 
 function AAI_CleanItemLinkForDatabase(text)
-    return AAI_ClearItemLinkEnchant(AAI_ClearItemLinkLevel(text))
+    return AAI_ClearItemLinkGems(AAI_ClearItemLinkEnchant(AAI_ClearItemLinkLevel(text)))
+end
+
+
+function AAI_ClearItemLinkGems(text)
+    for i = 3, 6 do
+        text = AAI_ReplaceNumberAtIndex(text, i, "")
+    end
+    return text
 end
 
 
