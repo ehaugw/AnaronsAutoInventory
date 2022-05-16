@@ -2,6 +2,7 @@ AAI_OnAddonLoadedTags = function(instance)
     aai_item_tags = aai_item_tags or {}
     aai_tag_colors = aai_tag_colors or {}
     aai_item_tags_global = aai_item_tags_global or {}
+    AAI_SubscribeEvent("UNIT_HEALTH_FREQUENT", function(...) AAI_ReplaceSwapItems("inventory") end)
 end
 
 
@@ -35,10 +36,11 @@ function AAI_EquipAllTaggedItems(inventory, tag)
     for i = 1, 19 do
         equipped[i] = false
     end
+    local swapped = false
 
     for bag, slot, item_link in AAI_InventoryIterator(inventory) do
         local was_equipped = false
-        if AAI_HasTag(item_link, tag) then 
+        if AAI_HasTag(item_link, tag) and (not AAI_HasTag(item_link, "swap") or not swapped) then 
             local slots = AAI_GetItemSlots(item_link)
 
             for _, equip_to in pairs(slots) do
@@ -46,13 +48,16 @@ function AAI_EquipAllTaggedItems(inventory, tag)
                     equipped[equip_to] = GetInventoryItemLink("player", equip_to)
                 end
                 if not equipped[equip_to] then
+                    if AAI_HasTag(item_link, "swap") then
+                        swapped = true
+                    end
                     EquipItemByName(item_link, equip_to)
                     equipped[equip_to] = item_link
                     was_equipped = true
                     break
                 end
             end
-            if not was_equipped then
+            if not was_equipped and not AAI_HasTag(item_link, "swap") then
                 AAI_print(string.format("There are %s items tagged as %s for that equipment slot, but only %s slots are available:", #slots + 1, AAI_SetColor(tag), #slots))
                 AAI_print(item_link)
                 for _, occupied_slot in pairs(slots) do
@@ -61,6 +66,42 @@ function AAI_EquipAllTaggedItems(inventory, tag)
             end
         end
     end
+end
+
+
+function AAI_ReplaceSwapItems(inventory)
+    if UnitAffectingCombat("player") then
+        return
+    end
+
+    for bag, slot, item_link in AAI_InventoryIterator(inventory) do
+        if AAI_HasTag(item_link, "swap") then
+            local slots = AAI_GetItemSlots(item_link)
+            local cooldown = AAI_GetRemainingCooldown(GetContainerItemCooldown(bag, slot))
+
+            for _, equip_to in pairs(slots) do
+                local competing_item_link = GetInventoryItemLink("player", equip_to)
+                local competing_cooldown = AAI_GetRemainingCooldown(GetInventoryItemCooldown("player", equip_to))
+
+                if AAI_HasTag(competing_item_link, "swap") then
+                    if competing_cooldown > 30 then
+                        if cooldown < competing_cooldown then
+                            EquipItemByName(item_link, equip_to)
+                            return
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+
+function AAI_GetRemainingCooldown(timestamp, cooldown, on_cooldown)
+    if cooldown == 0 then
+        return 0
+    end
+    return cooldown - GetTime() + timestamp
 end
 
 
