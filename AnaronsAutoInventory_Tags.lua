@@ -356,9 +356,9 @@ function AAI_CleanUpItemTagDatabase()
 end
 
 
-function AAI_RenameItemTagInDatabase(from_name, to_name)
+function AAI_RenameItemTagInDatabase(from_name, to_name, condition)
     for item_link, tag_dict in pairs(aai_item_tags) do
-        if AAI_HasTag(item_link, from_name) then
+        if (condition == nil or condition(item_link, from_name, to_name)) and AAI_HasTag(item_link, from_name) then
             if to_name then
                 AAI_AddTag(item_link, to_name)
             end
