@@ -226,6 +226,7 @@ end
 
 
 function AAI_ClearTagForSlots(tag, slots)
+    AAI_RenameItemTagInDatabase(tag, nil, function(item_link, _, _) return AAI_GetItemSlots(item_link) == slots end)
     for _, item_link in AAI_EquipmentIterator("inventory") do
         if AAI_HasTag(item_link, tag) and table.getn(AAI_GroupIntersect(slots, AAI_GetItemSlots(item_link))) > 0 then
             AAI_RemoveTag(item_link, tag)
