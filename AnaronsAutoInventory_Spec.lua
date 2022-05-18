@@ -6,7 +6,6 @@ end
 local spec_evaluators = {
     melee = function(item_link)
         local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
-        -- competing_item_link = AAI_ClearItemLinkEnchant(item_link)
 
         -- local a, b, _ = UnitAttackPower("player") -- unbuffed
         -- local power = a + b - AAI_GetItemTotalAttackPower(competing_item_link)
@@ -93,23 +92,30 @@ end
 function AAI_GetHitCap()
     local _, player_class = UnitClass("player")
     if string.lower(player_class) == "paladin" then
-        return 6.5 / 100
+        return 6 / 100
     else
         return nil
     end
 end
 
 
-function AAI_CalculateYellowDps(dps, period, crit, attack_power, haste)
-    dps = dps + attack_power / 14
+function AAI_CalculateYellowDps()
+    local low, high = UnitDamage("player")
+    local period = UnitAttackSpeed("player")
+    local dps = (low + high)/2/period
+
+    local hit_chance = AAI_GetItemTotalHitChance(item_link)
+    local crit = GetCritChance() / 100 - AAI_GetItemTotalCritChance(competing_item_link) 
+    local haste = GetCombatRatingBonus(CR_HASTE_MELEE)
 
     local actual_period = period / (1 + haste / 100)
-    local effective_judgement_cd = 8 --AAI_GetCooldownBetweenSwings(8, actual_period)
+    local effective_judgement_cd = AAI_GetCooldownBetweenSwings(8, actual_period) / period
 
     local proc_per_minute = 7
     local damage = dps * period * (1 + crit / 100)
     local white = damage / actual_period
     local soc_rate = 1 * period * 7 / 60 * period / actual_period
+    print(soc_rate)
     local soc = damage * 0.7 * soc_rate / effective_judgement_cd
     local sob = white * 0.35
     local sob_twist = damage * 0.35 * soc_rate / effective_judgement_cd
