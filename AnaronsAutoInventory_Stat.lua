@@ -295,7 +295,7 @@ end
 
 
 function AAI_GetItemSpec(item_link)
-    local tank_stats = AAI_GetItemStat(item_link, "shield block rating") + AAI_GetItemStat(item_link, "resilience rating") + AAI_GetItemStat(item_link, "dodge rating") + AAI_GetItemStat(item_link, "parry rating") + AAI_GetItemStat(item_link, "defense rating")
+    local tank_stats = AAI_GetItemStat(item_link, "shield block rating") + AAI_GetItemStat(item_link, "resilience rating") + AAI_GetItemStat(item_link, "dodge rating") + AAI_GetItemStat(item_link, "parry rating") + AAI_GetItemStat(item_link, "defense rating") * 40
     local melee_stats = AAI_GetItemTotalAttackPower(item_link) + (AAI_GetItemTotalCritChance(item_link) + AAI_GetItemTotalHitChance(item_link))*40
     local spell_stats = AAI_GetItemTotalSpellDamage(item_link)
     local heal_stats = AAI_GetItemTotalSpellHealing(item_link)
