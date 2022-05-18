@@ -235,7 +235,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     elseif operation == "gearset" then
         local links, tags = AAI_StringToItemLinksAndWords(option)
         for _, tag in pairs(tags) do
-            AAI_RenameItemTagInDatabase(tag, nil)
+            AAI_RenameItemTagInDatabase(tag, nil, function(item_link, _,_) return not AAI_HasTag(item_link, "swap") end)
             for index, item_link in AAI_EquipmentIterator() do
                 if item_link then
                     AAI_AddTag(item_link, tag, false)
