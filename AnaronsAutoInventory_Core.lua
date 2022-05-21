@@ -18,8 +18,6 @@ function AAI_UnsubscribeEvent(event, identifier)
     local name = addon_name .. identifier .. event
     local frame = addon_data.event_frames[name]
     frame:UnregisterEvent(event)
-    print("unsubscribed")
-
 end
 
 
@@ -70,7 +68,6 @@ function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
 
     if AAI_GetItemSlots(item_link) ~= nil then
         compete_with_equipped = item_spec == nil and IsShiftKeyDown()
-        item_link = AAI_ClearItemLinkEnchant(item_link)
 
         local attackpower = AAI_GetItemTotalAttackPowerWithDps(item_link)
         local critchance = AAI_GetItemTotalCritChance(item_link)
@@ -98,6 +95,7 @@ function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
             tooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
         end
 
+        item_link = AAI_ClearItemLinkEnchant(item_link)
         for spec_name, description in pairs({melee = "Melee Power Delta", heal = "Healing/Second Delta"}) do
             local competing_item_link = compete_with_equipped and AAI_GetCompetingItemEquipped(item_link) or AAI_GetCompetingItemFromInventory(item_link, item_spec or spec_name)
             competing_item_link = AAI_ClearItemLinkEnchant(competing_item_link)
