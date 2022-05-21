@@ -15,41 +15,45 @@ function AAI_GetItemStatsByScanning(item_link)
     local has_empty_socket = false
     
     for left, right in AAI_ForEachTooltipLine(item_link) do
-        text = AAI_GeneraliseTooltipText(left)
+        for _, line in pairs({left, right}) do
+            if line then
+                text = AAI_GeneraliseTooltipText(line)
 
-        local equipped_set_pieces, set_size = string.match(text, ".* %(([0-9]+)/([0-9]+)%)")
-        if equipped_set_pieces then
-            set_pieces = tonumber(equipped_set_pieces)
-        end
+                local equipped_set_pieces, set_size = string.match(text, ".* %(([0-9]+)/([0-9]+)%)")
+                if equipped_set_pieces then
+                    set_pieces = tonumber(equipped_set_pieces)
+                end
 
-        local required_set_pieces, effect = string.match(text, "%(([0-9]+)%) set:(.*)")
-        if required_set_pieces then
-            if set_pieces >= tonumber(required_set_pieces) then
-                text = effect
-            else
-                text = ""
+                local required_set_pieces, effect = string.match(text, "%(([0-9]+)%) set:(.*)")
+                if required_set_pieces then
+                    if set_pieces >= tonumber(required_set_pieces) then
+                        text = effect
+                    else
+                        text = ""
+                    end
+                end
+                
+                local empty_socket = string.match(text, "^[^ ]+ socket$")
+                if empty_socket then
+                    has_empty_socket = true
+                    text = ""
+                end
+                
+                local effect = string.match(text, "socket bonus: (.*)")
+                if effect then
+                    if has_empty_socket then
+                        text = ""
+                    else
+                        text = effect
+                    end
+                end
+
+                local sign, scalar, effect = string.match(text, "^([%+%-]) *([0-9]+%.?[0-9]*) *([^ ].*)")
+                if scalar then
+                    -- effect = string.gsub(effect, " +", "")
+                    gear_bonuses[effect] = (gear_bonuses[effect] or 0) + tonumber(sign .. scalar)
+                end
             end
-        end
-        
-        local empty_socket = string.match(text, "^[^ ]+ socket$")
-        if empty_socket then
-            has_empty_socket = true
-            text = ""
-        end
-        
-        local effect = string.match(text, "socket bonus: (.*)")
-        if effect then
-            if has_empty_socket then
-                text = ""
-            else
-                text = effect
-            end
-        end
-
-        local sign, scalar, effect = string.match(text, "^([%+%-]) *([0-9]+%.?[0-9]*) *([^ ].*)")
-        if scalar then
-            -- effect = string.gsub(effect, " +", "")
-            gear_bonuses[effect] = (gear_bonuses[effect] or 0) + tonumber(sign .. scalar)
         end
     end
     return gear_bonuses
@@ -95,6 +99,7 @@ function AAI_GeneraliseTooltipText(text)
     text = string.gsub(text, "([0-9]+) armor", "+ %1 armor")
 
     text = string.gsub(text, "%(([^ ]+) damage per second%)", "+ %1 dps")
+    text = string.gsub(text, "speed ([^ ]+)", "+ %1 speed")
 
     test = string.gsub(text, " +", " ")
 
