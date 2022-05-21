@@ -181,6 +181,11 @@ function AAI_GetItemTotalCritChance(item_link)
 end
 
 
+function AAI_GetItemSpeed(item_link)
+    return AAI_GetItemStat(item_link, "speed")
+end
+
+
 function AAI_GetItemTotalSpellHaste(item_link)
     return (AAI_HasterRatingPerHaste(AAI_GetItemStat(item_link, "spell haste rating"))) / 100
 end
