@@ -97,12 +97,14 @@ function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
 
         item_link = AAI_ClearItemLinkEnchant(item_link)
         for spec_name, description in pairs({melee = "Melee Power Delta", heal = "Healing/Second Delta"}) do
-            local competing_item_link = compete_with_equipped and AAI_GetCompetingItemEquipped(item_link) or AAI_GetCompetingItemFromInventory(item_link, item_spec or spec_name)
-            competing_item_link = AAI_ClearItemLinkEnchant(competing_item_link)
+            if spec_name ~= "heal" or AAI_IsHealerClass("player") then
+                local competing_item_link = compete_with_equipped and AAI_GetCompetingItemEquipped(item_link) or AAI_GetCompetingItemFromInventory(item_link, item_spec or spec_name)
+                competing_item_link = AAI_ClearItemLinkEnchant(competing_item_link)
 
-            local score_delta, provided_score, competing_score = AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
-            if provided_score > 0 then
-                tooltip:AddDoubleLine(description,   AAI_SetColor(AAI_Round(score_delta,   2), score_delta   < 0 and "FF0000" or "00FF00"))
+                local score_delta, provided_score, competing_score = AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
+                if provided_score > 0 then
+                    tooltip:AddDoubleLine(description,   AAI_SetColor(AAI_Round(score_delta,   2), score_delta   < 0 and "FF0000" or "00FF00"))
+                end
             end
         end
     end
