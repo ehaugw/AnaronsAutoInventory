@@ -108,16 +108,15 @@ end
 
 
 function AAI_CalculateYellowDps(option)
+    local hit_chance = GetCombatRatingBonus(CR_HIT_MELEE) / 100
+    local crit = GetCritChance() / 100
+    local haste = GetCombatRatingBonus(CR_HASTE_MELEE) / 100
+
     local low, high = UnitDamage("player")
     local period = UnitAttackSpeed("player")
-    local dps = (low + high)/2/period
-
-    local hit_chance = AAI_GetItemTotalHitChance(item_link)
-    local crit = GetCritChance() / 100 - AAI_GetItemTotalCritChance(competing_item_link) 
-    local haste = GetCombatRatingBonus(CR_HASTE_MELEE)
+    local dps = (low + high)/2/period / (1 + haste)
 
     option = option and AAI_StringToItemLinksAndWords(option)[1]
-    print(option)
     if option then
         dps = dps - AAI_GetItemTotalAttackPowerWithDps(AAI_GetCompetingItemEquipped(option)) / 14 + AAI_GetItemTotalAttackPowerWithDps(option) / 14
         hit_chance = hit_chance - AAI_GetItemTotalHitChance(AAI_GetCompetingItemEquipped(option)) + AAI_GetItemTotalHitChance(option)
@@ -126,18 +125,18 @@ function AAI_CalculateYellowDps(option)
         -- period = AAI_GetItemStat(option, "speed")
     end
 
-    local actual_period = period / (1 + haste / 100)
+    local actual_period = period / (1 + haste)
     local effective_judgement_cd = AAI_GetCooldownBetweenSwings(8, actual_period) / period
 
     local proc_per_minute = 7
-    local damage = dps * period * (1 + crit / 100)
+    local damage = dps * period * (1 + crit)
     local white = damage / actual_period
     local soc_rate = 1 * period * 7 / 60 * period / actual_period
     local soc = damage * 0.7 * soc_rate / effective_judgement_cd
     local sob = white * 0.35
     local sob_twist = damage * 0.35 * soc_rate / effective_judgement_cd
     local crusader_strike = damage * 1.1 / 6
-    local judgement = 346 / effective_judgement_cd * (1 + crit / 100)
+    local judgement = 346 / effective_judgement_cd * (1 + crit)
 
     local total = (white + sob + sob_twist + sob + crusader_strike + judgement)
 
