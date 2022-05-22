@@ -58,14 +58,14 @@ function AAI_GetSavedHealPowerAndCastTime()
     if saved then
         return unpack(saved)
     end
-    if IsHealerClass("player") then
+    if AAI_IsHealerClass("player") then
         AAI_print("Default healing spell is not configurated! Type /run aai_stat_settings[\"defaultheal\"] = {spell healing, cast time}")
     end
     return 500, 1.5
 end
 
 
-function IsHealerClass(unit)
+function AAI_IsHealerClass(unit)
     local class = string.lower(UnitClass(unit))
     return class == "paladin" or class == "priest" or class == "druid" or class == "shaman"
 end
