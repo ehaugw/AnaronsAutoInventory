@@ -58,8 +58,16 @@ function AAI_GetSavedHealPowerAndCastTime()
     if saved then
         return unpack(saved)
     end
-    AAI_print("Default healing spell is not configurated!")
+    if IsHealerClass("player") then
+        AAI_print("Default healing spell is not configurated! Type /run aai_stat_settings[\"defaultheal\"] = {spell healing, cast time}")
+    end
     return 500, 1.5
+end
+
+
+function IsHealerClass(unit)
+    local class = string.lower(UnitClass(unit))
+    return class == "paladin" or class == "priest" or class == "druid" or class == "shaman"
 end
 
 
@@ -99,7 +107,7 @@ function AAI_GetHitCap()
 end
 
 
-function AAI_CalculateYellowDps()
+function AAI_CalculateYellowDps(option)
     local low, high = UnitDamage("player")
     local period = UnitAttackSpeed("player")
     local dps = (low + high)/2/period
@@ -108,6 +116,16 @@ function AAI_CalculateYellowDps()
     local crit = GetCritChance() / 100 - AAI_GetItemTotalCritChance(competing_item_link) 
     local haste = GetCombatRatingBonus(CR_HASTE_MELEE)
 
+    option = option and AAI_StringToItemLinksAndWords(option)[1]
+    print(option)
+    if option then
+        dps = dps - AAI_GetItemTotalAttackPowerWithDps(AAI_GetCompetingItemEquipped(option)) / 14 + AAI_GetItemTotalAttackPowerWithDps(option) / 14
+        hit_chance = hit_chance - AAI_GetItemTotalHitChance(AAI_GetCompetingItemEquipped(option)) + AAI_GetItemTotalHitChance(option)
+        crit = crit - AAI_GetItemTotalCritChance(AAI_GetCompetingItemEquipped(option)) + AAI_GetItemTotalCritChance(option)
+        haste = haste - AAI_GetItemTotalHaste(AAI_GetCompetingItemEquipped(option)) + AAI_GetItemTotalHaste(option)
+        -- period = AAI_GetItemStat(option, "speed")
+    end
+
     local actual_period = period / (1 + haste / 100)
     local effective_judgement_cd = AAI_GetCooldownBetweenSwings(8, actual_period) / period
 
@@ -115,7 +133,6 @@ function AAI_CalculateYellowDps()
     local damage = dps * period * (1 + crit / 100)
     local white = damage / actual_period
     local soc_rate = 1 * period * 7 / 60 * period / actual_period
-    print(soc_rate)
     local soc = damage * 0.7 * soc_rate / effective_judgement_cd
     local sob = white * 0.35
     local sob_twist = damage * 0.35 * soc_rate / effective_judgement_cd
