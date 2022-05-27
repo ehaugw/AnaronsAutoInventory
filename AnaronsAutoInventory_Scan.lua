@@ -126,6 +126,9 @@ function AAI_GetTooltipLineAfterSplit(item_link)
         left_text = AAI_FillEmptyGems(left_text)
         left_text, left_text_2 = AAI_SplitTooltipText(left_text)
 
+        if left_text then
+            -- print(left_text)
+        end
         table.insert(left_texts, left_text)
         table.insert(right_texts, right_text)
 
@@ -157,10 +160,11 @@ end
 function AAI_CleanTooltipText(text)
     text = string.gsub(text, "\124c[a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z]" ,"")
     text = string.gsub(text, "\124r" ,"")
-    text = string.gsub(text, "[^0-9a-zA-Z%+%-%(%)%:/%., ]" ,"")
+    text = string.gsub(text, "[^%&0-9a-zA-Z%+%-%(%)%:/%., ]" ,"")
     text = string.gsub(text, "spells and effects", "spells_and_effects")
     text = string.gsub(text, "Equip: ", "")
     text = string.gsub(text, " up to ", " ")
+    text = string.gsub(text, "%s*Requires at least [0-9] %S+ gems","")
     return text
 end
 
@@ -176,7 +180,7 @@ end
 
 
 function AAI_SplitTooltipText(text)
-    text = string.gsub(text, "&","and")
+    text = string.gsub(text, "%&","and")
     local increases, remainder = string.match(text, "(.*[Ii]ncreases)(.*)")
     if not increases then
         increases, remainder = string.match(text, "(.*[Ii]mproves)(.*)")
