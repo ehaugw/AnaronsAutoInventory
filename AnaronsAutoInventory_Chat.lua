@@ -166,6 +166,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     elseif operation == "playerwarn" then
         option = AAI_GeneralStringFormat(option)
         local name, remainder = AAI_GetLeftWord(option)
+        name = AAI_TitleCase(name)
         aai_warn_players[name] = remainder
         AAI_print(string.format("Warning set for %s: %s", name, remainder))
 
