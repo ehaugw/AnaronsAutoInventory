@@ -1,4 +1,4 @@
-## Interface: 20502
+## Interface: 30400
 ## Title-deDE: Anaron's Auto Inventory (Deutsch)
 ## Title-enUS: Anaron's Auto Inventory (English)
 ## Title-esES: Anaron's Auto Inventory (Español)
