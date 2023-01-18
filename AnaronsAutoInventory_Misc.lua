@@ -20,6 +20,17 @@ end
 
 
 ------------------------------------
+--    GET CURRENT API VERSION     --
+------------------------------------
+SLASH_GET_API_VERSION1 = "/gapi"
+SLASH_GET_API_VERSION2 = "/getapiversion"
+
+SlashCmdList["GET_API_VERSION"] = function(option)
+    print((select(4, GetBuildInfo())))
+end
+
+
+------------------------------------
 --    RELOAD UIT SLASH COMMAND    --
 ------------------------------------
 SLASH_RELOAD_UI1 = "/reui"
