@@ -1,4 +1,5 @@
 GetContainerItemCooldown = C_Container.GetContainerItemCooldown
+UseContainerItem = C_Container.UseContainerItem
 GetContainerNumSlots = C_Container.GetContainerNumSlots
 GetContainerItemLink = C_Container.GetContainerItemLink
 PickupContainerItem  = C_Container.PickupContainerItem
