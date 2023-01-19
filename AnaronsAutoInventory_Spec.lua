@@ -11,12 +11,14 @@ function AAI_GetCharacterHaste()
     return AAI_GetSwiftRetributionRank() / 100
 end
 
+local white_dps_relative = 0.5
+local instant_cast_reltive = 0.5
+local speed_scaling = instant_cast_reltive
+
 local spec_evaluators = {
     melee = function(item_link)
         local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
 
-        -- local a, b, _ = UnitAttackPower("player") -- unbuffed
-        -- local power = a + b - AAI_GetItemTotalAttackPower(competing_item_link)
         local low, high = UnitDamage("player")
         local power = (low + high)/2/UnitAttackSpeed("player")*14
 
@@ -34,9 +36,15 @@ local spec_evaluators = {
         ) * (
             1 + (total_crit_chance + AAI_GetItemTotalCritChance(item_link)) * (1 + AAI_GetImpaleRank() * 0.05) * (1 + AAI_GetItemCriticalDamageBonus(item_link))
         ) * (
-            1 + (AAI_GetCharacterHaste() + AAI_GetItemTotalHaste(item_link)) * 0.75
+            1 + (AAI_GetCharacterHaste() + AAI_GetItemTotalHaste(item_link)) * white_dps_relative
         ) / (
             1 - AAI_GetItemTotalExpertise(item_link)
+        ) * (
+            (AAI_GetItemSpeed(item_link) > 0 and (
+                AAI_GetItemSpeed(item_link) / AAI_GetItemSpeed(competing_item_link) * speed_scaling
+                +
+                1 * (1 - speed_scaling))
+            ) or 1
         ) / (
             1 - hit_chance
         ) + (power + AAI_GetItemTotalAttackPower(item_link)) * AAI_GetDeepWoundsRank() * 0.16
