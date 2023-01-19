@@ -3,6 +3,14 @@ function AAI_OnAddonLoadedSpec(instance)
 end
 
 
+function AAI_GetCharacterCritChance()
+    return (GetCritChance() + AAI_GetHeartOfTheCrusaderRank() + AAI_GetConvictionRank() + AAI_GetSanctityOfBattleRank()) / 100
+end
+
+function AAI_GetCharacterHaste()
+    return AAI_GetSwiftRetributionRank() / 100
+end
+
 local spec_evaluators = {
     melee = function(item_link)
         local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
@@ -13,9 +21,9 @@ local spec_evaluators = {
         local power = (low + high)/2/UnitAttackSpeed("player")*14
 
         local hit_chance = AAI_GetItemTotalHitChance(item_link)
-        local total_crit_chance = GetCritChance() / 100 - AAI_GetItemTotalCritChance(competing_item_link) 
+        local total_crit_chance = AAI_GetCharacterCritChance() - AAI_GetItemTotalCritChance(competing_item_link)
         if IsControlKeyDown() and hit_chance > 0 then
-            local total_hit_chance = GetCombatRatingBonus(CR_HIT_MELEE) / 100 - AAI_GetItemTotalHitChance(competing_item_link) 
+            local total_hit_chance = GetCombatRatingBonus(CR_HIT_MELEE) / 100 - AAI_GetItemTotalHitChance(competing_item_link)
             hit_chance = max(0, min(AAI_GetHitCap() - total_hit_chance, hit_chance))
         end
 
@@ -24,14 +32,14 @@ local spec_evaluators = {
         ) / (
             1
         ) * (
-            1 + (total_crit_chance + AAI_GetItemTotalCritChance(item_link)) * (1 + AAI_GetImpaleRank() * 0.1) * (1 + AAI_GetItemCriticalDamageBonus(item_link))
+            1 + (total_crit_chance + AAI_GetItemTotalCritChance(item_link)) * (1 + AAI_GetImpaleRank() * 0.05) * (1 + AAI_GetItemCriticalDamageBonus(item_link))
         ) * (
-            1 + AAI_GetItemTotalHaste(item_link) * 0.75
+            1 + (AAI_GetCharacterHaste() + AAI_GetItemTotalHaste(item_link)) * 0.75
         ) / (
             1 - AAI_GetItemTotalExpertise(item_link)
         ) / (
             1 - hit_chance
-        ) + (power + AAI_GetItemTotalAttackPower(item_link)) * AAI_GetDeepWoundsRank()
+        ) + (power + AAI_GetItemTotalAttackPower(item_link)) * AAI_GetDeepWoundsRank() * 0.16
     end,
 
     heal = function(item_link)
@@ -41,13 +49,11 @@ local spec_evaluators = {
         return (
             power + (AAI_GetItemTotalSpellHealing(item_link)) / 3.5 * cast_time
         ) * (
-            1 + AAI_GetItemTotalSpellHaste(item_link)
+            1 + (AAI_GetCharacterHaste() + AAI_GetItemTotalHaste(item_link))
         ) / (
             cast_time
         ) * (
             1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
-        ) / (
-            1 - AAI_GetItemTotalSpellCritChance(item_link) * 0.2 * AAI_GetIlluminationRank()
         )
     end
 }
@@ -78,12 +84,15 @@ function AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
 end
 
 
--- fury spec "flurry" not included"
-AAI_GetIlluminationRank     = function() return AAI_GetTalentRankForClass("paladin", 1, 9)  end
-AAI_GetDivineStrengthRank   = function() return AAI_GetTalentRankForClass("paladin", 1, 1)  end
-AAI_GetDeepWoundsRank       = function() return AAI_GetTalentRankForClass("warrior", 1, 9)  end
-AAI_GetImpaleRank           = function() return AAI_GetTalentRankForClass("warrior", 1, 11) end
-AAI_HolyGuidanceRank        = function() return AAI_GetTalentRankForClass("warrior", 1, 19) end
+AAI_GetDivineStrengthRank       = function() return AAI_GetTalentRankForClass("paladin", 2, 2)  end
+AAI_GetHeartOfTheCrusaderRank   = function() return AAI_GetTalentRankForClass("paladin", 2, 4)  end
+AAI_GetConvictionRank           = function() return AAI_GetTalentRankForClass("paladin", 2, 7)  end
+AAI_GetSanctityOfBattleRank     = function() return AAI_GetTalentRankForClass("paladin", 2, 11)  end
+AAI_GetSwiftRetributionRank     = function() return AAI_GetTalentRankForClass("paladin", 2, 22)  end
+AAI_GetRighteousVengeanceRank   = function() return AAI_GetTalentRankForClass("paladin", 2, 25)  end
+
+AAI_GetDeepWoundsRank           = function() return AAI_GetTalentRankForClass("warrior", 1, 10)  end
+AAI_GetImpaleRank               = function() return AAI_GetTalentRankForClass("warrior", 1, 9) end -- assumed only 50% efficiency due to being skills only
 
 
 function AAI_GetTalentRankForClass(class, spec, talent)
