@@ -51,7 +51,7 @@ function AAI_StrengthToAttackPower(ability_score)
     }
     local mod = mod_dict[string.lower(player_class)]
 
-    return ability_score * mod * (1 + 0.02 * AAI_GetDivineStrengthRank())
+    return ability_score * mod * (1 + 0.03 * AAI_GetDivineStrengthRank())
 end
 
 
@@ -206,8 +206,9 @@ function AAI_GetItemTotalHitChance(item_link)
 end
 
 
+-- wrapped inside getter for damage and healer individually, thus returns 0
 function AAI_GetItemTotalSpellDamageAndHealing(item_link)
-    return  AAI_GetItemStat(item_link, "intellect") * AAI_HolyGuidanceRank() * 0.07
+    return 0
 end
 
 
