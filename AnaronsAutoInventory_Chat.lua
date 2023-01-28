@@ -159,8 +159,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
             elseif help_operation == "use" then
                 local optionals = AAI_Join(AAI_Map(AAI_GetKeysFromTable(use_prefixes), function(x) return "[" .. x .. "]" end), " ")
                 AAI_print(string.format("Usage: /aai %s use <tag>", optionals))
-                AAI_print("Example: /aai use melee")
-                AAI_print(string.format("- Expected outcome: use all items in your inventory that are tagged with %s", AAI_SetColor("melee")))
+                AAI_print("Example: /aai use cooking")
+                AAI_print(string.format("- Expected outcome: use (as if you right clicked) all items in your inventory that are tagged with %s", AAI_SetColor("cooking")))
                 AAI_print("Optional arguments for the \"use\" operation:")
                 for key, value in pairs(use_prefixes ) do
                     AAI_print(string.format("- %s: %s", key, value):gsub("\n", "\n-"))
