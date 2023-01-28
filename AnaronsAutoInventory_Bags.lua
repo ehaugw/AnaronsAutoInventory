@@ -29,16 +29,22 @@ function AAI_ItemLockChanged(source_bag, slot)
         if not locked then
             set_inventory_lock_status(source_bag, slot, false)
 
+            -- inventory or bank depending on if the item was unlocked in inventory or bank
             local inventory = AAI_GetBagInventory(source_bag)
+            -- make an iterator for the target inventory
             local inventory_iterator = AAI_InventoryIterator(inventory)
             local next_bag, next_slot, item_link = inventory_iterator()
 
+            -- this moves the iterator to the point where it finds the newly unlocked item
+            -- the purpose of this is to skip all the full (preceeding) slots, because we can not put the item there
             while next_bag ~= source_bag or next_slot ~= slot do
                 if not item_link then
-                    return -- this means that the item was not auto put into the container
+                -- if not item_link and next_bag == source_bag and next_slot == slot then
+                    return -- no item link should mean that the slot an item just left was unlocked as empty
                 end
                 next_bag, next_slot, item_link = inventory_iterator()
             end
+
             for tag, preferences in pairs(aai_bag_preferences["tags"]) do
                 if AAI_HasTag(item_link, tag) then
                     for _, bag in pairs(preferences) do
