@@ -5,38 +5,6 @@ SLASH_AUTO_INVENTORY_COMMAND_LINE_INTERFACE2 = "/anaronsautoinventory"
 SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
     local operation, option = AAI_GetLeftWord(option)
 
-    local valid_operations = {
-        help        = "get help with AAI",
-        tag         = "assign a tag to an item",
-        remove      = "prepend to \"tag\" to remove a tag from an item\n prepend to \"tagcolor\" to reset the color of a tag",
-        taglist     = "display a list of tags handled by AAI",
-        use         = "use all items with the provided tag",
-        force       = "prepend to other action to ignore precious tags",
-        silent      = "ignore any prints during the following operation",
-        restore     = "restore AAI after a crash",
-        bank        = "prepend to \"use\" to use from bank rather than inventory",
-        display     = "display saved data",
-        debug       = "prepend to display to show more information",
-        need        = "automatically roll \"need\" on this item",
-        greed       = "automatically roll \"greed\" on this item",
-        tagcolor    = "manually override the color of a tag",
-        global      = "prepend to \"tag\" to apply the action across all characters",
-        auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house",
-        replace     = "preped to \"tag\" to delete existing tags and add the new ones",
-        tagrename   = "replace all occurences of from_name with to_name",
-        distinct    = "prepend to tag to remove other occurences of the provided tags for the same item slot before applying them to items",
-        equip       = "equip all items with a given tag",
-        gearset     = "remove the provided tag from all items and add it to each equipped item",
-        playerwarn  = "Set a note about a players negative behaviour",
-        stats       = "configure how stats are calculated",
-        exact       = "prepent to use to only use items with the exact provided tags",
-        cache       = "cache an inventory",
-        count       = "prepend to cache to print a count of items in the provided inventory",
-        bagpreference = "set the prefered bags for a tag",
-        delete      = "delete all times with the given tags, prepend force to actually delete",
-    }
-
-
     local forced = false
     local global = false
     local remove = false
@@ -116,14 +84,91 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
     end
 
+    local valid_operations = {
+        help        = "get help with AAI",
+        tag         = "assign a tag to an item",
+        taglist     = "display a list of tags handled by AAI",
+        use         = "use all items with the provided tag",
+        prefixes    = "list prefixes that can be prepended to any action",
+        restore     = "restore AAI after a crash",
+        bank        = "prepend to \"use\" to use from bank rather than inventory",
+        display     = "display saved data",
+        debug       = "prepend to display to show more information",
+        need        = "automatically roll \"need\" on this item",
+        greed       = "automatically roll \"greed\" on this item",
+        tagcolor    = "manually override the color of a tag",
+        auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house",
+        tagrename   = "replace all occurences of from_name with to_name",
+        equip       = "equip all items with a given tag",
+        gearset     = "remove the provided tag from all items and add it to each equipped item",
+        playerwarn  = "Set a note about a players negative behaviour",
+        stats       = "configure how stats are calculated",
+        exact       = "prepent to use to only use items with the exact provided tags",
+        cache       = "cache an inventory",
+        count       = "prepend to cache to print a count of items in the provided inventory",
+        bagpreference = "set the prefered bags for a tag",
+        delete      = "delete all times with the given tags, prepend force to actually delete",
+    }
+
+    local prefixes = {
+        force       = "prepend to other action to ignore precious tags",
+        silent      = "prepend to other action to ignore any prints during the following operation",
+    }
+
+    local tag_prefixes = {
+        remove      = "remove tag(s) from item(s) rather than adding it/them. Remove all tag(s) from the item(s) if no tag(s) are provided",
+        global      = "apply the tagging action across all characters",
+        replace     = "delete existing tag(s) from the item(s) before adding new tag(s)",
+        distinct    = "remove occurence(s) of the provided tag(s) from item(s) of the same item slot(s) as the provided item(s)",
+    }
+
+
     -- Prefixes does not change the actual operation, thus this output must be printed when we know what the actual
     -- command is.
     if valid_operations[operation] == nil then
         AAI_print(string.format("\"%s\" is an invalid operation - try \"/aai help\"", operation))
-    end
+
+
+    elseif operation == "help" then
+        if option == nil then
+            AAI_print("AAI options:")
+            for key, value in pairs(valid_operations) do
+                AAI_print(string.format("- %s: %s", key, value))
+            end
+
+        else
+            local help_operation, option = AAI_GetLeftWord(option)
+
+            if valid_operations[help_operation] == nil then
+                AAI_print(string.format("There is no help for \"%s\", as it is an invalid operation - try \"/aai help\"", help_operation))
+
+            elseif help_operation == "tag" then
+                if option == nil then
+                    local optionals = AAI_Join(AAI_Map(AAI_GetKeysFromTable(tag_prefixes), function(x) return "[" .. x .. "]" end), " ")
+                    AAI_print(string.format("Usage: /aai %s tag <tag> <ITEMLINK>", optionals))
+                    AAI_print(string.format("Example: /aai tag melee %s", "\124cffe6cc80\124Hitem:36942::::::::70:::::\124h[Frostmourne]\124h\124r"))
+                    AAI_print("Use \"/aai taglist\" to list tags with special meaning to AAI")
+                    AAI_print("Optional arguments for the tag operation:")
+                    for key, value in pairs(tag_prefixes ) do
+                        AAI_print(string.format("- %s: %s", key, value):gsub("\n", "\n-"))
+                    end
+
+                end
+
+            else
+                AAI_print(string.format("There is no detailed help for %s yet", help_operation))
+            end
+        end
 
     -- operations
-    if operation == "restore" then
+    elseif operation == "prefixes" then
+        AAI_print("Prefixes that can be applied to any AAI command:")
+        for key, value in pairs(prefixes) do
+            AAI_print(string.format("%s:\n %s", key, value):gsub("\n", "\n-"))
+        end
+
+    -- operations
+    elseif operation == "restore" then
         AAI_print = AAI_print_original
         AAI_CleanUpItemTagDatabase()
         AAI_print("Restored AAI")
@@ -206,18 +251,6 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
             AAI_print("Invalid option for display. Try \"bagpreference\" or \"tag\"")
         end
 
-    elseif operation == "help" then
-        if option then
-            AAI_print(string.format("Items tagged as %s are %s", AAI_SetColor(option, AAI_GetTagColor(option)), AAI_GetTagHelp(option)))
-        else
-            AAI_print("AAI options:")
-            AAI_print("help [tag]:")
-            AAI_print("- get information related to a tag")
-            for key, value in pairs(valid_operations) do
-                AAI_print(string.format("%s:\n %s", key, value):gsub("\n", "\n-"))
-            end
-        end
-
     elseif operation == "taglist" then
         AAI_print("The tags handled by AAI are:")
         for _, value in ipairs(AAI_GetKeysFromTable(AAI_HandledTagsWithHelp)) do
@@ -246,13 +279,12 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
     elseif operation == "tag" then
         local links, tags = AAI_StringToItemLinksAndWords(option)
+        if table.getn(links) == 0 then
+            AAI_print("Invalid use of \"tag\" operation. Try \"/aai help tag\"")
+        end
         
-        -- if table.getn(tags) == 0 then
-        --     AAI_RemoveAllTags(item_link, true)
-        -- end
-
         for _, item_link in pairs(links) do
-            if replace then
+            if replace or (remove and table.getn(tags)) then
                 AAI_RemoveAllTags(item_link, true)
                 AAI_RemoveAllTags(item_link, false)
             end
