@@ -105,6 +105,7 @@ function AAI_HasterRatingPerHaste(rating)
         {50, 1 / 11.308562  * 1.398734},
         {60, 1 / 14.0       * 1.398734},
         {70, 1 / 22.1       * 1.398734},
+        {80, 1 / 46.097315  * 1.40626341},
     }
     return AAI_Interpolate(scalars, level) * rating
 end
@@ -122,6 +123,7 @@ function AAI_ExpertiseRatingPerExpertise(rating)
         {50, 1 / 11.308562  * 1.39466},
         {60, 1 / 14.0       * 1.39466},
         {70, 1 / 22.1       * 1.39466},
+        {80, 1 / 46.097315  * 1.40626341},
     }
     return AAI_Interpolate(scalars, level) * rating
 end
@@ -139,6 +141,7 @@ function AAI_HitRatingToHitChance(rating)
         {50, 1 / 11.308562  * 1.40626341},
         {60, 1 / 14.0       * 1.40626341},
         {70, 1 / 22.1       * 1.40626341},
+        {80, 1 / 46.097315  * 1.40626341},
     }
     return AAI_Interpolate(scalars, level) * rating
 end
@@ -156,6 +159,7 @@ function AAI_CritRatingToCritChance(rating)
         {50, 1 / 11.308562},
         {60, 1 / 14.0},
         {70, 1 / 22.1},
+        {80, 1 / 45.91},
     }
     return AAI_Interpolate(scalars, level) * rating
 end
