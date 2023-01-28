@@ -331,7 +331,8 @@ function AAI_GetTagColor(tag)
         melee       = "ff8800",
         spell       = "8888ff",
         tank        = "8844ff",
-        heal        = "00ff00"
+        heal        = "00ff00",
+        level       = "ff5555",
     }
 
     return aai_tag_colors[tag] or color_table[tag] or "ffffff"
@@ -381,5 +382,6 @@ AAI_HandledTagsWithHelp = {
     tank        = "does nothing on its own but using it can be keybound",
     heal        = "does nothing on its own but using it can be keybound",
     spell       = "does nothing on its own but using it can be keybound",
+    level       = "does nothing on its own but using it can be keybound",
 }
 
