@@ -91,24 +91,23 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         use         = "use all items with the provided tag",
         prefixes    = "list prefixes that can be prepended to any action",
         restore     = "restore AAI after a crash",
-        bank        = "prepend to \"use\" to use from bank rather than inventory",
+
+        equip       = "equip all items with a given tag",
         display     = "display saved data",
         debug       = "prepend to display to show more information",
-        need        = "automatically roll \"need\" on this item",
-        greed       = "automatically roll \"greed\" on this item",
         tagcolor    = "manually override the color of a tag",
         auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house",
         tagrename   = "replace all occurences of from_name with to_name",
-        equip       = "equip all items with a given tag",
         gearset     = "remove the provided tag from all items and add it to each equipped item",
         playerwarn  = "Set a note about a players negative behaviour",
         stats       = "configure how stats are calculated",
-        exact       = "prepent to use to only use items with the exact provided tags",
         cache       = "cache an inventory",
         count       = "prepend to cache to print a count of items in the provided inventory",
         bagpreference = "set the prefered bags for a tag",
         delete      = "delete all times with the given tags, prepend force to actually delete",
     }
+
+    local no_help_required = {"taglist", "prefixes", "restore"}
 
     local prefixes = {
         force       = "prepend to other action to ignore precious tags",
@@ -120,6 +119,11 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         global      = "apply the tagging action across all characters",
         replace     = "delete existing tag(s) from the item(s) before adding new tag(s)",
         distinct    = "remove occurence(s) of the provided tag(s) from item(s) of the same item slot(s) as the provided item(s)",
+    }
+
+    local use_prefixes = {
+        bank        = "use from bank rather than inventory",
+        exact       = "only use item(s) with, and only with, the provided tag(s)",
     }
 
 
@@ -143,17 +147,28 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
                 AAI_print(string.format("There is no help for \"%s\", as it is an invalid operation - try \"/aai help\"", help_operation))
 
             elseif help_operation == "tag" then
-                if option == nil then
-                    local optionals = AAI_Join(AAI_Map(AAI_GetKeysFromTable(tag_prefixes), function(x) return "[" .. x .. "]" end), " ")
-                    AAI_print(string.format("Usage: /aai %s tag <tag> <ITEMLINK>", optionals))
-                    AAI_print(string.format("Example: /aai tag melee %s", "\124cffe6cc80\124Hitem:36942::::::::70:::::\124h[Frostmourne]\124h\124r"))
-                    AAI_print("Use \"/aai taglist\" to list tags with special meaning to AAI")
-                    AAI_print("Optional arguments for the tag operation:")
-                    for key, value in pairs(tag_prefixes ) do
-                        AAI_print(string.format("- %s: %s", key, value):gsub("\n", "\n-"))
-                    end
-
+                local optionals = AAI_Join(AAI_Map(AAI_GetKeysFromTable(tag_prefixes), function(x) return "[" .. x .. "]" end), " ")
+                AAI_print(string.format("Usage: /aai %s tag <tag> <ITEMLINK>", optionals))
+                AAI_print(string.format("Example: /aai tag melee %s", "\124cffe6cc80\124Hitem:36942::::::::70:::::\124h[Frostmourne]\124h\124r"))
+                AAI_print("Use \"/aai taglist\" to list tags with special meaning to AAI")
+                AAI_print("Optional arguments for the \"tag\" operation:")
+                for key, value in pairs(tag_prefixes ) do
+                    AAI_print(string.format("- %s: %s", key, value):gsub("\n", "\n-"))
                 end
+
+            elseif help_operation == "use" then
+                local optionals = AAI_Join(AAI_Map(AAI_GetKeysFromTable(use_prefixes), function(x) return "[" .. x .. "]" end), " ")
+                AAI_print(string.format("Usage: /aai %s use <tag>", optionals))
+                AAI_print("Example: /aai use melee")
+                AAI_print(string.format("- Expected outcome: use all items in your inventory that are tagged with %s", AAI_SetColor("melee")))
+                AAI_print("Optional arguments for the \"use\" operation:")
+                for key, value in pairs(use_prefixes ) do
+                    AAI_print(string.format("- %s: %s", key, value):gsub("\n", "\n-"))
+                end
+
+
+            elseif AAI_HasValue(no_help_required, help_operation) then
+                AAI_print(string.format("\"%s\" is a simple and harmless operation without detailed help, try \"/aai %s\"", help_operation, help_operation))
 
             else
                 AAI_print(string.format("There is no detailed help for %s yet", help_operation))
