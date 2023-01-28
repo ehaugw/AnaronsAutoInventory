@@ -132,6 +132,17 @@ function AAI_print(str)
 end
 
 
+aai_to_be_printed = ""
+function AAI_BatchPrint(str)
+    if str == nil then
+        AAI_print(aai_to_be_printed)
+        aai_to_be_printed = ""
+    else
+        aai_to_be_printed = aai_to_be_printed .. "\n" .. str
+    end
+end
+
+
 AAI_print_original = AAI_print
 
 
@@ -235,4 +246,15 @@ end
 function AAI_Round(num, numDecimalPlaces)
     local mult = 10^(numDecimalPlaces or 0)
     return math.floor(num * mult + 0.5) / mult
+end
+
+function AAI_Join(list, delim)
+    local out = ""
+    for index, value in pairs(list) do
+        if out ~= "" then
+            out = out .. delim
+        end
+        out = out .. value
+    end
+    return out
 end
