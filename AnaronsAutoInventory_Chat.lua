@@ -91,8 +91,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         use         = "use all items with the provided tag",
         prefixes    = "list prefixes that can be prepended to any action",
         restore     = "restore AAI after a crash",
-
         equip       = "equip all items with a given tag",
+
         display     = "display saved data",
         debug       = "prepend to display to show more information",
         tagcolor    = "manually override the color of a tag",
@@ -148,9 +148,10 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
             elseif help_operation == "tag" then
                 local optionals = AAI_Join(AAI_Map(AAI_GetKeysFromTable(tag_prefixes), function(x) return "[" .. x .. "]" end), " ")
+                AAI_print("Description: Applies the specified tag(s) to the provided item(s). Tags are shown on item tooltips.")
                 AAI_print(string.format("Usage: /aai %s tag <tag> <ITEMLINK>", optionals))
                 AAI_print(string.format("Example: /aai tag melee %s", "\124cffe6cc80\124Hitem:36942::::::::70:::::\124h[Frostmourne]\124h\124r"))
-                AAI_print("Use \"/aai taglist\" to list tags with special meaning to AAI")
+                AAI_print("Hint: \"/aai taglist\" to list tags with special meaning to AAI")
                 AAI_print("Optional arguments for the \"tag\" operation:")
                 for key, value in pairs(tag_prefixes ) do
                     AAI_print(string.format("- %s: %s", key, value):gsub("\n", "\n-"))
@@ -158,6 +159,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
             elseif help_operation == "use" then
                 local optionals = AAI_Join(AAI_Map(AAI_GetKeysFromTable(use_prefixes), function(x) return "[" .. x .. "]" end), " ")
+                AAI_print("Description: Uses all items in your inventory (or bank if specified) that are tagged with one (or each, and only each, if provided) of the provided tag(s)")
                 AAI_print(string.format("Usage: /aai %s use <tag>", optionals))
                 AAI_print("Example: /aai use cooking")
                 AAI_print(string.format("- Expected outcome: use (as if you right clicked) all items in your inventory that are tagged with %s", AAI_SetColor("cooking")))
@@ -166,6 +168,14 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
                     AAI_print(string.format("- %s: %s", key, value):gsub("\n", "\n-"))
                 end
 
+            elseif help_operation == "equip" then
+                local equip_tags = {"level", "melee", "tank", "heal", "spell", "uniform"}
+                local equip_tag_string = AAI_Join(AAI_Map(equip_tags, function(x) return AAI_SetColor(x) end), ", ")
+                AAI_print("Description: Equips all items in your inventory that are tagged with one of the provided tag(s)")
+                AAI_print("Usage: /aai equip <tag>")
+                AAI_print(string.format("Example: /aai equip %s", AAI_SetColor("melee")))
+                AAI_print(string.format("- Expected outcome: equip all items from your inventory that are tagged with %s", AAI_SetColor("melee")))
+                AAI_print(string.format("Hint: Keep in mind that equipping %s", equip_tag_string))
 
             elseif AAI_HasValue(no_help_required, help_operation) then
                 AAI_print(string.format("\"%s\" is a simple and harmless operation without detailed help, try \"/aai %s\"", help_operation, help_operation))
