@@ -104,7 +104,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         cache       = "cache an inventory",
         count       = "prepend to cache to print a count of items in the provided inventory",
         bagpreference = "set the prefered bags for a tag",
-        delete      = "delete all times with the given tags, prepend force to actually delete",
+        delete      = "delete all times with the given tags, \"prepend\" force to actually delete",
     }
 
     local no_help_required = {"taglist", "prefixes", "restore"}
@@ -309,7 +309,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
         
         for _, item_link in pairs(links) do
-            if replace or (remove and table.getn(tags)) then
+            if replace or (remove and table.getn(tags) == 0) then
                 AAI_RemoveAllTags(item_link, true)
                 AAI_RemoveAllTags(item_link, false)
             end
