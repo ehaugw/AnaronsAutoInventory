@@ -34,7 +34,7 @@ local spec_evaluators = {
         ) / (
             1
         ) * (
-            1 + (total_crit_chance + AAI_GetItemTotalCritChance(item_link)) * (1 + AAI_GetImpaleRank() * 0.05) * (1 + AAI_GetItemCriticalDamageBonus(item_link))
+            1 + (total_crit_chance + AAI_GetItemTotalCritChance(item_link)) * (1 + AAI_GetRighteousVengeanceRank() * 0.1 * speed_scaling) * (1 + AAI_GetImpaleRank() * 0.05) * (1 + AAI_GetItemCriticalDamageBonus(item_link))
         ) * (
             1 + (AAI_GetCharacterHaste() + AAI_GetItemTotalHaste(item_link)) * white_dps_relative
         ) / (
