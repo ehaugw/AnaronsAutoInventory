@@ -35,11 +35,10 @@ function AAI_ItemLockChanged(source_bag, slot)
             local inventory_iterator = AAI_InventoryIterator(inventory)
             local next_bag, next_slot, item_link = inventory_iterator()
 
-            -- this moves the iterator to the point where it finds the newly unlocked item
-            -- the purpose of this is to skip all the full (preceeding) slots, because we can not put the item there
+            -- make sure this was the first available inventory slot. if it is not, it must have been manualy placed
+            -- manualy placed items should not be moved
             while next_bag ~= source_bag or next_slot ~= slot do
                 if not item_link then
-                -- if not item_link and next_bag == source_bag and next_slot == slot then
                     return -- no item link should mean that the slot an item just left was unlocked as empty
                 end
                 next_bag, next_slot, item_link = inventory_iterator()
@@ -257,7 +256,7 @@ function AAI_BagIterator(bag, reverse)
     local reversed = reverse
     local iterated_bag = bag
     local recover = nil
-    local bag_space = GetContainerNumSlots(iterated_bag) 
+    local bag_space = GetContainerNumSlots(iterated_bag)
 
     return function(options)
         if options and options.recover then
@@ -349,4 +348,3 @@ AAI_SubscribeEvent("BANKFRAME_OPENED", function(...) if not IsShiftKeyDown() the
 AAI_SubscribeEvent("BANKFRAME_CLOSED", function(...) AAI_CacheInventory("bank") end)
 AAI_SubscribeEvent("ITEM_LOCK_CHANGED", function(_, _, bag, slot) AAI_ItemLockChanged(bag, slot) end)
 AAI_SubscribeEvent("MERCHANT_SHOW", function(...) AAI_UseAllTaggedItems("inventory", {"junk"}, true, false) end)
-
