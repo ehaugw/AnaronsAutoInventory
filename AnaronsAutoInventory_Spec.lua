@@ -60,7 +60,7 @@ local spec_evaluators = {
     heal = function(item_link)
         local school = AAI_GetHealerSchool("player")
         local total_crit_chance = AAI_GetCharacterSpellCritChance(school) - AAI_GetItemTotalSpellCritChance(competing_item_link)
-        local total_crit_chance_with_this = total_crit_chance + AAI_GetItemTotalSpellCritChance(item_link) + AAI_GetSanctifiedLightRank() * 0.02 + AAI_GetHolyPowerRank() * 0.01
+        local total_crit_chance_with_this = total_crit_chance + AAI_GetItemTotalSpellCritChance(item_link) + AAI_GetSanctifiedLightRank() * 0.02 + AAI_GetHolyPowerRank() * 0.01 + AAI_GetHolySpecializationRank() * 0.01 + AAI_GetFocusedWillRank() * 0.01
 
         local base_power, cast_time = AAI_GetSavedHealPowerAndCastTime()
         local power = base_power + (GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))) / 3.5 * cast_time
@@ -136,6 +136,11 @@ AAI_GetDeepWoundsRank           = function() return AAI_GetTalentRankForClass("w
 AAI_GetImpaleRank               = function() return AAI_GetTalentRankForClass("warrior", 1, 9) end -- assumed only 50% efficiency due to being skills only
 
 AAI_GetHolySpecializationRank   = function() return AAI_GetTalentRankForClass("priest", 2, 3)  end
+AAI_GetMentalStrengthRank       = function() return AAI_GetTalentRankForClass("priest", 2, 14)  end
+AAI_GetEnlightenmenthRank       = function() return AAI_GetTalentRankForClass("priest", 2, 17)  end
+AAI_GetFocusedWillRank          = function() return AAI_GetTalentRankForClass("priest", 2, 18)  end
+AAI_GetDivineAegisRank          = function() return AAI_GetTalentRankForClass("priest", 2, 24)  end
+AAI_GetBorrowedTimeRank         = function() return AAI_GetTalentRankForClass("priest", 2, 27)  end
 
 
 function AAI_GetTalentRankForClass(class, spec, talent)
