@@ -46,7 +46,15 @@ function AAI_SetComparetooltip(tooltip_self, anchorFrame)
     if primaryItemShown then
         local _, item_link = GameTooltip:GetItem()
 
-        local item_spec = AAI_GetItemSpec(item_link)
+        local priority = nil
+        if AAI_HasTag(item_link, "heal") and not AAI_HasTag(item_link, "spell") then
+            priority = "heal"
+        elseif not AAI_HasTag(item_link, "heal") and AAI_HasTag(item_link, "spell") then
+            priority = "spell"
+        end
+
+        local item_spec = AAI_GetItemSpec(item_link, priority)
+
         if item_spec then
             local competing_item_link = AAI_GetCompetingItemFromInventory(item_link, item_spec)
 
