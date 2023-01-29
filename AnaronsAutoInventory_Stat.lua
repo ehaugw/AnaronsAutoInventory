@@ -89,7 +89,7 @@ function AAI_IntellectToSpellCritChance(ability_score)
     }
     local mod = mod_dict[string.lower(player_class)]
 
-    return ability_score * mod
+    return ability_score * mod * (1 + 0.02 * AAI_GetDivineIntellectRank())
 end
 
 

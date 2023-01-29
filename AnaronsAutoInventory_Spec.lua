@@ -7,6 +7,12 @@ function AAI_GetCharacterCritChance()
     return (GetCritChance() + AAI_GetHeartOfTheCrusaderRank() + AAI_GetConvictionRank() + AAI_GetSanctityOfBattleRank()) / 100
 end
 
+
+function AAI_GetCharacterSpellCritChance(school)
+    return (GetSpellCritChance(school)) / 100
+end
+
+
 function AAI_GetCharacterHaste()
     return AAI_GetSwiftRetributionRank() / 100
 end
@@ -24,6 +30,7 @@ local spec_evaluators = {
 
         local hit_chance = AAI_GetItemTotalHitChance(item_link)
         local total_crit_chance = AAI_GetCharacterCritChance() - AAI_GetItemTotalCritChance(competing_item_link)
+
         if IsControlKeyDown() and hit_chance > 0 then
             local total_hit_chance = GetCombatRatingBonus(CR_HIT_MELEE) / 100 - AAI_GetItemTotalHitChance(competing_item_link)
             hit_chance = max(0, min(AAI_GetHitCap() - total_hit_chance, hit_chance))
@@ -51,8 +58,12 @@ local spec_evaluators = {
     end,
 
     heal = function(item_link)
+        local school = AAI_GetHealerSchool("player")
+        local total_crit_chance = AAI_GetCharacterSpellCritChance(school) - AAI_GetItemTotalSpellCritChance(competing_item_link)
+
         local base_power, cast_time = AAI_GetSavedHealPowerAndCastTime()
         local power = base_power + (GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))) / 3.5 * cast_time
+
 
         return (
             power + (AAI_GetItemTotalSpellHealing(item_link)) / 3.5 * cast_time
@@ -62,7 +73,11 @@ local spec_evaluators = {
             cast_time
         ) * (
             1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
-        ) * 14 -- to map healing / second to healing power
+        ) / (
+            1 - (total_crit_chance + AAI_GetItemTotalSpellCritChance(item_link)) * AAI_GetIlluminationRank() * 0.1
+        ) * (
+            14 -- to map healing / second to healing power
+        )
     end
 }
 
@@ -85,6 +100,17 @@ function AAI_IsHealerClass(unit)
 end
 
 
+function AAI_GetHealerSchool(unit)
+    local class = string.lower(UnitClass(unit))
+    if class == "paladin" or class == "priest" then
+        return 2 -- holy
+    elseif class == "shaman" or class == "druid" then
+        return 4 -- nature
+    end
+    return -1
+end
+
+
 function AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
     local this_score = spec_evaluators[spec_name](item_link)
     local competing_score = spec_evaluators[spec_name](competing_item_link)
@@ -93,6 +119,8 @@ end
 
 
 AAI_GetDivineStrengthRank       = function() return AAI_GetTalentRankForClass("paladin", 2, 2)  end
+AAI_GetDivineIntellectRank      = function() return AAI_GetTalentRankForClass("paladin", 1, 1)  end
+AAI_GetIlluminationRank         = function() return AAI_GetTalentRankForClass("paladin", 1, 7)  end
 AAI_GetHeartOfTheCrusaderRank   = function() return AAI_GetTalentRankForClass("paladin", 2, 4)  end
 AAI_GetConvictionRank           = function() return AAI_GetTalentRankForClass("paladin", 2, 7)  end
 AAI_GetSanctityOfBattleRank     = function() return AAI_GetTalentRankForClass("paladin", 2, 11)  end
