@@ -92,22 +92,23 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         prefixes    = "list prefixes that can be prepended to any action",
         restore     = "restore AAI after a crash",
         equip       = "equip all items with a given tag",
+        gearset     = "first remove the provided tag from every item you have previously tagged, and then add it to the currently equipped items",
 
         display     = "display saved data",
         debug       = "prepend to display to show more information",
         tagcolor    = "manually override the color of a tag",
         auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house",
         tagrename   = "replace all occurences of from_name with to_name",
-        gearset     = "remove the provided tag from all items and add it to each equipped item",
         playerwarn  = "Set a note about a players negative behaviour",
         stats       = "configure how stats are calculated",
         cache       = "cache an inventory",
         count       = "prepend to cache to print a count of items in the provided inventory",
         bagpreference = "set the prefered bags for a tag",
         delete      = "delete all times with the given tags, \"prepend\" force to actually delete",
+        sort        = "sort your inventory according to bagpreference",
     }
 
-    local no_help_required = {"taglist", "prefixes", "restore"}
+    local no_help_required = {"taglist", "prefixes", "restore", "gearset"}
 
     local prefixes = {
         force       = "prepend to other action to ignore precious tags",
@@ -339,6 +340,9 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
             AAI_print("Equipping items tagged as " .. AAI_SetColor(tag, AAI_GetTagColor(tag)) .. ".")
             AAI_EquipAllTaggedItems(inventory, tag)
         end
+
+    elseif operation == "sort" then
+        AAI_SortInventory(inventory)
 
     elseif operation == "delete" then
         local links, tags = AAI_StringToItemLinksAndWords(option)

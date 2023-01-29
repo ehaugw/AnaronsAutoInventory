@@ -23,6 +23,30 @@ function AAI_GetCachedInventoryIterator(inventory, reverse)
 end
 
 
+function AAI_SortInventory(inventory)
+    local inventory_iterator = AAI_InventoryIterator(inventory)
+    for source_bag, slot, item_link in inventory_iterator do
+        local skip = false
+        for tag, preferences in pairs(aai_bag_preferences["tags"]) do
+            for _, bag in pairs(preferences) do
+                if AAI_HasTag(item_link, tag) then
+                    if bag > source_bag then
+                        skip = true
+                    end
+                    if not skip and source_bag <= bag and AAI_GetBagInventory(bag) == inventory then
+                        AAI_MoveToDesiredBag(
+                        AAI_ForEachUnpack({{source_bag, slot, item_link}}),
+                        AAI_BagIterator(bag, true),
+                        function(item_link, source_slot, target_slot) return (source_slot == nil and target_slot == nil) or (target_slot > source_slot) end
+                        )
+                    end
+                end
+            end
+        end
+    end
+end
+
+
 function AAI_ItemLockChanged(source_bag, slot)
     if slot then
         local _, _, locked = GetContainerItemInfo(source_bag, slot);
@@ -51,7 +75,7 @@ function AAI_ItemLockChanged(source_bag, slot)
                             AAI_MoveToDesiredBag(
                                 AAI_ForEachUnpack({{source_bag, slot, item_link}}),
                                 AAI_BagIterator(bag, true),
-                                function(item_link) return true end
+                                function(item_link, source_slot, target_slot) return true end
                             )
                         end
                     end
@@ -107,7 +131,7 @@ function AAI_DepositItemsToBank(require_bank_tag)
                 AAI_MoveToDesiredBag(
                     AAI_InventoryIterator("inventory"),
                     AAI_BagIterator(bag, true),
-                    function(item_link)
+                    function(item_link, source_slot, target_slot)
                         return not require_bank_tag or AAI_HasTag(item_link, "bank") and AAI_HasTag(item_link, tag)
                     end
                 )
@@ -126,31 +150,35 @@ function AAI_MoveToDesiredBag(source_iterator, target_bag_iterator, evaluator)
     source_iterator{reset = true}
 
     for bag, slot, item_link in source_iterator do
-        if item_link and evaluator(item_link) then
+        if item_link and evaluator(item_link, nil, nil) then
             local _, stack_size, stack_size_max = AAI_GetInventoryStackInfo(bag, slot)
 
             if not select(3, GetContainerItemInfo(bag, slot)) then
                 local deposited = false
                 if item_table[item_link] then
                     for target_bag, target_slot, target_item_link, target_stack_size in AAI_ForEachUnpack(item_table[item_link]) do
-                        local _, _, locked = GetContainerItemInfo(target_bag, target_slot);
-                        if not locked and not get_inventory_lock_status(target_bag, target_slot) and target_stack_size + stack_size <= stack_size_max then
-                            PickupContainerItem(bag, slot)
-                            PickupContainerItem(target_bag, target_slot)
-                            set_inventory_lock_status(target_bag, target_slot, true)
-                            deposited = true
-                            break
+                        if evaluator(item_link, slot, target_slot) then
+                            local _, _, locked = GetContainerItemInfo(target_bag, target_slot);
+                            if not locked and not get_inventory_lock_status(target_bag, target_slot) and target_stack_size + stack_size <= stack_size_max then
+                                PickupContainerItem(bag, slot)
+                                PickupContainerItem(target_bag, target_slot)
+                                set_inventory_lock_status(target_bag, target_slot, true)
+                                deposited = true
+                                break
+                            end
                         end
                     end
                 end
                 if not deposited then
                     for target_bag, target_slot, target_item_link in target_bag_iterator do -- note that this iterator is not reset between each source iteratation
-                        local _, _, locked = GetContainerItemInfo(target_bag, target_slot);
-                        if not locked and not get_inventory_lock_status(target_bag, target_slot) and target_item_link == nil then
-                            PickupContainerItem(bag, slot)
-                            PickupContainerItem(target_bag, target_slot)
-                            set_inventory_lock_status(target_bag, target_slot, true)
-                            break
+                        if evaluator(item_link, slot, target_slot) then
+                            local _, _, locked = GetContainerItemInfo(target_bag, target_slot);
+                            if not locked and not get_inventory_lock_status(target_bag, target_slot) and target_item_link == nil then
+                                PickupContainerItem(bag, slot)
+                                PickupContainerItem(target_bag, target_slot)
+                                set_inventory_lock_status(target_bag, target_slot, true)
+                                break
+                            end
                         end
                     end
                 end
