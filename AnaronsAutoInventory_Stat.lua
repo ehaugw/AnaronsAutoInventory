@@ -191,12 +191,13 @@ end
 
 
 function AAI_GetItemTotalSpellHaste(item_link)
-    return (AAI_HasterRatingPerHaste(AAI_GetItemStat(item_link, "haste rating"))) / 100 -- spell haste rating for tbc
+    -- spell haste rating for tbc
+    return (AAI_HasterRatingPerHaste(AAI_GetItemStat(item_link, "haste rating"))) / 100 + AAI_GetJudgementOfThePureRank()  * 0.03
 end
 
 
 function AAI_GetItemTotalHaste(item_link)
-    return (AAI_HasterRatingPerHaste(AAI_GetItemStat(item_link, "haste rating"))) / 100
+    return (AAI_HasterRatingPerHaste(AAI_GetItemStat(item_link, "haste rating"))) / 100 + AAI_GetJudgementOfThePureRank()  * 0.03
 end
 
 
@@ -212,7 +213,7 @@ end
 
 -- wrapped inside getter for damage and healer individually, thus returns 0
 function AAI_GetItemTotalSpellDamageAndHealing(item_link)
-    return AAI_GetItemStat(item_link, "spell power")
+    return AAI_GetItemStat(item_link, "spell power") + AAI_GetItemStat(item_link, "intellect") * AAI_GetHolyGuidanceRank() * 0.04
 end
 
 

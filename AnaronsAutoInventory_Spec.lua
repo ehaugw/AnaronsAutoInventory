@@ -60,6 +60,7 @@ local spec_evaluators = {
     heal = function(item_link)
         local school = AAI_GetHealerSchool("player")
         local total_crit_chance = AAI_GetCharacterSpellCritChance(school) - AAI_GetItemTotalSpellCritChance(competing_item_link)
+        local total_crit_chance_with_this = total_crit_chance + AAI_GetItemTotalSpellCritChance(item_link) + AAI_GetSanctifiedLightRank() * 0.02 + AAI_GetHolyPowerRank() * 0.01
 
         local base_power, cast_time = AAI_GetSavedHealPowerAndCastTime()
         local power = base_power + (GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))) / 3.5 * cast_time
@@ -72,9 +73,9 @@ local spec_evaluators = {
         ) / (
             cast_time
         ) * (
-            1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
-        ) / (
-            1 - (total_crit_chance + AAI_GetItemTotalSpellCritChance(item_link)) * AAI_GetIlluminationRank() * 0.1
+            1 + total_crit_chance_with_this * 0.5
+        ) * (
+            1 + total_crit_chance_with_this * (1/(1 - AAI_GetIlluminationRank() * 0.06))
         ) * (
             14 -- to map healing / second to healing power
         )
@@ -118,6 +119,10 @@ function AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
 end
 
 
+AAI_GetJudgementOfThePureRank   = function() return AAI_GetTalentRankForClass("paladin", 1, 21)  end
+AAI_GetHolyGuidanceRank         = function() return AAI_GetTalentRankForClass("paladin", 1, 19)  end
+AAI_GetSanctifiedLightRank      = function() return AAI_GetTalentRankForClass("paladin", 1, 14)  end
+AAI_GetHolyPowerRank            = function() return AAI_GetTalentRankForClass("paladin", 1, 16)  end
 AAI_GetDivineStrengthRank       = function() return AAI_GetTalentRankForClass("paladin", 2, 2)  end
 AAI_GetDivineIntellectRank      = function() return AAI_GetTalentRankForClass("paladin", 1, 1)  end
 AAI_GetIlluminationRank         = function() return AAI_GetTalentRankForClass("paladin", 1, 7)  end
