@@ -43,7 +43,7 @@ local spec_evaluators = {
         ) * (
             1 + (total_crit_chance + AAI_GetItemTotalCritChance(item_link)) * (1 + AAI_GetRighteousVengeanceRank() * 0.1 * speed_scaling) * (1 + AAI_GetImpaleRank() * 0.05) * (1 + AAI_GetItemCriticalDamageBonus(item_link))
         ) * (
-            1 + (AAI_GetCharacterHaste() + AAI_GetItemTotalHaste(item_link)) * white_dps_relative
+            1 + (AAI_GetCharacterHaste() + AAI_GetItemTotalHaste(item_link) + AAI_GetJudgementOfThePureRank()  * 0.03) * white_dps_relative
         ) / (
             1 - AAI_GetItemTotalExpertise(item_link)
         ) * (
@@ -69,7 +69,7 @@ local spec_evaluators = {
         return (
             power + (AAI_GetItemTotalSpellHealing(item_link)) / 3.5 * cast_time
         ) * (
-            1 + (AAI_GetCharacterHaste() + AAI_GetItemTotalHaste(item_link))
+            1 + (AAI_GetCharacterHaste() + AAI_GetItemTotalHaste(item_link) + AAI_GetJudgementOfThePureRank()  * 0.03)
         ) / (
             cast_time
         ) * (
@@ -134,6 +134,8 @@ AAI_GetRighteousVengeanceRank   = function() return AAI_GetTalentRankForClass("p
 
 AAI_GetDeepWoundsRank           = function() return AAI_GetTalentRankForClass("warrior", 1, 10)  end
 AAI_GetImpaleRank               = function() return AAI_GetTalentRankForClass("warrior", 1, 9) end -- assumed only 50% efficiency due to being skills only
+
+AAI_GetHolySpecializationRank   = function() return AAI_GetTalentRankForClass("priest", 2, 3)  end
 
 
 function AAI_GetTalentRankForClass(class, spec, talent)
