@@ -40,7 +40,10 @@ function AAI_EquipAllTaggedItems(inventory, tag)
 
     for bag, slot, item_link in AAI_InventoryIterator(inventory) do
         local was_equipped = false
-        if AAI_HasTag(item_link, tag) and (not AAI_HasTag(item_link, "swap") or not swapped) then 
+
+        local level = item_link and select(5, GetItemInfo(item_link)) or 0
+
+        if AAI_HasTag(item_link, tag) and (not AAI_HasTag(item_link, "swap") or not swapped) and level <= UnitLevel("player") then
             local slots = AAI_GetItemSlots(item_link)
 
             for _, equip_to in pairs(slots) do
@@ -209,7 +212,6 @@ function AAI_AddTag(item, tag, global)
     end
     tag_dict[item][tag] = true
 
-    -- _, item_link = GetItemInfo(item)
     AAI_print(string.format("%s was %s tagged as %s.", item, (global and "globaly" or not global and "localy"), AAI_SetColor(tag, AAI_GetTagColor(tag))))
 end
 
@@ -256,7 +258,6 @@ function AAI_RemoveTag(item, tag, global)
         tag_dict[item] = nil
     end
     
-    -- _, item_link = GetItemInfo(item)
     AAI_print(string.format("%s is no longer %s tagged as %s.", item, (global and "globaly" or not global and "localy"), AAI_SetColor(tag, AAI_GetTagColor(tag))))
 end
 
