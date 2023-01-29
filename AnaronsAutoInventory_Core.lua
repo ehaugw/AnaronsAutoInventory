@@ -100,7 +100,7 @@ function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
         end
 
         item_link = AAI_ClearItemLinkEnchant(item_link)
-        for spec_name, description in pairs({melee = "Melee Power Delta", heal = "Healing/Second Delta"}) do
+        for spec_name, description in pairs({melee = "Melee Power Delta", heal = "Healing Power Delta"}) do
             if spec_name ~= "heal" or AAI_IsHealerClass("player") then
                 local competing_item_link = compete_with_equipped and AAI_GetCompetingItemEquipped(item_link) or AAI_GetCompetingItemFromInventory(item_link, item_spec or spec_name) or AAI_GetCompetingItemEquipped(item_link)
                 competing_item_link = AAI_ClearItemLinkEnchant(competing_item_link)

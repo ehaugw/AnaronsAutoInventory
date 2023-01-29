@@ -62,7 +62,7 @@ local spec_evaluators = {
             cast_time
         ) * (
             1 + AAI_GetItemTotalSpellCritChance(item_link) * 0.5
-        )
+        ) * 14 -- to map healing / second to healing power
     end
 }
 
