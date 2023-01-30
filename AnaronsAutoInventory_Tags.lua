@@ -6,27 +6,6 @@ AAI_OnAddonLoadedTags = function(instance)
 end
 
 
-function AAI_SellItemsOnAuctionHouse(item, stack_size, bid, buyout)
-    -- The stacks must be split in to a slot before being put on the AH
-    free_bag = -1
-    free_slot = -1
-    
-    for bag, slot, link in AAI_InventoryIterator("inventory") do
-        if link == nil then
-            free_bag = bag
-            free_slot = slot
-            break
-        end
-    end
-
-    -- Split the stacks and sell
-    for _, bag in ipairs(container_ids) do
-        for slot=1,GetContainerNumSlots(bag),1 do
-        end
-    end
-end
-
-
 function AAI_EquipAllTaggedItems(inventory, tag)
     if UnitAffectingCombat("player") then
         AAI_print("You can not use this feature while in combat.")
