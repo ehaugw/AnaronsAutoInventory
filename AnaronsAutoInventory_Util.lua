@@ -168,6 +168,19 @@ AAI_print_original = AAI_print
 
 
 -- GENERAL TABLE OPERATIONS
+function AAI_TableCompare(tab1, tab2)
+    if #AAI_GetKeysFromTable(tab1) ~= #AAI_GetKeysFromTable(tab2) then
+        return false
+    end
+    for key, _ in pairs(tab1) do
+        if tab1[key] ~= tab2[key] then
+            return false
+        end
+    end
+    return true
+end
+
+
 function AAI_HasValue (tab, val)
     for index, value in pairs(tab) do
         if value == val then
@@ -269,13 +282,4 @@ function AAI_Round(num, numDecimalPlaces)
     return math.floor(num * mult + 0.5) / mult
 end
 
-function AAI_Join(list, delim)
-    local out = ""
-    for index, value in pairs(list) do
-        if out ~= "" then
-            out = out .. delim
-        end
-        out = out .. tostring(value)
-    end
-    return out
-end
+
