@@ -1,8 +1,3 @@
--- stub API functions
-GetTime = GetTime or function() end
-GetUnitName = GetUnitName or function(_, _) end
-GetZoneText = GetZoneText or function() end
-
 -- WOW SPECIFIC STRING HANDLING
 function AAI_GeneralStringFormat(message)
     message = string.gsub(message, "%%player", "%%p")
