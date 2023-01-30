@@ -3,7 +3,8 @@ SLASH_AUTO_INVENTORY_COMMAND_LINE_INTERFACE1 = "/aai"
 SLASH_AUTO_INVENTORY_COMMAND_LINE_INTERFACE2 = "/anaronsautoinventory"
 
 SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
-    local operation, option = AAI_GetLeftWord(option)
+    local operation
+    operation, option = AAI_GetLeftWord(option)
 
     local forced = false
     local global = false
@@ -97,7 +98,6 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         display     = "display saved data",
         debug       = "prepend to display to show more information",
         tagcolor    = "manually override the color of a tag",
-        auction     = "Prepend \"stack size, bid price, buyout price, item link\" to automatically sell items on the auction house",
         tagrename   = "replace all occurences of from_name with to_name",
         playerwarn  = "Set a note about a players negative behaviour",
         stats       = "configure how stats are calculated",
@@ -242,19 +242,22 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         AAI_print(string.format("Warning set for %s: %s", name, remainder))
 
     elseif operation == "tagrename" then
-        local from_name, option = AAI_GetLeftWord(option)
-        local to_name, option = AAI_GetLeftWord(option)
+        local from_name, to_name
+        from_name, option = AAI_GetLeftWord(option)
+        to_name, option = AAI_GetLeftWord(option)
         AAI_RenameItemTagInDatabase(from_name, to_name)
         if to_name then
             AAI_print(string.format("Replaced all occurences of %s with %s.", from_name, to_name))
         else
             AAI_print(string.format("Deleted all occurences of %s.", from_name))
         end
- 
+
     elseif operation == "display" then
-        local mode, option = AAI_GetLeftWord(option)
+        local mode
+        mode, option = AAI_GetLeftWord(option)
         if mode == "bagpreference" then
-            local tag, option = AAI_GetLeftWord(option)
+            local tag
+            tag, option = AAI_GetLeftWord(option)
             print(unpack(aai_bag_preferences["tags"][tag]))
         elseif mode == "tag" then
             local links, tags = AAI_StringToItemLinksAndWords(option)
@@ -265,7 +268,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
                 -- if table.getn(tags) == 0 or AAI_HasValue(links, item_link) or table.getn(AAI_GroupIntersect(AAI_GetKeysFromTable(tag_list), tags)) > 0 then
                     if debug then
                         AAI_print(string.format("%s: %s", item_link, item_link:gsub("\124", "")))
-                        for tag, value2 in pairs(tag_list) do
+                        for tag, _ in pairs(tag_list) do
                             AAI_print(string.format("- %s", tag))
                         end
                     else
@@ -284,6 +287,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
 
     elseif operation == "tagcolor" then
+        local tag
         tag, option = AAI_GetLeftWord(option)
         if remove then
             aai_tag_colors[tag] = nil
@@ -293,10 +297,10 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
 
     elseif operation == "gearset" then
-        local links, tags = AAI_StringToItemLinksAndWords(option)
+        local _, tags = AAI_StringToItemLinksAndWords(option)
         for _, tag in pairs(tags) do
             AAI_RenameItemTagInDatabase(tag, nil, function(item_link, _,_) return not AAI_HasTag(item_link, "swap") end)
-            for index, item_link in AAI_EquipmentIterator() do
+            for _, item_link in AAI_EquipmentIterator() do
                 if item_link then
                     AAI_AddTag(item_link, tag, false)
                 end
@@ -305,12 +309,12 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
     elseif operation == "tag" then
         local links, tags = AAI_StringToItemLinksAndWords(option)
-        if table.getn(links) == 0 then
+        if #links == 0 then
             AAI_print("Invalid use of \"tag\" operation. Try \"/aai help tag\"")
         end
-        
+
         for _, item_link in pairs(links) do
-            if replace or (remove and table.getn(tags) == 0) then
+            if replace or (remove and #tags == 0) then
                 AAI_RemoveAllTags(item_link, true)
                 AAI_RemoveAllTags(item_link, false)
             end
@@ -331,8 +335,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
     elseif operation == "equip" then
         local links, tags = AAI_StringToItemLinksAndWords(option)
-        
-        if table.getn(links) > 0 then
+
+        if #links > 0 then
             AAI_print("You provided item links. This feature has not yet been implemented")
         end
 
@@ -346,8 +350,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
     elseif operation == "delete" then
         local links, tags = AAI_StringToItemLinksAndWords(option)
-        
-        if table.getn(links) > 0 then
+
+        if #links > 0 then
             AAI_print("You provided item links. This feature has not yet been implemented")
         end
 
@@ -358,8 +362,8 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
     elseif operation == "use" then
         local links, tags = AAI_StringToItemLinksAndWords(option)
-        
-        if table.getn(links) > 0 then
+
+        if #links > 0 then
             AAI_print("You provided item links. This feature has not yet been implemented")
         end
 
@@ -368,13 +372,6 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
         end
         AAI_UseAllTaggedItems(inventory, tags, false, forced, exact)
 
-    elseif operation == "auction" then
-        stack_size, option = AAI_GetLeftWord(option)
-        bid_price, option = AAI_GetLeftWord(option)
-        buyout_price, option = AAI_GetLeftWord(option)
-        item_link = AAI_CleanItemLinkForDatabase(option)
-        
-        AAI_SellItemsOnAuctionHouse(item_link, stack_size, bid_price, buyout_price)
     end -- end of operation list
 
     AAI_print = AAI_print_original
