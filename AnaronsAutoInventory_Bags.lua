@@ -1,24 +1,27 @@
 local inventory_lock_table = {}
 
 
-local function set_inventory_lock_status(bag, slot, flag) 
+local function set_inventory_lock_status(bag, slot, flag)
     inventory_lock_table[string.format("%s,%s", bag, slot)] = time() + (flag and 10 or 0)
 end
 
 
-local function get_inventory_lock_status(bag, slot) 
+local function get_inventory_lock_status(bag, slot)
     local timestamp = inventory_lock_table[string.format("%s,%s", bag, slot)]
     return (timestamp ~= nil) and (time() - timestamp <= 0)
 end
 
 
-function AAI_OnAddonLoadedBags(instance)
+function AAI_OnAddonLoadedBags(_)
     aai_bag_preferences = aai_bag_preferences or {tags = {}, items = {}}
     aai_item_cache = aai_item_cache or {}
 end
 
 
 function AAI_GetCachedInventoryIterator(inventory, reverse)
+    if reverse then
+        AAI_print("GetCachedInventoryIterator does not yet support reverse")
+    end
     return aai_item_cache[inventory] and AAI_ForEachUnpack(aai_item_cache[inventory]) or function() return nil end
 end
 
@@ -34,7 +37,7 @@ function AAI_EquipAllTaggedItems(inventory, tag)
     end
     local swapped = false
 
-    for bag, slot, item_link in AAI_InventoryIterator(inventory) do
+    for _, _, item_link in AAI_InventoryIterator(inventory) do
         local was_equipped = false
 
         local level = item_link and select(5, GetItemInfo(item_link)) or 0
@@ -231,7 +234,7 @@ function AAI_MoveToDesiredBag(source_iterator, target_bag_iterator, evaluator)
             if not select(3, GetContainerItemInfo(bag, slot)) then
                 local deposited = false
                 if item_table[item_link] then
-                    for target_bag, target_slot, target_item_link, target_stack_size in AAI_ForEachUnpack(item_table[item_link]) do
+                    for target_bag, target_slot, _, target_stack_size in AAI_ForEachUnpack(item_table[item_link]) do
                         if evaluator(item_link, bag, target_bag, slot, target_slot) then
                             local _, _, locked = GetContainerItemInfo(target_bag, target_slot);
                             if not locked and not get_inventory_lock_status(target_bag, target_slot) and target_stack_size + stack_size <= stack_size_max then
@@ -266,7 +269,7 @@ end
 function AAI_GetInventoryStackInfo(bag, slot)
     local texture, item_count, locked, quality, readable, lootable, item_link = GetContainerItemInfo(bag, slot);
     if not item_link then return end
-    local itemName, _, _, _, _, _, _, item_stack_max = GetItemInfo(item_link)
+    local _, _, _, _, _, _, _, item_stack_max = GetItemInfo(item_link)
     return item_link, item_count, item_stack_max
 end
 
@@ -322,7 +325,7 @@ function AAI_InventoryIterator(inventory, reverse)
     local recover_bags_index = nil
 
     local step = reversed and -1 or 1
-    
+
     return function(options)
         if options and options.recover then
             bag_iterator = recover_bag_iterator
@@ -416,12 +419,13 @@ function AAI_SplitAllStacks(item_link, stack_size)
     local _stack_size = stack_size
     local inventory_iterator = AAI_InventoryIterator("inventory")
     -- local done_slots = {}
-    
+
     AAI_SubscribeEvent("ITEM_LOCK_CHANGED", function(_, _, bag, slot)
         if not select(3, GetContainerItemInfo(bag, slot)) then
             set_inventory_lock_status(bag, slot, false)
 
-            local item_link, remaining_stacks, max_stack_size = AAI_GetInventoryStackInfo(bag, slot)
+            local remaining_stacks
+            item_link, remaining_stacks, _ = AAI_GetInventoryStackInfo(bag, slot)
             if item_link == _item_link then
                 if remaining_stacks > _stack_size then
                     for target_bag, target_slot, target_item_link in inventory_iterator do
