@@ -78,6 +78,7 @@ end
 
 function AAI_CleanItemLinkForConsole(text)
     if text ~= nil then
+        text = tostring(text)
         old = nil
         while text ~= old do
             old = text
