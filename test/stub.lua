@@ -28,10 +28,16 @@ CreateFrame = function(_, _, _, _)
 end
 
 
+self = CreateFrame()
+
+
 GameTooltip = {
     HookScript = function(_, _, _) end
 }
 
+
+GameTooltip_InitializeComparisonTooltips = function(_, _) end
+GameTooltip_AnchorComparisonTooltips = function(_, _, _, _, _, _) end
 
 GetTime = function() end
 GetUnitName = function(_, _) end
@@ -39,3 +45,6 @@ GetZoneText = function() end
 
 UIParent = {}
 
+IsShiftKeyDown = function() end
+GetCritChance = function () end
+IsAltKeyDown = function () end
