@@ -104,19 +104,19 @@ function AAI_SortInventory(inventory)
     for source_bag, slot, item_link in inventory_iterator do
         local skip = false
         for tag, preferences in pairs(aai_bag_preferences["tags"]) do
-            for _, bag in pairs(preferences) do
-                if AAI_HasTag(item_link, tag) then
-                    if not skip and source_bag <= bag and AAI_GetBagInventory(bag) == inventory then
-                        AAI_MoveToDesiredBag(
-                        AAI_ForEachUnpack({{source_bag, slot, item_link}}),
-                        AAI_BagIterator(bag, true),
-                        function(_, source_bag, target_bag, source_slot, target_slot)
-                            return ((source_bag == nil and target_bag == nil) or (target_bag ~= source_bag)) or ((source_slot == nil and target_slot == nil) or (target_slot > source_slot))
+            if not skip then
+                for _, bag in pairs(preferences) do
+                    if AAI_HasTag(item_link, tag) then
+                        if not skip and AAI_GetBagInventory(bag) == inventory then
+                            skip = true
+                            AAI_MoveToDesiredBag(
+                            AAI_ForEachUnpack({{source_bag, slot, item_link}}),
+                            AAI_BagIterator(bag, true),
+                            function(_, source_bag, target_bag, source_slot, target_slot)
+                                return ((source_bag == nil and target_bag == nil) or (target_bag ~= source_bag)) or ((source_slot == nil and target_slot == nil) or (target_slot > source_slot))
+                            end
+                            )
                         end
-                        )
-                    end
-                    if bag == source_bag then
-                        skip = true
                     end
                 end
             end
