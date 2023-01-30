@@ -48,3 +48,7 @@ UIParent = {}
 IsShiftKeyDown = function() end
 GetCritChance = function () end
 IsAltKeyDown = function () end
+
+GetItemInfo = function() end
+
+unpack = unpack
