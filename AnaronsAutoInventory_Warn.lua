@@ -1,4 +1,4 @@
-function AAI_OnAddonLoadedWarn()
+function AAI_OnAddonLoadedWarn(instance)
     aai_warn_players = aai_warn_players or {}
     aai_warn_guilds = aai_warn_guilds or {}
 end
