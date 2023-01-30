@@ -148,7 +148,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
                 AAI_print(string.format("There is no help for \"%s\", as it is an invalid operation - try \"/aai help\"", help_operation))
 
             elseif help_operation == "tag" then
-                local optionals = AAI_Join(AAI_Map(AAI_GetKeysFromTable(tag_prefixes), function(x) return "[" .. x .. "]" end), " ")
+                local optionals = table.concat(AAI_Map(AAI_GetKeysFromTable(tag_prefixes), function(x) return "[" .. x .. "]" end), " ")
                 AAI_print("Description: Applies the specified tag(s) to the provided item(s). Tags are shown on item tooltips.")
                 AAI_print(string.format("Usage: /aai %s tag <tag> <ITEMLINK>", optionals))
                 AAI_print(string.format("Example: /aai tag melee %s", "\124cffe6cc80\124Hitem:36942::::::::70:::::\124h[Frostmourne]\124h\124r"))
@@ -159,7 +159,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
                 end
 
             elseif help_operation == "use" then
-                local optionals = AAI_Join(AAI_Map(AAI_GetKeysFromTable(use_prefixes), function(x) return "[" .. x .. "]" end), " ")
+                local optionals = table.concat(AAI_Map(AAI_GetKeysFromTable(use_prefixes), function(x) return "[" .. x .. "]" end), " ")
                 AAI_print("Description: Uses all items in your inventory (or bank if specified) that are tagged with one (or each, and only each, if provided) of the provided tag(s)")
                 AAI_print(string.format("Usage: /aai %s use <tag>", optionals))
                 AAI_print("Example: /aai use cooking")
@@ -171,7 +171,7 @@ SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"] = function(option)
 
             elseif help_operation == "equip" then
                 local equip_tags = {"level", "melee", "tank", "heal", "spell", "uniform"}
-                local equip_tag_string = AAI_Join(AAI_Map(equip_tags, function(x) return AAI_SetColor(x) end), ", ")
+                local equip_tag_string = table.concat(AAI_Map(equip_tags, function(x) return AAI_SetColor(x) end), ", ")
                 AAI_print("Description: Equips all items in your inventory that are tagged with one of the provided tag(s)")
                 AAI_print("Usage: /aai equip <tag>")
                 AAI_print(string.format("Example: /aai equip %s", AAI_SetColor("melee")))
