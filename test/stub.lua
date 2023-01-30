@@ -1,3 +1,9 @@
+-- SETUP DEFAULT DICTS
+aai_item_tags = {}
+aai_item_tags_global = {}
+aai_tag_colors = {}
+
+
 C_Container = {
     GetContainerItemCooldown = function(_) end,
     UseContainerItem = function(_, _) end,

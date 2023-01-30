@@ -1,8 +1,4 @@
 print("Start of tags testing")
--- SETUP DEFAULT DICTS
-aai_item_tags = {}
-aai_item_tags_global = {}
-aai_tag_colors = {}
 
 
 print_backup = print
