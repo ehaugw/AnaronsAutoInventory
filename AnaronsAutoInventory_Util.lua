@@ -1,3 +1,8 @@
+-- stub API functions
+GetTime = GetTime or function() end
+GetUnitName = GetUnitName or function(_, _) end
+GetZoneText = GetZoneText or function() end
+
 -- WOW SPECIFIC STRING HANDLING
 function AAI_GeneralStringFormat(message)
     message = string.gsub(message, "%%player", "%%p")
@@ -12,10 +17,11 @@ function AAI_GeneralStringFormat(message)
     return message
 end
 
-    
+
 function AAI_StringToItemLinksAndWords(option)
     local links = {}
     local tags = {}
+    local left_word
     while true do
         if option then
             if AAI_IsItemLink(option) then
@@ -43,13 +49,13 @@ end
 
 
 function AAI_IsItemLink(text)
-    item_link, _, _, remainer = string.match(text, "^(\124c[0-9a-f]+\124Hitem:([0-9]+):[^\124]*\124h[^\124]*\124h\124r)(%s?)(.*)")
+    local item_link, _, _, _ = string.match(text, "^(\124c[0-9a-f]+\124Hitem:([0-9]+):[^\124]*\124h[^\124]*\124h\124r)(%s?)(.*)")
     return item_link ~= nil
 end
 
 
 function AAI_GetLeftItemLink(text)
-    item_link, _, _, remainer = string.match(text, "(\124c[0-9a-f]+\124Hitem:([0-9]+):[^\124]*\124h[^\124]*\124h\124r)(%s?)(.*)")
+    local item_link, _, _, remainer = string.match(text, "(\124c[0-9a-f]+\124Hitem:([0-9]+):[^\124]*\124h[^\124]*\124h\124r)(%s?)(.*)")
     return item_link, remainer
 end
 
@@ -79,7 +85,7 @@ end
 function AAI_CleanItemLinkForConsole(text)
     if text ~= nil then
         text = tostring(text)
-        old = nil
+        local old = nil
         while text ~= old do
             old = text
             text, _ = text:gsub("(.*)\124c[0-9a-f]+([^\124]*)\124r(.*)", "%1%2%3")
@@ -121,7 +127,6 @@ end
 
 
 function AAI_ReplaceNumberAtIndex(text, index, level)
-    local old = text
     if text ~= nil then
         local pre = "(.*)(\124c[0-9a-f]+\124Hitem)"
         local mid = "(" .. AAI_TextRepeat(":%-?[0-9]*", index - 1) .. ":)(%-?[0-9]*)(" .. AAI_TextRepeat(":%-?[0-9]*", 18 - index) .. ")"
@@ -182,7 +187,7 @@ end
 
 
 function AAI_HasValue (tab, val)
-    for index, value in pairs(tab) do
+    for _, value in pairs(tab) do
         if value == val then
             return true
         end
@@ -202,7 +207,7 @@ end
 
 function AAI_ForEachUnpack(tab)
     local i = 0
-    local n = table.getn(tab)
+    local n = #tab
     local recover = 0
 
     return function(options)
@@ -280,6 +285,14 @@ end
 function AAI_Round(num, numDecimalPlaces)
     local mult = 10^(numDecimalPlaces or 0)
     return math.floor(num * mult + 0.5) / mult
+end
+
+
+function AAI_GetRemainingCooldown(timestamp, cooldown, _)
+    if cooldown == 0 then
+        return 0
+    end
+    return cooldown - GetTime() + timestamp
 end
 
 
