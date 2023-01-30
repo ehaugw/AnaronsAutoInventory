@@ -3,9 +3,12 @@ aai_item_tags = {}
 aai_item_tags_global = {}
 aai_tag_colors = {}
 
+aai_bag_preferences  = {}
+aai_item_cache = {}
+
 
 C_Container = {
-    GetContainerItemCooldown = function(_) end,
+    GetContainerItemCooldown = function(_, _) end,
     UseContainerItem = function(_, _) end,
     GetContainerNumSlots = function(_) end,
     GetContainerItemLink = function (_, _) end,
@@ -47,7 +50,13 @@ GameTooltip_AnchorComparisonTooltips = function(_, _, _, _, _, _) end
 
 GetTime = function() end
 GetUnitName = function(_, _) end
+UnitAffectingCombat = function(_) end
+UnitLevel = function(_) end
 GetZoneText = function() end
+
+GetInventoryItemLink = function(_, _) end
+GetInventoryItemCooldown = function(_, _) end
+EquipItemByName = function(_, _) end
 
 UIParent = {}
 
@@ -55,6 +64,12 @@ IsShiftKeyDown = function() end
 GetCritChance = function () end
 IsAltKeyDown = function () end
 
-GetItemInfo = function() end
+GetItemInfo = function(_) end
+time = function() end
 
 unpack = unpack
+
+ContainerIDToInventoryID = function (_) end
+GetItemFamily = function(_) end
+GetNumBankSlots = function () end
+SplitContainerItem = function (_, _, _) end
