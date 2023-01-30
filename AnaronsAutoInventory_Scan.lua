@@ -2,24 +2,18 @@ local scantip = CreateFrame("GameTooltip", "AAI_ScanningTooltip", nil, "GameTool
 scantip:SetOwner(UIParent, "ANCHOR_NONE")
 
 
-function AAI_GetPlusToStat(stat_dict, text)
-    scalar, remainder = string.match(text, "^\+ ?([0-9]+) ?(.*)")
-
-end
-
-
 function AAI_GetItemStatsByScanning(item_link)
     local gear_bonuses = {}
 
     local set_pieces = 0
     local has_empty_socket = false
-    
+
     for left, right in AAI_ForEachTooltipLine(item_link) do
         for _, line in pairs({left, right}) do
             if line then
-                text = AAI_GeneraliseTooltipText(line)
+                local text = AAI_GeneraliseTooltipText(line)
 
-                local equipped_set_pieces, set_size = string.match(text, ".* %(([0-9]+)/([0-9]+)%)")
+                local equipped_set_pieces, _ = string.match(text, ".* %(([0-9]+)/([0-9]+)%)")
                 if equipped_set_pieces then
                     set_pieces = tonumber(equipped_set_pieces)
                 end
@@ -32,14 +26,14 @@ function AAI_GetItemStatsByScanning(item_link)
                         text = ""
                     end
                 end
-                
+
                 local empty_socket = string.match(text, "^[^ ]+ socket$")
                 if empty_socket then
                     has_empty_socket = true
                     text = ""
                 end
-                
-                local effect = string.match(text, "socket bonus: (.*)")
+
+                effect = string.match(text, "socket bonus: (.*)")
                 if effect then
                     if has_empty_socket then
                         text = ""
@@ -48,7 +42,8 @@ function AAI_GetItemStatsByScanning(item_link)
                     end
                 end
 
-                local sign, scalar, effect = string.match(text, "^([%+%-]) *([0-9]+%.?[0-9]*) *([^ ].*)")
+                local sign, scalar
+                sign, scalar, effect = string.match(text, "^([%+%-]) *([0-9]+%.?[0-9]*) *([^ ].*)")
                 if scalar then
                     -- effect = string.gsub(effect, " +", "")
                     gear_bonuses[effect] = (gear_bonuses[effect] or 0) + tonumber(sign .. scalar)
@@ -64,7 +59,7 @@ function AAI_GeneraliseTooltipText(text)
     text = string.lower(text)
 
     -- spells
-    effect, scalar, situation = string.match(text, "increases (.*) done by ([0-9]+) for (.*)%.")
+    local effect, scalar, situation = string.match(text, "increases (.*) done by ([0-9]+) for (.*)%.")
     if not effect then
         effect, situation, scalar = string.match(text, "increases (.*) done by (.*) by ([0-9]+)%.")
     end
@@ -101,7 +96,7 @@ function AAI_GeneraliseTooltipText(text)
     text = string.gsub(text, "%(([^ ]+) damage per second%)", "+ %1 dps")
     text = string.gsub(text, "speed ([^ ]+)", "+ %1 speed")
 
-    test = string.gsub(text, " +", " ")
+    text = string.gsub(text, " +", " ")
 
     return text
 end
@@ -124,11 +119,9 @@ function AAI_GetTooltipLineAfterSplit(item_link)
 
         left_text = AAI_CleanTooltipText(left_text)
         left_text = AAI_FillEmptyGems(left_text)
+        local left_text_2
         left_text, left_text_2 = AAI_SplitTooltipText(left_text)
 
-        if left_text then
-            -- print(left_text)
-        end
         table.insert(left_texts, left_text)
         table.insert(right_texts, right_text)
 
@@ -188,18 +181,19 @@ function AAI_SplitTooltipText(text)
     if increases then
         text = remainder
     end
-    local plus, text = string.match(text, "(%+?%-?[0-9]* ?)(.*)")
+    local plus
+    plus, text = string.match(text, "(%+?%-?[0-9]* ?)(.*)")
 
-    prefix = (increases or "") .. plus
+    local prefix = (increases or "") .. plus
 
     -- special cases
     -- increases healing done by # and damage done by # ...
-    effect1, effect2, situation = string.match(text, "(.* done by [0-9]+) and (.* done by [0-9]+)(.*)")
+    local effect1, effect2, situation = string.match(text, "(.* done by [0-9]+) and (.* done by [0-9]+)(.*)")
     if situation then
         prefix = prefix .. " "
         return prefix .. effect1 .. situation, prefix .. effect2 .. situation
     end
-    -- increases damage and healing done by ... by # 
+    -- increases damage and healing done by ... by #
     effect1, effect2, situation = string.match(text, "(damage) and (healing)( done by .* by [0-9]+%.)")
     if situation then
         prefix = prefix .. " "
