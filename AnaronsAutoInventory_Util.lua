@@ -274,7 +274,7 @@ function AAI_Join(list, delim)
         if out ~= "" then
             out = out .. delim
         end
-        out = out .. value
+        out = out .. tostring(value)
     end
     return out
 end
