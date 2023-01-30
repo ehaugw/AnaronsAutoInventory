@@ -27,6 +27,11 @@ chat_command("tag melee heal " .. item_links_thunderfury, true)
 assert(aai_item_tags[AAI_CleanItemLinkForDatabase(item_links_thunderfury)]["melee"] == true, "AddTag failed to add first of two tags")
 assert(aai_item_tags[AAI_CleanItemLinkForDatabase(item_links_thunderfury)]["heal"] == true, "AddTag failed to add second of two tags")
 
+print("Testing /aai tag melee " .. item_links_thunderfury .. " and " .. item_links_arcanite_reaper)
+chat_command("tag melee " .. item_links_thunderfury .. " " .. item_links_arcanite_reaper, true)
+assert(aai_item_tags[AAI_CleanItemLinkForDatabase(item_links_thunderfury)]["melee"] == true, "AddTag failed to add tag to first out of two items")
+assert(aai_item_tags[AAI_CleanItemLinkForDatabase(item_links_arcanite_reaper)]["melee"] == true, "AddTag failed to add tag to second out of two items")
+
 
 -- test HasTag
 print("Testing AAI_HasTag")
@@ -85,7 +90,21 @@ AAI_RemoveAllTags(item_links_thunderfury)
 assert(not AAI_HasTag(item_links_thunderfury, "melee"), "RemoveAllTags failed to remove an arbitrary tag")
 
 
+-- test TaggedItemIterator
+print("Testing TaggedItemIterator")
+aai_item_tags = {}
+chat_command("tag melee " .. item_links_thunderfury .. " " .. item_links_arcanite_reaper, true)
+local iterator
+iterator = AAI_TaggedItemIterator("melee")
+assert(select(1,iterator()) == item_links_arcanite_reaper, "TaggedItemIterator did not yield the first expected item")
+assert(select(1,iterator()) == item_links_thunderfury, "TaggedItemIterator did not yield the first expected item")
+assert(select(1,iterator()) == nil, "TaggedItemIterator did not exhaust as expected")
+iterator = AAI_TaggedItemIterator("melee")
+assert(AAI_TableCompare(select(2,iterator()), {melee = true}), "TaggedItemIterator did not yield the expected tag with item")
+
+
+
 print = print_backup
 AAI_print = AAI_print_backup
 AAI_print_original = AAI_print
-print("End of tags testing")
+print("End of tags testing\n")
