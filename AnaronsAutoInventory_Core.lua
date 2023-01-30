@@ -21,8 +21,8 @@ function AAI_UnsubscribeEvent(event, identifier)
 end
 
 
-local function OnAddonLoadedCore(addon_name)
-    if addon_name == "AnaronsAutoInventory" then
+local function OnAddonLoadedCore(name)
+    if name == "AnaronsAutoInventory" then
         AAI_print("Anaron's Auto Inventory was loaded")
         AAI_OnAddonLoadedTags(self)
         AAI_OnAddonLoadedWarn(self)
@@ -33,14 +33,14 @@ local function OnAddonLoadedCore(addon_name)
 end
 
 
-AAI_SubscribeEvent("ADDON_LOADED", function(_, _, addon_name) OnAddonLoadedCore(addon_name) end)
+AAI_SubscribeEvent("ADDON_LOADED", function(_, _, name) OnAddonLoadedCore(name) end)
 
 
 function AAI_SetComparetooltip(tooltip_self, anchorFrame)
     -- taken from https://github.com/tomrus88/BlizzardInterfaceCode/blob/master/Interface/FrameXML/GameTooltip.lua
-    local tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(tooltip_self, anchorFrame);
+    local tooltip, newAnchorFrame, shoppingTooltip1, shoppingTooltip2 = GameTooltip_InitializeComparisonTooltips(tooltip_self, anchorFrame);
     local primaryItemShown, secondaryItemShown = shoppingTooltip1:SetCompareItem(shoppingTooltip2, tooltip);
-    GameTooltip_AnchorComparisonTooltips(tooltip, anchorFrame, shoppingTooltip1, shoppingTooltip2, primaryItemShown, secondaryItemShown);
+    GameTooltip_AnchorComparisonTooltips(tooltip, newAnchorFrame, shoppingTooltip1, shoppingTooltip2, primaryItemShown, secondaryItemShown);
 
     -- private code
     if primaryItemShown then
@@ -75,8 +75,7 @@ end
 function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
 
     if AAI_GetItemSlots(item_link) ~= nil then
-        compete_with_equipped = item_spec == nil and IsShiftKeyDown()
-
+        local compete_with_equipped = item_spec == nil and IsShiftKeyDown()
         local attackpower = AAI_GetItemTotalAttackPowerWithDps(item_link)
         local critchance = AAI_GetItemTotalCritChance(item_link)
         local hitchance = AAI_GetItemTotalHitChance(item_link)
@@ -113,7 +112,7 @@ function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
                 local competing_item_link = compete_with_equipped and AAI_GetCompetingItemEquipped(item_link) or AAI_GetCompetingItemFromInventory(item_link, item_spec or spec_name) or AAI_GetCompetingItemEquipped(item_link)
                 competing_item_link = AAI_ClearItemLinkEnchant(competing_item_link)
 
-                local score_delta, provided_score, competing_score = AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
+                local score_delta, provided_score, _ = AAI_GetItemScoreComparison(item_link, competing_item_link, spec_name)
                 if provided_score > 0 then
                     tooltip:AddDoubleLine(description,   AAI_SetColor(AAI_Round(score_delta,   2), score_delta   < 0 and "FF0000" or "00FF00"))
                 end
@@ -123,14 +122,14 @@ function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
 
     item_link = AAI_CleanItemLinkForDatabase(item_link)
     if aai_item_tags[item_link] ~= nil then
-        for key, value in pairs(aai_item_tags[item_link]) do
+        for key, _ in pairs(aai_item_tags[item_link]) do
             if not (aai_item_tags_global[item_link] and aai_item_tags_global[item_link][key]) then
                 tooltip:AddLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)))
             end
         end
     end
     if aai_item_tags_global[item_link] ~= nil then
-        for key, value in pairs(aai_item_tags_global[item_link]) do
+        for key, _ in pairs(aai_item_tags_global[item_link]) do
             tooltip:AddDoubleLine(AAI_SetColor(AAI_TitleCase(key), AAI_GetTagColor(key)), AAI_SetColor("Global", "FFFFFF"))
         end
     end
@@ -145,7 +144,6 @@ function AAI_AddTooltipTags()
     end
 
     AAI_AddTooltipInformation(GameTooltip, item_link, IsAltKeyDown() and AAI_GetItemSpec(item_link) or nil)
-
 end
 
 
