@@ -76,10 +76,19 @@ function AAI_ReplaceLinkWithID(text)
 end
 
 
-function AAI_CleanLinkToConsole(text)
+function AAI_CleanItemLinkForConsole(text)
     if text ~= nil then
-        text, _ = text:gsub("(.*)\124c[0-9a-f]+([^\124]*)\124r(.*)", "%1%2%3")
-        text, _ = text:gsub("(.*)(\124c[0-9a-f]+\124Hitem:[^\124]*\124h)([^\124]*)\124h\124r(.*)", "%1%3%4")
+        old = nil
+        while text ~= old do
+            old = text
+            text, _ = text:gsub("(.*)\124c[0-9a-f]+([^\124]*)\124r(.*)", "%1%2%3")
+        end
+
+        old = nil
+        while text ~= old do
+            old = text
+            text, _ = text:gsub("(.*)(\124c[0-9a-f]+\124Hitem:[^\124]*\124h)([^\124]*)\124h\124r(.*)", "%1%3%4")
+        end
         return text
     else
         return nil

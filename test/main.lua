@@ -5,7 +5,7 @@ package.path = package.path .. ";../?.lua"
 -- backup actual print and make a new print that removes wow highlights
 true_print = print
 print = function(msg)
-    true_print(AAI_CleanLinkToConsole(msg))
+    true_print(AAI_CleanItemLinkForConsole(msg))
 end
 
 
