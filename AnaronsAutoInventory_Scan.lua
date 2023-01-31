@@ -96,7 +96,7 @@ function AAI_GeneraliseTooltipText(text)
     text = string.gsub(text, "%(([^ ]+) damage per second%)", "+ %1 dps")
     text = string.gsub(text, "speed ([^ ]+)", "+ %1 speed")
 
-    text = string.gsub(text, " +", " ")
+    text = string.gsub(text, " %+", " ")
 
     return text
 end
