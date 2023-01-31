@@ -50,7 +50,11 @@ GameTooltip_AnchorComparisonTooltips = function(_, _, _, _, _, _) end
 
 GetTime = function() end
 GetUnitName = function(_, _) end
+UnitClass = function(_, _) end
+UnitDamage = function (_) end
+UnitAttackSpeed = function (_) end
 UnitAffectingCombat = function(_) end
+GetCombatRatingBonus = function(_) end
 UnitLevel = function(_) end
 GetZoneText = function() end
 
@@ -59,14 +63,21 @@ GetInventoryItemCooldown = function(_, _) end
 EquipItemByName = function(_, _) end
 
 UIParent = {}
+CR_HIT_MELEE = ""
+CR_HASTE_MELEE = ""
 
 IsShiftKeyDown = function() end
 GetCritChance = function () end
+GetSpellBonusHealing = function () end
+GetSpellCritChance = function (_) end
 IsAltKeyDown = function () end
 IsControlKeyDown = function () end
 
 GetItemInfo = function(_) end
 time = function() end
+max = function(...) end
+min = function (...) end
+ceil = function (...) end
 
 unpack = unpack
 
@@ -80,3 +91,4 @@ ReloadUI = function () end
 GetActiveLootRollIDs = function() end
 GetLootRollItemLink = function (_) end
 ConfirmLootRoll = function (_, _) end
+GetTalentInfo = function (_, _) end

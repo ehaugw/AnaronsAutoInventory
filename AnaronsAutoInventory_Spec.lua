@@ -1,4 +1,4 @@
-function AAI_OnAddonLoadedSpec(instance)
+function AAI_OnAddonLoadedSpec(_)
     aai_spec_settings = aai_spec_settings or {}
 end
 
@@ -58,13 +58,14 @@ local spec_evaluators = {
     end,
 
     heal = function(item_link)
+        local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
+
         local school = AAI_GetHealerSchool("player")
         local total_crit_chance = AAI_GetCharacterSpellCritChance(school) - AAI_GetItemTotalSpellCritChance(competing_item_link)
         local total_crit_chance_with_this = total_crit_chance + AAI_GetItemTotalSpellCritChance(item_link) + AAI_GetSanctifiedLightRank() * 0.02 + AAI_GetHolyPowerRank() * 0.01 + AAI_GetHolySpecializationRank() * 0.01 + AAI_GetFocusedWillRank() * 0.01
 
         local base_power, cast_time = AAI_GetSavedHealPowerAndCastTime()
         local power = base_power + (GetSpellBonusHealing() - AAI_GetItemTotalSpellHealing(AAI_GetCompetingItemEquipped(item_link))) / 3.5 * cast_time
-
 
         return (
             power + (AAI_GetItemTotalSpellHealing(item_link)) / 3.5 * cast_time
@@ -147,8 +148,7 @@ function AAI_GetTalentRankForClass(class, spec, talent)
     local _, player_class = UnitClass("player")
     player_class = string.lower(player_class)
     if string.lower(class) == player_class then
-        _, _, _, _, rank = GetTalentInfo(spec, talent)
-        return rank
+        return select(5, GetTalentInfo(spec, talent))
     end
     return 0
 end
@@ -185,7 +185,7 @@ function AAI_CalculateYellowDps(option)
     local actual_period = period / (1 + haste)
     local effective_judgement_cd = AAI_GetCooldownBetweenSwings(8, actual_period) / period
 
-    local proc_per_minute = 7
+    -- local proc_per_minute = 7
     local damage = dps * period * (1 + crit)
     local white = damage / actual_period
     local soc_rate = 1 * period * 7 / 60 * period / actual_period
