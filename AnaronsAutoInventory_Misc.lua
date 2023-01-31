@@ -14,7 +14,7 @@ end
 ------------------------------------
 SLASH_AAI_WISHLIST1 = "/wishlist"
 
-SlashCmdList["AAI_WISHLIST"] = function(option)
+SlashCmdList["AAI_WISHLIST"] = function(_)
     SlashCmdList["AUTO_INVENTORY_COMMAND_LINE_INTERFACE"]("display wishlist")
 end
 
@@ -25,7 +25,7 @@ end
 SLASH_GET_API_VERSION1 = "/gapi"
 SLASH_GET_API_VERSION2 = "/getapiversion"
 
-SlashCmdList["GET_API_VERSION"] = function(option)
+SlashCmdList["GET_API_VERSION"] = function(_)
     print((select(4, GetBuildInfo())))
 end
 
@@ -36,7 +36,7 @@ end
 SLASH_RELOAD_UI1 = "/reui"
 SLASH_RELOAD_UI2 = "/reloadui"
 
-SlashCmdList["RELOAD_UI"] = function(option)
+SlashCmdList["RELOAD_UI"] = function(_)
     ReloadUI()
 end
 
@@ -44,12 +44,10 @@ end
 ------------------------------------
 -- CHAT MESSAGE STRING FORMATTING --
 ------------------------------------
-local OldSendChatMessage = SendChatMessage 
-SendChatMessage = function(...)
-    message, chat_type, language, channel = ...
-
+local OldSendChatMessage = SendChatMessage
+SendChatMessage = function(message, chat_type, language, channel, ...)
     message = AAI_GeneralStringFormat(message)
-    
+
     -- Replace %whisper with whisper recepient
     local whisper_recepient = "<no whisper recepient>"
     if chat_type == "WHISPER" then
@@ -61,6 +59,6 @@ SendChatMessage = function(...)
     end
     message = string.gsub(message, "%%whisper", "%%w")
     message = string.gsub(message, "%%w", whisper_recepient)
-    OldSendChatMessage(message, chat_type, language, channel)
+    OldSendChatMessage(message, chat_type, language, channel, ...)
 end
 
