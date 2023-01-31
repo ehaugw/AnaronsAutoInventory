@@ -61,7 +61,7 @@ function AAI_CountInBag(inventory, item_link)
     local count = 0
     for bag, slot, container_item_link in AAI_InventoryIterator(inventory) do
         if AAI_CleanItemLinkForDatabase(container_item_link) == item_link then
-            local _, stack_size, stack_size_max = AAI_GetInventoryStackInfo(bag, slot)
+            local stack_size = select(2, AAI_GetInventoryStackInfo(bag, slot))
             count = count + stack_size
         end
     end
@@ -71,8 +71,8 @@ end
 
 function AAI_DeleteAllTaggedItems(inventory, tags, forced, exact)
     for bag, slot, item_link in AAI_InventoryIterator(inventory) do
-        _, _, locked = GetContainerItemInfo(bag, slot)
-        if not locked and ((not exact and AAI_HasTags(item_link, tags)) or (exact and AAI_HasTagsExact(item_link, tags))) then 
+        local locked = select(3, GetContainerItemInfo(bag, slot))
+        if not locked and ((not exact and AAI_HasTags(item_link, tags)) or (exact and AAI_HasTagsExact(item_link, tags))) then
             AAI_print(string.format("Delete %s", item_link))
             if forced and not CursorHasItem() then
                 PickupContainerItem(bag, slot)
@@ -85,8 +85,8 @@ end
 
 function AAI_UseAllTaggedItems(inventory, tags, destructive, forced, exact)
     for bag, slot, item_link in AAI_InventoryIterator(inventory) do
-        _, _, locked = GetContainerItemInfo(bag, slot)
-        if not locked and ((not exact and AAI_HasTags(item_link, tags)) or (exact and AAI_HasTagsExact(item_link, tags))) then 
+        local locked = select(3, GetContainerItemInfo(bag, slot))
+        if not locked and ((not exact and AAI_HasTags(item_link, tags)) or (exact and AAI_HasTagsExact(item_link, tags))) then
             -- precious items can not be destroyed without "forced"
             if forced or not (AAI_HasTag(item_link, "precious") and destructive) then
                 -- Equipment has a GCD in combat and can therefore not be used unless it is in destructive mode
@@ -102,7 +102,7 @@ end
 
 function AAI_AddTag(item, tag, global)
     item = AAI_CleanItemLinkForDatabase(item)
-    tag_dict = aai_item_tags
+    local tag_dict = aai_item_tags
     if global then
         tag_dict = aai_item_tags_global
     end
@@ -130,12 +130,12 @@ end
 function AAI_ClearTagForSlots(tag, slots)
     AAI_RenameItemTagInDatabase(tag, nil, function(item_link, _, _) return AAI_GetItemSlots(item_link) == slots end)
     for _, item_link in AAI_EquipmentIterator("inventory") do
-        if AAI_HasTag(item_link, tag) and table.getn(AAI_GroupIntersect(slots, AAI_GetItemSlots(item_link))) > 0 then
+        if AAI_HasTag(item_link, tag) and #AAI_GroupIntersect(slots, AAI_GetItemSlots(item_link)) > 0 then
             AAI_RemoveTag(item_link, tag)
         end
     end
     for _, _, item_link in AAI_InventoryIterator("inventory") do
-        if AAI_HasTag(item_link, tag) and table.getn(AAI_GroupIntersect(slots, AAI_GetItemSlots(item_link))) > 0 then
+        if AAI_HasTag(item_link, tag) and #AAI_GroupIntersect(slots, AAI_GetItemSlots(item_link)) > 0 then
             AAI_RemoveTag(item_link, tag)
         end
     end
@@ -144,7 +144,7 @@ end
 
 function AAI_RemoveTag(item, tag, global)
     item = AAI_CleanItemLinkForDatabase(item)
-    tag_dict = aai_item_tags
+    local tag_dict = aai_item_tags
     if global then
         tag_dict = aai_item_tags_global
     end
@@ -157,7 +157,7 @@ function AAI_RemoveTag(item, tag, global)
     if #AAI_GetKeysFromTable(tag_dict[item]) == 0 then
         tag_dict[item] = nil
     end
-    
+
     AAI_print(string.format("%s is no longer %s tagged as %s.", item, (global and "globaly" or not global and "localy"), AAI_SetColor(tag, AAI_GetTagColor(tag))))
 end
 
@@ -166,7 +166,7 @@ function AAI_HasTag(item, tag)
     item = AAI_CleanItemLinkForDatabase(item)
 
     if item and tag == "junk" then
-        _, _, rarity = GetItemInfo(item)
+        local rarity = select(3, GetItemInfo(item))
         if rarity == 0 then
             return true
         end
@@ -260,7 +260,7 @@ end
 
 
 function AAI_RenameItemTagInDatabase(from_name, to_name, condition)
-    for item_link, tag_dict in pairs(aai_item_tags) do
+    for item_link, _ in pairs(aai_item_tags) do
         if (condition == nil or condition(item_link, from_name, to_name)) and AAI_HasTag(item_link, from_name) then
             if to_name then
                 AAI_AddTag(item_link, to_name)
