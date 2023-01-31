@@ -7,15 +7,6 @@ aai_bag_preferences  = {}
 aai_item_cache = {}
 
 
-C_Container = {
-    GetContainerItemCooldown = function(_, _) end,
-    UseContainerItem = function(_, _) end,
-    GetContainerNumSlots = function(_) end,
-    GetContainerItemLink = function (_, _) end,
-    PickupContainerItem = function (_, _) end,
-}
-
-
 SlashCmdList = {}
 function chat_command(msg, silent)
     if silent == nil then
@@ -58,7 +49,6 @@ GetCombatRatingBonus = function(_) end
 UnitLevel = function(_) end
 GetZoneText = function() end
 
-GetInventoryItemLink = function(_, _) end
 GetInventoryItemCooldown = function(_, _) end
 EquipItemByName = function(_, _) end
 
@@ -94,3 +84,19 @@ ConfirmLootRoll = function (_, _) end
 GetTalentInfo = function (_, _) end
 CursorHasItem = function () end
 DeleteCursorItem = function () end
+
+
+GetContainerItemCooldown = function(_, _) end
+UseContainerItem = function(_, _) end
+GetContainerNumSlots = function(_) end
+GetContainerItemLink = function (_, _) end
+PickupContainerItem = function (_, _) end
+
+
+C_Container = {
+    GetContainerItemCooldown = GetContainerItemCooldown,
+    UseContainerItem = UseContainerItem,
+    GetContainerNumSlots = GetContainerNumSlots,
+    GetContainerItemLink = GetContainerItemLink,
+    PickupContainerItem = PickupContainerItem
+}
