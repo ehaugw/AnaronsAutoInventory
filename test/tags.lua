@@ -64,7 +64,7 @@ assert(not AAI_HasTagsExact(item_links_thunderfury, {"melee", "melee2"}), "HasTa
 chat_command("tag melee " .. item_links_thunderfury, true)
 assert(AAI_HasTagsExact(item_links_thunderfury, {"melee"}), "HasTagsExact gives false negatives when the item has one tag and the requiested tag contains only that tag")
 assert(not AAI_HasTagsExact(item_links_thunderfury, {"melee", "melee2"}), "HasTagsExact gives false positive when requesting more than the one existing tag")
-chat_command("tag melee2 " .. item_links_thunderfury)
+chat_command("tag melee2 " .. item_links_thunderfury, true)
 assert(not AAI_HasTagsExact(item_links_thunderfury, {"melee"}), "HasTagsExact gives false positive when requesting one of two existing tags")
 assert(AAI_HasTagsExact(item_links_thunderfury, {"melee", "melee"}), "HasTagsExact gives false negative when attempting to match the two tags that exist on an item")
 
