@@ -267,7 +267,7 @@ end
 
 
 function AAI_GetInventoryStackInfo(bag, slot)
-    local texture, item_count, locked, quality, readable, lootable, item_link = GetContainerItemInfo(bag, slot);
+    local _, item_count, _, _, _, _, item_link = GetContainerItemInfo(bag, slot);
     if not item_link then return end
     local _, _, _, _, _, _, _, item_stack_max = GetItemInfo(item_link)
     return item_link, item_count, item_stack_max
