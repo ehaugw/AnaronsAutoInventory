@@ -1,4 +1,4 @@
-function AAI_OnAddonLoadedStat(instance)
+function AAI_OnAddonLoadedStat(_)
     aai_stat_settings = aai_stat_settings or {}
 end
 
@@ -170,12 +170,12 @@ function AAI_DpsToAttackPower(dps)
 end
 
 
-function AAI_GetItemTotalAttackPowerWithDps(item_link, blessing_of_kings)
-    return AAI_GetItemTotalAttackPower(item_link, true, blessing_of_kings)
+function AAI_GetItemTotalAttackPowerWithDps(item_link)
+    return AAI_GetItemTotalAttackPower(item_link, true)
 end
 
 
-function AAI_GetItemTotalAttackPower(item_link, include_dps, blessing_of_kings)
+function AAI_GetItemTotalAttackPower(item_link, include_dps)
     return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attack power") + (include_dps and AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps")) or 0)
 end
 
@@ -239,7 +239,7 @@ end
 
 function AAI_DisplayStatKeys(item_link)
     local stat_table = AAI_GetItemStats(item_link)
-    for key, val in pairs(stat_table) do
+    for key, _ in pairs(stat_table) do
         print(key)
     end
 end
@@ -248,7 +248,7 @@ end
 function AAI_GetCompetingItemFromInventory(item_link, tag)
     local item_slots = AAI_GetItemSlots(item_link)
     for _, inventory in pairs({"bank","inventory"}) do
-        for bag, slot, link in AAI_InventoryIterator(inventory) do
+        for _, _, link in AAI_InventoryIterator(inventory) do
             if AAI_HasTag(link, tag) and AAI_GetItemSlots(link)[1] == item_slots[1] then
                 return link
             end
@@ -310,7 +310,7 @@ function AAI_GetItemStats(item_link)
         aai_cached_dict = AAI_GetItemStatsByScanning(item_link)
         aai_cached_item = item_link
     end
-    return aai_cached_dict 
+    return aai_cached_dict
 end
 
 
@@ -320,7 +320,7 @@ function AAI_GetItemSpec(item_link, priority)
     local spell_stats = AAI_GetItemTotalSpellDamage(item_link) + (AAI_GetItemTotalHitChance(item_link)) * 0.4
     local heal_stats = AAI_GetItemTotalSpellHealing(item_link)
 
-    highest = max(tank_stats, melee_stats, spell_stats, heal_stats)
+    local highest = max(tank_stats, melee_stats, spell_stats, heal_stats)
 
     if highest == tank_stats then return "tank" end
     if highest == melee_stats then return "melee" end
