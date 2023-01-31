@@ -92,3 +92,5 @@ GetActiveLootRollIDs = function() end
 GetLootRollItemLink = function (_) end
 ConfirmLootRoll = function (_, _) end
 GetTalentInfo = function (_, _) end
+CursorHasItem = function () end
+DeleteCursorItem = function () end
