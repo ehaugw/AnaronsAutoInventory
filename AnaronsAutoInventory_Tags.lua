@@ -1,4 +1,4 @@
-AAI_OnAddonLoadedTags = function(instance)
+AAI_OnAddonLoadedTags = function(_)
     aai_item_tags = aai_item_tags or {}
     aai_tag_colors = aai_tag_colors or {}
     aai_item_tags_global = aai_item_tags_global or {}
