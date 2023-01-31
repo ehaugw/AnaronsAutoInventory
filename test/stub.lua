@@ -63,6 +63,7 @@ UIParent = {}
 IsShiftKeyDown = function() end
 GetCritChance = function () end
 IsAltKeyDown = function () end
+IsControlKeyDown = function () end
 
 GetItemInfo = function(_) end
 time = function() end
@@ -73,3 +74,9 @@ ContainerIDToInventoryID = function (_) end
 GetItemFamily = function(_) end
 GetNumBankSlots = function () end
 SplitContainerItem = function (_, _, _) end
+GuildSetMOTD = function(_) end
+GetBuildInfo = function() end
+ReloadUI = function () end
+GetActiveLootRollIDs = function() end
+GetLootRollItemLink = function (_) end
+ConfirmLootRoll = function (_, _) end
