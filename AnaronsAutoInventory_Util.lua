@@ -153,7 +153,7 @@ function AAI_print(str)
 end
 
 
-aai_to_be_printed = ""
+local aai_to_be_printed = ""
 function AAI_BatchPrint(str)
     if str == nil then
         AAI_print(aai_to_be_printed)
