@@ -79,10 +79,11 @@ function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
         local attackpower = AAI_GetItemTotalAttackPowerWithDps(item_link)
         local critchance = AAI_GetItemTotalCritChance(item_link)
         local hitchance = AAI_GetItemTotalHitChance(item_link)
-        local spellcritchance = AAI_GetItemTotalSpellCritChance(item_link)
+        -- local spellcritchance = AAI_GetItemTotalSpellCritChance(item_link)
         local expertise = AAI_GetItemTotalExpertise(item_link)
         local haste = AAI_GetItemTotalHaste(item_link)
         local critboost = AAI_GetItemCriticalDamageBonus(item_link)
+        local dodgechance = AAI_GetItemDodgeBonus(item_link)
 
         if attackpower > 0 then
             tooltip:AddDoubleLine("Effective Attack Power", AAI_Round(attackpower, 2))
@@ -99,11 +100,14 @@ function AAI_AddTooltipInformation(tooltip, item_link, item_spec)
         if hitchance > 0 then
             tooltip:AddDoubleLine("Effective Hit Chance", AAI_Round(hitchance * 100,2) .. "%")
         end
-        if spellcritchance > 0 then
-            tooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
-        end
+        -- if spellcritchance > 0 then
+        --     tooltip:AddDoubleLine("Effective Spell Crit Chance", AAI_Round(spellcritchance * 100,2) .. "%")
+        -- end
         if critboost > 0 then
             tooltip:AddDoubleLine("Crit Boost to Overall", AAI_Round(critboost * GetCritChance(), 2) .. "%")
+        end
+        if dodgechance > 0 then
+            tooltip:AddDoubleLine("Effective Dodge Chance", AAI_Round(dodgechance * 100,2) .. "%")
         end
 
         item_link = AAI_ClearItemLinkEnchant(item_link)

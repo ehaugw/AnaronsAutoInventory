@@ -93,18 +93,36 @@ function AAI_IntellectToSpellCritChance(ability_score)
 end
 
 
+function AAI_DodgeRatingPerDodge(rating)
+    local level = UnitLevel("player")
+    local scalars = {
+        {0,  1 / 0.2},
+        {10, 1 / 0.7},
+        {15, 1 / 1.88476},
+        {20, 1 / 3.230272},
+        {30, 1 / 5.922166},
+        {40, 1 / 8.610086},
+        {50, 1 / 11.308562},
+        {60, 1 / 14.0},
+        {70, 1 / 22.1},
+        {80, 1 / 46.097315},
+    }
+    return AAI_Interpolate(scalars, level) * rating
+end
+
+
 function AAI_HasterRatingPerHaste(rating)
     local level = UnitLevel("player")
     local scalars = {
-        {0,  1 / 0.2        * 1.398734},
-        {10, 1 / 0.7        * 1.398734},
-        {15, 1 / 1.88476    * 1.398734},
-        {20, 1 / 3.230272   * 1.398734},
-        {30, 1 / 5.922166   * 1.398734},
-        {40, 1 / 8.610086   * 1.398734},
-        {50, 1 / 11.308562  * 1.398734},
-        {60, 1 / 14.0       * 1.398734},
-        {70, 1 / 22.1       * 1.398734},
+        {0,  1 / 0.2        * 1.40626339},
+        {10, 1 / 0.7        * 1.40626341},
+        {15, 1 / 1.88476    * 1.40626341},
+        {20, 1 / 3.230272   * 1.40626341},
+        {30, 1 / 5.922166   * 1.40626341},
+        {40, 1 / 8.610086   * 1.40626341},
+        {50, 1 / 11.308562  * 1.40626341},
+        {60, 1 / 14.0       * 1.40626341},
+        {70, 1 / 22.1       * 1.40626341},
         {80, 1 / 46.097315  * 1.40626341},
     }
     return AAI_Interpolate(scalars, level) * rating
@@ -193,6 +211,11 @@ end
 function AAI_GetItemTotalSpellHaste(item_link)
     -- spell haste rating for tbc
     return (AAI_HasterRatingPerHaste(AAI_GetItemStat(item_link, "haste rating"))) / 100
+end
+
+
+function AAI_GetItemDodgeBonus(item_link)
+    return AAI_DodgeRatingPerDodge(AAI_GetItemStat(item_link, "dodge rating")) / 100
 end
 
 
