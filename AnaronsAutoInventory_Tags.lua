@@ -162,6 +162,13 @@ function AAI_RemoveTag(item, tag, global)
 end
 
 
+function AAI_GetTags(item_link)
+    item_link = AAI_CleanItemLinkForDatabase(item_link)
+    local tags = AAI_GroupUnion(AAI_GetKeysFromTable(aai_item_tags[item_link] or {}), AAI_GetKeysFromTable(aai_item_tags_global[item_link] or {}))
+    return tags
+end
+
+
 function AAI_HasTag(item, tag)
     item = AAI_CleanItemLinkForDatabase(item)
 
