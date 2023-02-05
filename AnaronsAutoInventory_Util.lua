@@ -248,6 +248,17 @@ function AAI_GroupIntersect(tab1, tab2)
 end
 
 
+function AAI_GroupDifference(tab1, tab2)
+    local difference = {}
+    for _, value in ipairs(tab1) do
+        if not AAI_HasValue(tab2, value) then
+            table.insert(difference, value)
+        end
+    end
+    return difference
+end
+
+
 function AAI_Map(tab, func, selector)
     local output = {}
     for key, val in pairs(tab) do
