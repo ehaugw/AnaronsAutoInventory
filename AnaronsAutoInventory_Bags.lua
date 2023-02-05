@@ -26,6 +26,15 @@ function AAI_GetCachedInventoryIterator(inventory, reverse)
 end
 
 
+function AAI_IsSwapItem(item_link)
+    if AAI_HasTag(item_link, "swap") then
+        local competing_item_link = AAI_GetCompetingItemEquipped(item_link)
+        return AAI_HasTags(item_link, AAI_GroupDifference(AAI_GetTags(competing_item_link), {"swap"}))
+    end
+    return false
+end
+
+
 function AAI_EquipAllTaggedItems(inventory, tag)
     if UnitAffectingCombat("player") then
         AAI_print("You can not use this feature while in combat.")
@@ -77,7 +86,7 @@ function AAI_ReplaceSwapItems(inventory)
     end
 
     for bag, slot, item_link in AAI_InventoryIterator(inventory) do
-        if AAI_HasTag(item_link, "swap") then
+        if AAI_IsSwapItem(item_link) then
             local slots = AAI_GetItemSlots(item_link)
             local cooldown = AAI_GetRemainingCooldown(GetContainerItemCooldown(bag, slot))
 
