@@ -47,7 +47,8 @@ function AAI_StrengthToAttackPower(ability_score)
         rogue = 1,
         shaman = 2,
         warlock = 1,
-        warrior = 2
+        warrior = 2,
+        deathknight = 1.929577
     }
     local mod = mod_dict[string.lower(player_class)]
 
@@ -66,7 +67,8 @@ function AAI_AgilityToCritChance(ability_score)
         rogue = 1/40,
         shaman = 1/24,
         warlock = 0,
-        warrior = 1/33
+        warrior = 1/33,
+        deathknight = 1/62.5
     }
     local mod = mod_dict[string.lower(player_class)]
 
@@ -85,7 +87,8 @@ function AAI_IntellectToSpellCritChance(ability_score)
         rogue = 0,
         shaman = 1/78.1,
         warlock = 1/81.9,
-        warrior = 0
+        warrior = 0,
+        deathknight = 0
     }
     local mod = mod_dict[string.lower(player_class)]
 
@@ -194,7 +197,7 @@ end
 
 
 function AAI_GetItemTotalAttackPower(item_link, include_dps)
-    return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attack power") + (include_dps and AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps")) or 0)
+    return AAI_StrengthToAttackPower(AAI_GetItemStat(item_link, "strength")) + AAI_GetItemStat(item_link, "attack power") + (include_dps and AAI_DpsToAttackPower(AAI_GetItemStat(item_link, "dps")) or 0) + (AAI_GetBladedArmorRank() * AAI_GetItemStat(item_link, "armor") / 180.0)
 end
 
 
