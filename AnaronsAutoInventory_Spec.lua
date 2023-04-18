@@ -143,6 +143,8 @@ AAI_GetFocusedWillRank          = function() return AAI_GetTalentRankForClass("p
 AAI_GetDivineAegisRank          = function() return AAI_GetTalentRankForClass("priest", 2, 24)  end
 AAI_GetBorrowedTimeRank         = function() return AAI_GetTalentRankForClass("priest", 2, 27)  end
 
+AAI_GetBladedArmorRank          = function() return AAI_GetTalentRankForClass("deathknight", 1, 4)  end
+
 
 function AAI_GetTalentRankForClass(class, spec, talent)
     local _, player_class = UnitClass("player")
