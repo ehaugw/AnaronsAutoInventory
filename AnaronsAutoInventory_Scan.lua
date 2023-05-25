@@ -38,7 +38,7 @@ function AAI_GetItemStatsByScanning(item_link)
                     if has_empty_socket then
                         text = ""
                     else
-                        text = effect
+                        text = "+" .. effect
                     end
                 end
 
