@@ -71,7 +71,7 @@ function AAI_AgilityToCritChance(ability_score)
         deathknight = 1/30
     }
     local mod = mod_dict[string.lower(player_class)]
-    return ability_score * AAI_CritRatingToCritChance(mod / 25 * 22.1)
+    return AAI_CritRatingToCritChance(ability_score * mod * 22.15)
 end
 
 
