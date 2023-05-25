@@ -17,9 +17,12 @@ function AAI_GetCharacterHaste()
     return AAI_GetSwiftRetributionRank() / 100
 end
 
-local white_dps_relative = 0.5
-local instant_cast_reltive = 0.5
-local speed_scaling = instant_cast_reltive
+local white_dps_relative = 0.17
+local weapon_skills = 0.25
+local speed_scaling = weapon_skills
+-- local white_dps_relative = 0.5
+-- local instant_cast_reltive = 0.5
+-- local speed_scaling = instant_cast_reltive
 
 local spec_evaluators = {
     melee = function(item_link)
@@ -31,7 +34,7 @@ local spec_evaluators = {
         local hit_chance = AAI_GetItemTotalHitChance(item_link)
         local total_crit_chance = AAI_GetCharacterCritChance() - AAI_GetItemTotalCritChance(competing_item_link)
 
-        if IsControlKeyDown() and hit_chance > 0 then
+        if IsControlKeyDown() and hit_chance > 0 and AAI_GetHitCap() then
             local total_hit_chance = GetCombatRatingBonus(CR_HIT_MELEE) / 100 - AAI_GetItemTotalHitChance(competing_item_link)
             hit_chance = max(0, min(AAI_GetHitCap() - total_hit_chance, hit_chance))
         end
@@ -159,7 +162,7 @@ end
 function AAI_GetHitCap()
     local _, player_class = UnitClass("player")
     if string.lower(player_class) == "paladin" then
-        return 6 / 100
+        return 8 / 100
     else
         return nil
     end
