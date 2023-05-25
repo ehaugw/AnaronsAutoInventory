@@ -62,17 +62,16 @@ function AAI_AgilityToCritChance(ability_score)
         druid = 1/24,
         hunter = 1/40,
         mage = 0,
-        paladin = 1/24,
+        paladin = 1/25,
         priest = 0,
         rogue = 1/40,
         shaman = 1/24,
         warlock = 0,
         warrior = 1/33,
-        deathknight = 1/62.5
+        deathknight = 1/30
     }
     local mod = mod_dict[string.lower(player_class)]
-
-    return ability_score * mod
+    return ability_score * AAI_CritRatingToCritChance(mod / 25 * 22.1)
 end
 
 
@@ -180,7 +179,7 @@ function AAI_CritRatingToCritChance(rating)
         {50, 1 / 11.308562},
         {60, 1 / 14.0},
         {70, 1 / 22.1},
-        {80, 1 / 45.91},
+        {80, 1 / 46.097315},
     }
     return AAI_Interpolate(scalars, level) * rating
 end
