@@ -18,8 +18,8 @@ function AAI_GetCharacterHaste()
 end
 
 local white_dps_relative = 0.17
-local weapon_skills = 0.25
-local speed_scaling = weapon_skills
+local weapon_skills_relative = 0.25
+local speed_scaling = weapon_skills_relative
 -- local white_dps_relative = 0.5
 -- local instant_cast_reltive = 0.5
 -- local speed_scaling = instant_cast_reltive
