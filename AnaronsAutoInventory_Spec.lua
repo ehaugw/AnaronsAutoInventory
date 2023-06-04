@@ -48,7 +48,7 @@ local spec_evaluators = {
         ) * (
             1 + (AAI_GetCharacterHaste() + AAI_GetItemTotalHaste(item_link) + AAI_GetJudgementOfThePureRank()  * 0.03) * white_dps_relative
         ) / (
-            1 - AAI_GetItemTotalExpertise(item_link)
+            1 - AAI_GetItemTotalExpertise(item_link) * 0.25 --dodge
         ) * (
             (AAI_GetItemSpeed(item_link) > 0 and (
                 AAI_GetItemSpeed(item_link) / AAI_GetItemSpeed(competing_item_link) * speed_scaling
